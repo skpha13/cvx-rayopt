@@ -1,0 +1,36 @@
+[project]
+
+name = "stringart"
+version = "0.0.1"
+authors = [
+  { name="Adrian Mincu", email="mincu.adrian13@gmail.com" },
+]
+
+# TODO: project description
+description = ""
+readme = "README.md"
+
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    'numpy~=2.1'
+]
+
+[project.optional-dependencies]
+dev = [
+    'pytest~=8.3',
+    'black~=24.10',
+    'isort~=5.13',
+]
+
+[project.urls]
+Homepage = "https://github.com/skpha13/Procedural-Computing-of-String-Art/"
+Issues = "https://github.com/skpha13/Procedural-Computing-of-String-Art/issues"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
