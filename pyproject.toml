@@ -27,6 +27,14 @@ dev = [
     'isort~=5.13',
 ]
 
+[tool.pytest.ini_options]
+minversion = "8.3"
+addopts = "-ra"
+testpaths = [
+    "tests",
+    "integration",
+]
+
 [project.urls]
 Homepage = "https://github.com/skpha13/Procedural-Computing-of-String-Art/"
 Issues = "https://github.com/skpha13/Procedural-Computing-of-String-Art/issues"
