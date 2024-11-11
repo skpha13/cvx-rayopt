@@ -1,7 +1,6 @@
-from collections import namedtuple
 from typing import List
 
-Point = namedtuple("Point", ["x", "y"])
+from stringart.utils.types import Point
 
 
 class Bresenham:
@@ -104,7 +103,3 @@ class Bresenham:
             D += 2 * dx
 
         return points
-
-    @staticmethod  # TODO: maybe replace default values
-    def compute_matrix(number_of_pegs: int = 200, radius: int | None = None):
-        pass
