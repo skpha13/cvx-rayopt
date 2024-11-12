@@ -9,11 +9,11 @@ from stringart.utils.types import Point
 class DenseMatrixGenerator:
     @staticmethod
     def compute_matrix(shape: tuple[int, int], number_of_pegs: int) -> tuple[np.ndarray, List[Point], List[Point]]:
-        radius = min(shape[0], shape[1]) // 2
+        radius = min(shape[0], shape[1]) // 2 - 1
         pegs: List[Point] = compute_pegs(
             number_of_pegs=number_of_pegs,
             radius=radius,
-            center_point=Point(radius, radius),
+            center_point=Point(radius + 1, radius + 1),
         )
         line_indices: List[Point] = []
 
@@ -23,19 +23,19 @@ class DenseMatrixGenerator:
                 line = Bresenham.compute_line(pegs[i], pegs[j])
                 line_indices.append(Point(i, j))
 
-                vector = DenseMatrixGenerator.generate_line_matrix((shape[0] * shape[1], number_of_pegs), line)
+                vector = DenseMatrixGenerator.generate_line_matrix(shape, line)
                 A.append(vector)
 
-        return np.array(A), pegs, line_indices
+        return np.array(A).T, pegs, line_indices
 
     @staticmethod
     def generate_line_matrix(shape: tuple[int, int], line: List[Point]) -> np.ndarray:
-        matrix = np.zeros(shape, dtype=int)
+        vector = np.zeros(shape[0] * shape[1], dtype=int)
 
         indices = [point.y * shape[1] + point.x for point in line]
-        matrix[indices] = 1
+        vector[indices] = 1
 
-        return matrix.flatten()
+        return vector
 
 
 # TODO: maybe have a DenseMatrixGenerator implementation and a SparseMatrixGenerator implementation
