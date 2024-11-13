@@ -17,7 +17,10 @@ classifiers = [
 ]
 
 dependencies = [
-    'numpy~=2.1'
+    'numpy~=2.1',
+    'imageio~=2.36',
+    'scikit-image~=0.24',
+    'scipy~=1.14'
 ]
 
 [project.optional-dependencies]
