@@ -30,7 +30,6 @@ solution = np.dot(A, x)
 solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
 solution = np.multiply(solution, 255).astype(np.uint8)
 
-# TODO: make id counter for files
 io.imsave("../../outputs/mihai_stringart.png", solution)
 io.imshow(solution)
 plt.show()
