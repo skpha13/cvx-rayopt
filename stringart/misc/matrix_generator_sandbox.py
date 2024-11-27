@@ -3,14 +3,17 @@ import scipy
 from matplotlib import pyplot as plt
 from skimage import io
 from stringart.line_algorithms.matrix import DenseMatrixGenerator
-from stringart.utils.image import ImageWrapper
+from stringart.utils.image import ImageWrapper, crop_image
+from stringart.utils.types import Mode
 
 image = ImageWrapper()
 image.read_bw("../../imgs/mihai.jpg")
 b = image.flatten_image()
 
+
 shape = image.get_shape()
-A, pegs, lines = DenseMatrixGenerator.compute_matrix(shape, 100)
+mode: Mode = "center"
+A, pegs, lines = DenseMatrixGenerator.compute_matrix(shape, 100, mode)
 
 first_line = A[:, 2]
 matrix = np.reshape(first_line, shape=shape)
@@ -29,7 +32,8 @@ x, _, _, _ = scipy.linalg.lstsq(A, b)
 solution = np.dot(A, x)
 solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
 solution = np.multiply(solution, 255).astype(np.uint8)
+solution = crop_image(solution, mode)
 
-io.imsave("../../outputs/mihai_stringart.png", solution)
+io.imsave("../../outputs/mihai_stringart_cropped.png", solution)
 io.imshow(solution)
 plt.show()
