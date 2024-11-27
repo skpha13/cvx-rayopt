@@ -51,40 +51,31 @@ The input of our pipeline will be a normal image, which we will initially conver
 We can define the following:
 
 ```math
-y = \text{The initial grayscale image}
-\\
-m = \text{The Number of rows in our image}
-\\
-n = \text{The Number of columns in our image}
-\\
-Y = \text{The flattened row-wise version of the image. } Y \in \mathbb{R}^{m \cdot n}
-\\
-p = \text{The Number of pegs used}
-\\
+y = \text{The initial grayscale image} \\
+m = \text{The Number of rows in our image} \\
+n = \text{The Number of columns in our image} \\
+Y = \text{The flattened row-wise version of the image. } Y \in \mathbb{R}^{m \cdot n} \\
+p = \text{The Number of pegs used} \\
 l = {p \choose 2} \text{, the number of lines}
 ```
 
 ```math
-M_i = \text{A matrix representing the } i \text{-th line drawn on the canvas}
-\\
-M = \text{For each } M_i \text{, the corresponding column is the flattened row-wise version of } M_i. \ M \in \mathbb{R}^{m \cdot n, \\\ l}
+M_i = \text{A matrix representing the } i \text{-th line drawn on the canvas} \\
+M = \text{For each } M_i \text{, the corresponding column is the flattened row-wise version of } M_i. \space M \in \mathbb{R}^{m \cdot n, \space l}
 ```
 
 ```math
 x_i = \begin{cases}
     1 &\text{if line } i \text{ is drawn} \\
     0 &\text{otherwise}
-\end{cases}
-\\
+\end{cases} \\
 X \in \mathbb{R}^l
 ```
 
 Thus, the goal of our process is to minimize:
 
 ```math
-\min{\| \sum{(M_i \cdot x_i)} - y \|}
-\\
-\text{or}
-\\
+\min{\| \sum{(M_i \cdot x_i)} - y \|} \\
+\text{or} \\
 \min{\| M \cdot X - Y \|}
 ```
