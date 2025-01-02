@@ -29,7 +29,7 @@ def display_line_console(A: np.ndarray, pegs: np.ndarray) -> None:
         print()
 
 
-def dense_matrix_solver() -> None:
+def matrix_solver() -> None:
     A, pegs = MatrixGenerator.compute_matrix(shape, 100, mode, method)
 
     x = None
@@ -49,4 +49,4 @@ def dense_matrix_solver() -> None:
 
 
 if __name__ == "__main__":
-    dense_matrix_solver()
+    matrix_solver()

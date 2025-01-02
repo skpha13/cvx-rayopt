@@ -16,7 +16,7 @@ class MatrixGenerator:
     def compute_matrix(
         shape: tuple[int, ...], number_of_pegs: int, image_mode: Mode = "center", method: Method = "dense"
     ) -> tuple[np.ndarray, List[Point]]:
-        """Computes the dense matrix representation of lines drawn between pegs placed on a grid.
+        """Computes the matrix representation of lines drawn between pegs placed on a grid.
 
         Parameters
         ----------
@@ -32,13 +32,15 @@ class MatrixGenerator:
             - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
             - "second-half": Pegs are placed in the bottom-half/right-half portion of the rectangle.
 
+        method: Method
+            The method used to generate the matrix. Can be "dense" or "sparse".
+
         Returns
         -------
         tuple[np.ndarray, List[Point], List[Point]]
             - A 2D numpy array (shape: number_of_lines x grid_size) where each row is a binary vector
               representing a line drawn between two pegs.
             - A list of Points representing the locations of the pegs.
-            - A list of Point pairs representing the indices of pegs that are connected by a line.
         """
         radius, center_point = find_radius_and_center_point(shape, image_mode)
         pegs: List[Point] = compute_pegs(
@@ -85,11 +87,46 @@ class MatrixGenerator:
 
     @staticmethod
     def generate_sparse_line(shape: tuple[int, ...], line: List[Point]) -> List[int]:
+        """Generates a list of indices representing the positions of points in the line on a flattened grid.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            The dimensions of the grid (height, width).
+
+        line : List[Point]
+            A list of Points representing the coordinates of the line's path between two pegs.
+
+        Returns
+        -------
+        List[int]
+            A list of indices representing the positions of points in the line on the flattened grid.
+        """
+
         indices = [point.y * shape[1] + point.x for point in line]
         return indices
 
     @staticmethod
     def generate_dense_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
+        """Generates a dense matrix representation of lines drawn between all pairs of pegs.
+
+        Each column in the resulting matrix corresponds to a line between two pegs, represented as a binary vector
+        in flattened grid form.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            The dimensions of the grid (height, width).
+
+        pegs : List[Point]
+            A list of Points representing the coordinates of the pegs.
+
+        Returns
+        -------
+        np.ndarray
+            A 2D numpy array where each column is a binary vector representing a line between two pegs.
+        """
+
         A = []
 
         for i in range(len(pegs)):
@@ -103,6 +140,26 @@ class MatrixGenerator:
 
     @staticmethod
     def generate_sparse_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
+        """Generates a sparse matrix representation of lines drawn between all pairs of pegs.
+
+        The sparse matrix is in CSR format, where each non-zero entry corresponds to a point in the grid
+        that is part of a line between two pegs.
+
+        Parameters
+        ----------
+        shape : tuple[int, ...]
+            The dimensions of the grid (height, width).
+
+        pegs : List[Point]
+            A list of Points representing the coordinates of the pegs.
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix
+            A sparse matrix where each non-zero entry represents a point in the grid that is part of a line
+            between two pegs.
+        """
+
         row_indices: List[int] = []
         column_indices: List[int] = []
         column_index: int = 0

@@ -1,7 +1,6 @@
 from stringart.line_algorithms.matrix import MatrixGenerator
 
 
-# TODO: fix tests
 class TestPegPlacement:
     """Test class to verify peg placement methods for different shape configurations.
     The tests are based on different peg placement modes, including 'center' (square image),
