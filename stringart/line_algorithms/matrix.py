@@ -7,8 +7,9 @@ from stringart.utils.image import find_radius_and_center_point
 from stringart.utils.types import Mode, Point
 
 
-class DenseMatrixGenerator:
-    """A utility class for generating a dense matrix representation of lines drawn between pegs placed within a 2D grid."""
+# TODO: change docstrings and verify them
+class MatrixGenerator:
+    """A utility class for generating a matrix representation of lines drawn between pegs placed within a 2D grid."""
 
     @staticmethod
     def compute_matrix(
@@ -46,21 +47,13 @@ class DenseMatrixGenerator:
             radius=radius,
             center_point=center_point,
         )
-        line_indices: List[Point] = []
 
-        A = []
-        for i in range(number_of_pegs):
-            for j in range(i + 1, number_of_pegs):
-                line = Bresenham.compute_line(pegs[i], pegs[j])
-                line_indices.append(Point(i, j))
-
-                vector = DenseMatrixGenerator.generate_line_matrix(shape, line)
-                A.append(vector)
+        A, line_indices = MatrixGenerator.generate_dense_matrix(shape, pegs)
 
         return np.array(A).T, pegs, line_indices
 
     @staticmethod
-    def generate_line_matrix(shape: tuple[int, ...], line: List[Point]) -> np.ndarray:
+    def generate_dense_line(shape: tuple[int, ...], line: List[Point]) -> np.ndarray:
         """Generates a binary vector representing a line on the grid (the vector is in flattened matrix representation).
 
         The binary vector is of size `shape[0] * shape[1]` and each entry is set to `1` if the
@@ -87,3 +80,26 @@ class DenseMatrixGenerator:
         vector[indices] = 1
 
         return vector
+
+    @staticmethod
+    def generate_sparse_line(line: List[Point]) -> np.ndarray:
+        pass
+
+    @staticmethod
+    def generate_dense_matrix(shape: tuple[int, ...], pegs: List[Point]) -> tuple[np.ndarray, List[Point]]:
+        A = []
+        line_indices: List[Point] = []
+
+        for i in range(len(pegs)):
+            for j in range(i + 1, len(pegs)):
+                line = Bresenham.compute_line(pegs[i], pegs[j])
+                line_indices.append(Point(i, j))
+
+                vector = MatrixGenerator.generate_dense_line(shape, line)
+                A.append(vector)
+
+        return np.array(A).T, line_indices
+
+    @staticmethod
+    def generate_sparse_matrix() -> None:
+        pass

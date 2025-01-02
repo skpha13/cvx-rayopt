@@ -2,38 +2,45 @@ import numpy as np
 import scipy
 from matplotlib import pyplot as plt
 from skimage import io
-from stringart.line_algorithms.matrix import DenseMatrixGenerator
+from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.types import Mode
 
 image = ImageWrapper()
-image.read_bw("../../imgs/mihai.jpg")
+image.read_bw("../../imgs/lena.png")
+mode: Mode = "center"
+shape = image.get_shape()
 b = image.flatten_image()
 
 
-shape = image.get_shape()
-mode: Mode = "center"
-A, pegs, lines = DenseMatrixGenerator.compute_matrix(shape, 100, mode)
+def display_line_console(A: np.ndarray, pegs: np.ndarray) -> None:
+    first_line = A[:, 2]
+    matrix = np.reshape(first_line, shape=shape)
+    pegs_arr = [[point.y, point.x] for point in pegs]
 
-first_line = A[:, 2]
-matrix = np.reshape(first_line, shape=shape)
-pegs_arr = [[point.y, point.x] for point in pegs]
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if [i, j] in pegs_arr:
+                print("*", end=" ")
+                continue
+            print("." if matrix[i][j] == 0 else "#", end=" ")
+        print()
 
-# for i in range(len(matrix)):
-#     for j in range(len(matrix[i])):
-#         if [i, j] in pegs_arr:
-#             print("*", end=" ")
-#             continue
-#         print("." if matrix[i][j] == 0 else "#", end=" ")
-#     print()
 
-x, _, _, _ = scipy.linalg.lstsq(A, b)
+def dense_matrix_solver() -> None:
+    A, pegs, lines = MatrixGenerator.compute_matrix(shape, 100, mode)
 
-solution = np.dot(A, x)
-solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
-solution = np.multiply(solution, 255).astype(np.uint8)
-solution = crop_image(solution, mode)
+    x, _, _, _ = scipy.linalg.lstsq(A, b)
 
-io.imsave("../../outputs/mihai_stringart_cropped.png", solution)
-io.imshow(solution)
-plt.show()
+    solution = np.dot(A, x)
+    solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
+    solution = np.multiply(solution, 255).astype(np.uint8)
+    solution = crop_image(solution, mode)
+
+    io.imsave("../../outputs/lena_stringart_new.png", solution)
+    io.imshow(solution)
+    plt.show()
+
+
+if __name__ == "__main__":
+    dense_matrix_solver()

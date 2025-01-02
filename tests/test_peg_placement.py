@@ -1,4 +1,4 @@
-from stringart.line_algorithms.matrix import DenseMatrixGenerator
+from stringart.line_algorithms.matrix import MatrixGenerator
 
 
 class TestPegPlacement:
@@ -22,7 +22,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs, _ = DenseMatrixGenerator.compute_matrix(shape, 10, mode="center")
+            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, mode="center")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
@@ -36,7 +36,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs, _ = DenseMatrixGenerator.compute_matrix(shape, 10, mode="first-half")
+            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, mode="first-half")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
@@ -55,7 +55,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs, _ = DenseMatrixGenerator.compute_matrix(shape, 10, mode="second-half")
+            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, mode="second-half")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
