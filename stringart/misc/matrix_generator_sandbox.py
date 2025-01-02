@@ -1,14 +1,16 @@
 import numpy as np
-import scipy
 from matplotlib import pyplot as plt
+from scipy.linalg import lstsq
+from scipy.sparse.linalg import lsqr
 from skimage import io
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.types import Mode
+from stringart.utils.types import Method, Mode
 
 image = ImageWrapper()
 image.read_bw("../../imgs/lena.png")
 mode: Mode = "center"
+method: Method = "dense"
 shape = image.get_shape()
 b = image.flatten_image()
 
@@ -28,16 +30,20 @@ def display_line_console(A: np.ndarray, pegs: np.ndarray) -> None:
 
 
 def dense_matrix_solver() -> None:
-    A, pegs, lines = MatrixGenerator.compute_matrix(shape, 100, mode)
+    A, pegs = MatrixGenerator.compute_matrix(shape, 100, mode, method)
 
-    x, _, _, _ = scipy.linalg.lstsq(A, b)
+    x = None
+    if method == "dense":
+        x, _, _, _ = lstsq(A, b)
+    elif method == "sparse":
+        x = lsqr(A, b)[0]
 
-    solution = np.dot(A, x)
+    solution = A @ x
     solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
     solution = np.multiply(solution, 255).astype(np.uint8)
     solution = crop_image(solution, mode)
 
-    io.imsave("../../outputs/lena_stringart_new.png", solution)
+    io.imsave("../../outputs/lena_stringart_sparse.png", solution)
     io.imshow(solution)
     plt.show()
 

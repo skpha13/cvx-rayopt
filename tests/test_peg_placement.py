@@ -1,6 +1,7 @@
 from stringart.line_algorithms.matrix import MatrixGenerator
 
 
+# TODO: fix tests
 class TestPegPlacement:
     """Test class to verify peg placement methods for different shape configurations.
     The tests are based on different peg placement modes, including 'center' (square image),
@@ -22,7 +23,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, mode="center")
+            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, image_mode="center")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
@@ -36,7 +37,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, mode="first-half")
+            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, image_mode="first-half")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
@@ -55,7 +56,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, mode="second-half")
+            _, pegs, _ = MatrixGenerator.compute_matrix(shape, 10, image_mode="second-half")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)

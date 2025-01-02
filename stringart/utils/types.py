@@ -4,3 +4,5 @@ from typing import Literal
 Point = namedtuple("Point", ["x", "y"])
 
 Mode = Literal["first-half", "center", "second-half"]
+
+Method = Literal["dense", "sparse"]

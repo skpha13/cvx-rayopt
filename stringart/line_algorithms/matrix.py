@@ -1,10 +1,11 @@
-from typing import List
+from typing import Callable, List
 
 import numpy as np
+import scipy.sparse
 from stringart.line_algorithms.bresenham import Bresenham
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import find_radius_and_center_point
-from stringart.utils.types import Mode, Point
+from stringart.utils.types import Method, Mode, Point
 
 
 # TODO: change docstrings and verify them
@@ -13,10 +14,8 @@ class MatrixGenerator:
 
     @staticmethod
     def compute_matrix(
-        shape: tuple[int, ...],
-        number_of_pegs: int,
-        mode: Mode = "center",
-    ) -> tuple[np.ndarray, List[Point], List[Point]]:
+        shape: tuple[int, ...], number_of_pegs: int, image_mode: Mode = "center", method: Method = "dense"
+    ) -> tuple[np.ndarray, List[Point]]:
         """Computes the dense matrix representation of lines drawn between pegs placed on a grid.
 
         Parameters
@@ -27,7 +26,7 @@ class MatrixGenerator:
         number_of_pegs : int
             The number of pegs to be placed on the grid.
 
-        mode : Mode | None
+        image_mode : Mode | None
             Specifies the location of the center point to start the peg arrangement. Can be one of:
             - "center" (default): Pegs are placed symmetrically around the center.
             - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
@@ -41,16 +40,19 @@ class MatrixGenerator:
             - A list of Points representing the locations of the pegs.
             - A list of Point pairs representing the indices of pegs that are connected by a line.
         """
-        radius, center_point = find_radius_and_center_point(shape, mode)
+        radius, center_point = find_radius_and_center_point(shape, image_mode)
         pegs: List[Point] = compute_pegs(
             number_of_pegs=number_of_pegs,
             radius=radius,
             center_point=center_point,
         )
 
-        A, line_indices = MatrixGenerator.generate_dense_matrix(shape, pegs)
+        if method not in MatrixGenerator.method_map:
+            raise ValueError(f"Unknown method: {method}. Valid options are {list(MatrixGenerator.method_map.keys())}")
 
-        return np.array(A).T, pegs, line_indices
+        A = MatrixGenerator.method_map[method](shape, pegs)
+
+        return A, pegs
 
     @staticmethod
     def generate_dense_line(shape: tuple[int, ...], line: List[Point]) -> np.ndarray:
@@ -82,24 +84,46 @@ class MatrixGenerator:
         return vector
 
     @staticmethod
-    def generate_sparse_line(line: List[Point]) -> np.ndarray:
-        pass
+    def generate_sparse_line(shape: tuple[int, ...], line: List[Point]) -> List[int]:
+        indices = [point.y * shape[1] + point.x for point in line]
+        return indices
 
     @staticmethod
-    def generate_dense_matrix(shape: tuple[int, ...], pegs: List[Point]) -> tuple[np.ndarray, List[Point]]:
+    def generate_dense_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
         A = []
-        line_indices: List[Point] = []
 
         for i in range(len(pegs)):
             for j in range(i + 1, len(pegs)):
                 line = Bresenham.compute_line(pegs[i], pegs[j])
-                line_indices.append(Point(i, j))
 
                 vector = MatrixGenerator.generate_dense_line(shape, line)
                 A.append(vector)
 
-        return np.array(A).T, line_indices
+        return np.array(A).T
 
     @staticmethod
-    def generate_sparse_matrix() -> None:
-        pass
+    def generate_sparse_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
+        row_indices: List[int] = []
+        column_indices: List[int] = []
+        column_index: int = 0
+
+        for i in range(len(pegs)):
+            for j in range(i + 1, len(pegs)):
+                line = Bresenham.compute_line(pegs[i], pegs[j])
+
+                sparse_line = MatrixGenerator.generate_sparse_line(shape, line)
+                row_indices += sparse_line
+                column_indices += [column_index] * len(sparse_line)
+
+                column_index += 1
+
+        A = scipy.sparse.csr_matrix(
+            ([1.0] * len(row_indices), (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index)
+        )
+
+        return A
+
+    method_map: dict[str, Callable] = {
+        "dense": generate_dense_matrix,
+        "sparse": generate_sparse_matrix,
+    }
