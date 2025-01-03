@@ -20,7 +20,7 @@ def main() -> None:
     mode: Mode = "center"
 
     solver = Solver(image, mode)
-    solution = solver.least_squares(method="sparse")
+    solution = solver.greedy(2)
 
     io.imsave(metadata.path / "outputs/lena_stringart_sparse.png", solution)
     io.imshow(solution)
