@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 from imageio.v3 import imread
 from skimage.color import rgb2gray
@@ -12,7 +14,7 @@ class ImageWrapper:
         if self.image is None:
             raise ValueError("Image cannot be None. Most probably it was not loaded.")
 
-    def read_bw(self, file_path: str) -> None:
+    def read_bw(self, file_path: str | Path) -> None:
         self.image = rgb2gray(imread(file_path))
 
     def flatten_image(self) -> np.ndarray:

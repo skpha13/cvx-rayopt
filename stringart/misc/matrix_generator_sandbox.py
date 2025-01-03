@@ -10,7 +10,7 @@ from stringart.utils.types import Method, Mode
 image = ImageWrapper()
 image.read_bw("../../imgs/lena.png")
 mode: Mode = "center"
-method: Method = "dense"
+method: Method = "sparse"
 shape = image.get_shape()
 b = image.flatten_image()
 

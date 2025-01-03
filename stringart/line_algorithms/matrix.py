@@ -8,7 +8,6 @@ from stringart.utils.image import find_radius_and_center_point
 from stringart.utils.types import Method, Mode, Point
 
 
-# TODO: change docstrings and verify them
 class MatrixGenerator:
     """A utility class for generating a matrix representation of lines drawn between pegs placed within a 2D grid."""
 
