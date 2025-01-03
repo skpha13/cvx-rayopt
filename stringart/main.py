@@ -19,10 +19,13 @@ def main() -> None:
     image.read_bw(metadata.path / "imgs/lena.png")
     mode: Mode = "center"
 
-    solver = Solver(image, mode, number_of_pegs=20)
-    solution = solver.greedy(100)
+    # solver = Solver(image, mode, number_of_pegs=100)
+    # solution = solver.least_squares("sparse")
 
-    io.imsave(metadata.path / "outputs/lena_stringart_sparse.png", solution)
+    solver = Solver(image, mode, number_of_pegs=20)
+    solution = solver.greedy(number_of_lines=100, selector_type="random")
+
+    io.imsave(metadata.path / "outputs/lena_stringart_greedy.png", solution)
     io.imshow(solution)
     plt.show()
 
