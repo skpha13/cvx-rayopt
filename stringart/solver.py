@@ -2,9 +2,9 @@ from typing import List
 
 import numpy as np
 from numpy.linalg import lstsq
+from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
 
-from stringart.line_algorithms.bresenham import Bresenham
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
@@ -73,11 +73,11 @@ class Solver:
             center_point=center_point,
         )
 
-        candidate_lines = MatrixGenerator.generate_dense_matrix(self.shape, pegs)
+        candidate_lines = csr_matrix(MatrixGenerator.generate_dense_matrix(self.shape, pegs))
         rows, cols = candidate_lines.shape
         best_lines: set[int] = set()
 
-        A = np.empty((rows, 0))
+        A = csr_matrix((rows, 0))
         x = None
 
         for step in range(number_of_lines):
@@ -89,21 +89,22 @@ class Solver:
                 if column_index in best_lines:
                     continue
 
-                A_trial = np.column_stack((A, candidate_lines[:, column_index]))
-                x_trial, _, _, _ = np.linalg.lstsq(A_trial, self.b)
+                trial_column = candidate_lines[:, column_index]
+                A_trial = hstack([A, trial_column])
+                x_trial = lsqr(A_trial, self.b)[0]
 
-                residual = self.b - A_trial @ x_trial
-                residual = np.sum(np.square(residual))
+                residual = np.linalg.norm(self.b - A_trial @ x_trial)
 
                 if residual < best_residual:
                     best_index = column_index
                     best_residual = residual
 
             if best_index == -1:
-                raise RuntimeError(f"No index found at step: {step}.")
+                break
 
-            A = np.column_stack((A, candidate_lines[:, best_index]))
             best_lines.add(best_index)
-            x, _, _, _ = np.linalg.lstsq(A, self.b)
+            best_column = candidate_lines[:, best_index]
+            A = hstack([A, best_column])
+            x = lsqr(A, self.b)[0]
 
         return self.compute_solution(A, x)
