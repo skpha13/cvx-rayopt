@@ -1,7 +1,7 @@
 from typing import Callable, List
 
 import numpy as np
-import scipy.sparse
+from scipy.sparse import csr_matrix
 from stringart.line_algorithms.bresenham import Bresenham
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import find_radius_and_center_point
@@ -138,7 +138,7 @@ class MatrixGenerator:
         return np.array(A).T
 
     @staticmethod
-    def generate_sparse_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
+    def generate_sparse_matrix(shape: tuple[int, ...], pegs: List[Point]) -> csr_matrix:
         """Generates a sparse matrix representation of lines drawn between all pairs of pegs.
 
         The sparse matrix is in CSR format, where each non-zero entry corresponds to a point in the grid
@@ -173,7 +173,7 @@ class MatrixGenerator:
 
                 column_index += 1
 
-        A = scipy.sparse.csr_matrix(
+        A = csr_matrix(
             ([1.0] * len(row_indices), (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index)
         )
 

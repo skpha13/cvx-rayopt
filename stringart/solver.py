@@ -122,9 +122,9 @@ class Solver:
             center_point=center_point,
         )
 
-        candidate_lines = csr_matrix(MatrixGenerator.generate_dense_matrix(self.shape, pegs))
+        candidate_lines = MatrixGenerator.generate_sparse_matrix(self.shape, pegs)
         rows, cols = candidate_lines.shape
-        best_lines: set[int] = set()
+        selected_lines: set[int] = set()
         all_line_indices = set(range(cols))
         past_residual = np.inf
 
@@ -136,16 +136,20 @@ class Solver:
             best_residual = np.inf
 
             # exclude already selected lines
-            remaining_lines_indices = all_line_indices - best_lines
+            remaining_lines_indices = all_line_indices - selected_lines
             remaining_candidate_lines = candidate_lines[:, list(remaining_lines_indices)]
 
             # initialize selector
-            selector = Solver.__greedy_map_selector[selector_type](remaining_candidate_lines, self.b)
+            selector = Solver.__greedy_map_selector[selector_type](
+                remaining_candidate_lines,
+                self.b,
+                np.array(list(remaining_lines_indices)),
+            )
             top_candidates = selector.get_top_k_candidates()
 
             for column_index in top_candidates:
                 # check if we already included the line; TODO: might be redundant with the remaining_candidate logic
-                if column_index in best_lines:
+                if column_index in selected_lines:
                     continue
 
                 trial_column = candidate_lines[:, column_index]
@@ -162,7 +166,7 @@ class Solver:
             if best_index == -1:
                 break
 
-            best_lines.add(best_index)
+            selected_lines.add(best_index)
             best_column = candidate_lines[:, best_index]
             A = hstack([A, best_column])
             x = lsqr(A, self.b)[0]
