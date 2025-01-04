@@ -69,13 +69,21 @@ The second approach uses a **sparse matrix** representation.
 
 Knowing the fact that our column vectors in the dense matrix are a representation of a flattened matrix with just one line drawn in it, we can say that the matrix is a **sparse matrix**, meaning most elements are zero.
 
-For example, at most max⁡(m,n)max(m,n) elements of the matrix are set to non-zero values, as determined by the Bresenham line algorithm. See the illustration below:
+For example, at most `max(m,n)` elements of the matrix are set to non-zero values, as determined by the Bresenham line algorithm. See the illustration below:
 
 ![Bresenham Example](../assets/bresenham.png)
 
 In the example above, where `m = 5, n = 11` the line drawn results in exactly `11` non-zero elements.
 
 In this case, **least squares algorithms** have special implementations to take advantage of the sparse matrix structure. They work faster and use less memory, because they only process the non-zero elements.
+
+This results in a matrix with dimensions `3 * nz`, where `nz` represents the number of non-zero elements. The information is stored in the following format:
+
+- One vector representing the row indices
+- One vector representing the column indices
+- One vector representing the values
+
+The relationship thus becomes: `data[i] = matrix[row[i]][column[i]]`.
 
 > [!NOTE]
 > Both the dense and sparse methods have been implemented.
