@@ -3,4 +3,4 @@
 ## [Problem Definition](./readmes/01_problem_definition.md)
 ## [Approaches]()
    - [Least Squares](./readmes/02_least_squares.md)
-   - [Orthogonal Pursuit Matching](./readmes/03_matching_pursuit.md)
+   - [Matching Pursuit](./readmes/03_matching_pursuit.md)

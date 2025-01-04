@@ -2,16 +2,18 @@
 
 ## Terminology
 
-**"Matching Pursuit"** is a specific greedy algorithm used in signal processing and machine learning used to approximate a signal using a linear combination of *dictionary atoms* (columns from the matrix)
+**"Matching Pursuit"** is a specific greedy algorithm applied in signal processing and machine learning to approximate a signal using a linear combination of *dictionary atoms* (columns from the matrix)
 
 It iteratively selects the *atom* that at the current step reduces the residual most significantly.
 
 This concept has been adopted and integrated into this context to explore its performance and behaviour.
 
+You can read more here: [Wikipedia Matching Pursuit](https://en.wikipedia.org/wiki/Matching_pursuit)
+
 ## Implementation
 
 As I said above the implementation is very close to the one used in signal processing. I will go over the steps:
-
+    
 > [!NOTE]
 > For simplicity, the explanation uses a dense matrix representation. However, the actual implementation is based on sparse matrices for efficiency.
 
