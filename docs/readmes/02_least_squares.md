@@ -39,7 +39,7 @@ y_k = y_c + r \cdot \sin(\frac{2 \pi k}{n})
 ## Bresenham
 
 To draw each line in the matrix, the Bresenham algorithm was used, determining the points needed to be
-selected between two chosen pegs in order to have a close represantation of a straight drawn line.
+selected between two chosen pegs in order to have a close representation of a straight drawn line.
 
 ## Output Image
 
@@ -48,6 +48,37 @@ After solving the system for `X`, we can generate the output image using:
 ```math
 O = MX
 ```
+
+## Implementation
+
+The least squares solution can be implemented using two methods:
+
+### 1. Dense Matrix Representation
+
+In this approach, the matrix `M` is represented as a dense (full) matrix with dimensions:
+
+```math
+M \in \mathbb{R}^{m \cdot n, \space l}
+```
+
+While this is simpler and easier to understand, this representation is more computationally expensive for larger matrices due to the fact that each element, including zeros, is explicitly stored. In consequence, this leads to higher memory usage and increased computational time.
+
+### 2. Sparse Matrix Representation
+
+The second approach uses a **sparse matrix** representation.
+
+Knowing the fact that our column vectors in the dense matrix are a representation of a flattened matrix with just one line drawn in it, we can say that the matrix is a **sparse matrix**, meaning most elements are zero.
+
+For example, at most max⁡(m,n)max(m,n) elements of the matrix are set to non-zero values, as determined by the Bresenham line algorithm. See the illustration below:
+
+![Bresenham Example](../assets/bresenham.png)
+
+In the example above, where `m = 5, n = 11` the line drawn results in exactly `11` non-zero elements.
+
+In this case, **least squares algorithms** have special implementations to take advantage of the sparse matrix structure. They work faster and use less memory, because they only process the non-zero elements.
+
+> [!NOTE]
+> Both the dense and sparse methods have been implemented.
 
 ## Observations
 
