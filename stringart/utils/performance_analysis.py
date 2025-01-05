@@ -2,6 +2,7 @@ import json
 import time
 import tracemalloc
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable, List
 
 import numpy as np
@@ -62,6 +63,17 @@ class BenchmarkResult:
             f"- Peak Memory Usage: {formatted_memory}\n"
             f"- Output Image Shape: {self.output_image.shape}"
         )
+
+    def to_json(self) -> dict:
+        return {
+            "solver": self.solver,
+            "params": self.params,
+            "output_image_shape": self.output_image.shape,
+            "elapsed_monotonic_time": self.elapsed_monotonic_time,
+            "peak_memory_usage": self.peak_memory_usage,
+            "elapsed_time": self.elapsed_time,
+            "peak_memory_size": self.peak_memory_size,
+        }
 
 
 def benchmark(func: Callable, *args, **kwargs) -> BenchmarkResult:
@@ -148,3 +160,17 @@ def run_benchmarks(image: ImageWrapper) -> List[BenchmarkResult]:
         results.append(result)
 
     return results
+
+
+def save_benchmarks(benchmark_results: List[BenchmarkResult], file_path: str | Path) -> None:
+    """Save benchmark results to a JSON file.
+
+    Parameters:
+        benchmark_results (List[BenchmarkResult]): List of benchmark results to save.
+        file_path (str | Path): Path to the output JSON file.
+    """
+
+    json_results = [result.to_json() for result in benchmark_results]
+
+    with open(file_path, "w") as file:
+        json.dump(json_results, file, indent=4)

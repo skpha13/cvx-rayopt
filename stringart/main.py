@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from pathlib import Path
@@ -7,7 +8,7 @@ from skimage import io
 
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper
-from stringart.utils.performance_analysis import BenchmarkResult, benchmark, run_benchmarks
+from stringart.utils.performance_analysis import BenchmarkResult, benchmark, run_benchmarks, save_benchmarks
 from stringart.utils.types import Metadata, Mode
 
 
@@ -39,9 +40,14 @@ def main() -> None:
     # plt.show()
 
     results = run_benchmarks(image)
-    formatted_results = "\n\n".join([str(result) for result in results])
 
+    formatted_results = "\n\n".join([str(result) for result in results])
     logger.info(formatted_results)
+
+    dir_path = metadata.path / "benchmarks"
+    file_path = dir_path / "benchmarks_01.json"
+    os.makedirs(dir_path, exist_ok=True)
+    save_benchmarks(results, file_path)
 
 
 if __name__ == "__main__":
