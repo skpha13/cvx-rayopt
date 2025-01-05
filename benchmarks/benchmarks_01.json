@@ -10,19 +10,19 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_000.png",
-        "elapsed_monotonic_time": 95.17200000002049,
-        "peak_memory_usage": 8625841824,
+        "elapsed_monotonic_time": 96.5,
+        "peak_memory_usage": 8625841792,
         "elapsed_time": {
             "hours": 0,
             "minutes": 1,
-            "seconds": 35,
-            "milliseconds": 172
+            "seconds": 36,
+            "milliseconds": 500
         },
         "peak_memory_size": {
             "gigabytes": 8,
             "megabytes": 34,
             "kilobytes": 249,
-            "bytes": 672
+            "bytes": 640
         }
     },
     {
@@ -36,13 +36,13 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_001.png",
-        "elapsed_monotonic_time": 3.625,
+        "elapsed_monotonic_time": 3.797000000020489,
         "peak_memory_usage": 81615164,
         "elapsed_time": {
             "hours": 0,
             "minutes": 0,
             "seconds": 3,
-            "milliseconds": 625
+            "milliseconds": 797
         },
         "peak_memory_size": {
             "gigabytes": 0,
@@ -63,19 +63,19 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_002.png",
-        "elapsed_monotonic_time": 367.0,
-        "peak_memory_usage": 709946111,
+        "elapsed_monotonic_time": 316.8279999999795,
+        "peak_memory_usage": 730736051,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 6,
-            "seconds": 7,
-            "milliseconds": 0
+            "minutes": 5,
+            "seconds": 16,
+            "milliseconds": 827
         },
         "peak_memory_size": {
             "gigabytes": 0,
-            "megabytes": 677,
-            "kilobytes": 58,
-            "bytes": 767
+            "megabytes": 696,
+            "kilobytes": 905,
+            "bytes": 435
         }
     },
     {
@@ -90,19 +90,19 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_003.png",
-        "elapsed_monotonic_time": 213.03099999995902,
-        "peak_memory_usage": 809541986,
+        "elapsed_monotonic_time": 215.03100000019185,
+        "peak_memory_usage": 811975436,
         "elapsed_time": {
             "hours": 0,
             "minutes": 3,
-            "seconds": 33,
-            "milliseconds": 30
+            "seconds": 35,
+            "milliseconds": 31
         },
         "peak_memory_size": {
             "gigabytes": 0,
-            "megabytes": 772,
-            "kilobytes": 40,
-            "bytes": 354
+            "megabytes": 774,
+            "kilobytes": 368,
+            "bytes": 780
         }
     }
 ]

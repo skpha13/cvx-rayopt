@@ -9,7 +9,8 @@ from stringart.utils.types import Mode, Point
 class ImageWrapper:
     @staticmethod
     def read_bw(file_path: str | Path) -> np.ndarray:
-        return rgb2gray(imread(file_path))
+        grayscale_image = rgb2gray(imread(file_path))
+        return 1 - grayscale_image  # inverting black with white
 
     @staticmethod
     def flatten_image(image: np.ndarray) -> np.ndarray:
@@ -53,7 +54,7 @@ def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = Non
 
 
 def crop_image(image: np.ndarray, mode: Mode) -> np.ndarray:
-    """Calculate the radius and center point of a region within an image shape.
+    """Crops an input image according to a specified mode.
 
     Parameters
     ----------

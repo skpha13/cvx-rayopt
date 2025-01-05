@@ -40,17 +40,20 @@ def main() -> None:
     # io.imshow(solution)
     # plt.show()
 
-    # benchmark = Benchmark(image=image, mode=mode, number_of_pegs=100)
-    # results = benchmark.run_benchmarks()
-    #
-    # formatted_results = "\n\n".join([str(result) for result in results])
-    # logger.info(formatted_results)
-    #
-    # Benchmark.save_benchmarks(results, "benchmarks_01")
-    # benchmark.run_analysis(results, ground_truth_image, "benchmark_and_analysis_01")
+    benchmark = Benchmark(image=image, mode=mode, number_of_pegs=100)
+    results = benchmark.run_benchmarks()
+
+    formatted_results = "\n\n".join([str(result) for result in results])
+    logger.info(formatted_results)
+
+    Benchmark.save_benchmarks(results, "benchmarks_01")
 
     benchmarks = Benchmark.load_benchmarks("benchmarks_01")
-    print(benchmarks)
+    benchmark.run_analysis(
+        benchmarks=benchmarks,
+        ground_truth_image=ground_truth_image,
+        filename="benchmark_and_analysis",
+    )
 
 
 if __name__ == "__main__":

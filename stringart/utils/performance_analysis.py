@@ -1,15 +1,18 @@
 import json
+import logging
 import os
 import time
 import tracemalloc
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, List, TypedDict
+from typing import Callable, List
 
+import matplotlib.pyplot as plt
 import numpy as np
 from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
+from stringart.utils.image import crop_image
 from stringart.utils.time_and_memory_utils import (
     ElapsedTime,
     MemorySize,
@@ -19,6 +22,8 @@ from stringart.utils.time_and_memory_utils import (
     format_time,
 )
 from stringart.utils.types import Mode
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -206,8 +211,12 @@ class Benchmark:
 
         for benchmark_to_run in self.benchmarks_to_run:
             func, params = benchmark_to_run
+            logger.info(f"Started Function: {func.__name__}, Params: {params}\n")
+
             result = self.run_benchmark(func, **params)
             results.append(result)
+
+            logger.info(f"Finished\n")
 
         return results
 
@@ -274,8 +283,20 @@ class Benchmark:
         self, benchmarks: List[BenchmarkResult], ground_truth_image: np.ndarray, filename: str = "benchmark"
     ) -> None:
         output_images = [benchmark.output_image for benchmark in benchmarks]
+        ground_truth_image = crop_image(ground_truth_image, self.mode)
 
-        rmses = []
-        for test_image in output_images:
-            rmse = normalized_root_mse(ground_truth_image, test_image)  # TODO: cropping leaves image shapes different
-            rmses.append(rmse)
+        rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
+        diff_images = [ground_truth_image - test_image for test_image in output_images]
+
+        fig, axs = plt.subplots(1, len(output_images), figsize=(12, 4))
+        plot_name = "Difference Images"
+        fig.suptitle(plot_name)
+
+        for index, diff_image in enumerate(diff_images):
+            axs[index].imshow(diff_image, cmap="plasma")
+            axs[index].axis("off")
+
+        plt.show()
+
+        # TODO: plot with lowest time and lowest memory
+        print(rmses)
