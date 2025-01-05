@@ -25,20 +25,23 @@ def main() -> None:
     mode: Mode = "center"
 
     # solver = Solver(image, mode, number_of_pegs=100)
-    # benchmark_result: BenchmarkResult = benchmark(solver.least_squares, "sparse")
+    # params = {"method": "sparse"}
+    # benchmark_result: BenchmarkResult = benchmark(solver.least_squares, **params)
     # solution = benchmark_result.output_image
+    #
+    # logger.info(str(benchmark_result))
 
     # solver = Solver(image, mode, number_of_pegs=50)
     # solution = solver.greedy(number_of_lines=1000, selector_type="random")
+
+    # io.imsave(metadata.path / "outputs/lena_stringart_greedy.png", solution)
+    # io.imshow(solution)
+    # plt.show()
 
     results = run_benchmarks(image)
     formatted_results = "\n\n".join([str(result) for result in results])
 
     logger.info(formatted_results)
-
-    # io.imsave(metadata.path / "outputs/lena_stringart_greedy.png", solution)
-    # io.imshow(solution)
-    # plt.show()
 
 
 if __name__ == "__main__":
