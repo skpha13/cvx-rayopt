@@ -2,13 +2,14 @@ import json
 import logging
 import os
 from pathlib import Path
+from typing import List
 
 from matplotlib import pyplot as plt
 from skimage import io
 
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper
-from stringart.utils.performance_analysis import BenchmarkResult, benchmark, run_benchmarks, save_benchmarks
+from stringart.utils.performance_analysis import Benchmark, BenchmarkResult
 from stringart.utils.types import Metadata, Mode
 
 
@@ -21,33 +22,35 @@ def main() -> None:
 
     metadata = Metadata(directory)
 
-    image = ImageWrapper()
-    image.read_bw(metadata.path / "imgs/lena.png")
+    image = ImageWrapper.read_bw(metadata.path / "imgs/lena.png")
+    ground_truth_image = image.copy()
     mode: Mode = "center"
+    Benchmark.initialize_metadata(metadata.path)
 
     # solver = Solver(image, mode, number_of_pegs=100)
     # params = {"method": "sparse"}
-    # benchmark_result: BenchmarkResult = benchmark(solver.least_squares, **params)
+    # benchmark = Benchmark(image=image, mode=mode, path=metadata.path, number_of_pegs=100)
+    # benchmark_result: BenchmarkResult = benchmark.run_benchmark(solver.least_squares, **params)
+    # benchmark.save_benchmarks([benchmark_result])
     # solution = benchmark_result.output_image
     #
     # logger.info(str(benchmark_result))
-
-    # solver = Solver(image, mode, number_of_pegs=50)
-    # solution = solver.greedy(number_of_lines=1000, selector_type="random")
-
-    # io.imsave(metadata.path / "outputs/lena_stringart_greedy.png", solution)
+    #
+    # io.imsave(metadata.path / "outputs/lena_stringart_sparse.png", solution)
     # io.imshow(solution)
     # plt.show()
 
-    results = run_benchmarks(image)
+    # benchmark = Benchmark(image=image, mode=mode, number_of_pegs=100)
+    # results = benchmark.run_benchmarks()
+    #
+    # formatted_results = "\n\n".join([str(result) for result in results])
+    # logger.info(formatted_results)
+    #
+    # Benchmark.save_benchmarks(results, "benchmarks_01")
+    # benchmark.run_analysis(results, ground_truth_image, "benchmark_and_analysis_01")
 
-    formatted_results = "\n\n".join([str(result) for result in results])
-    logger.info(formatted_results)
-
-    dir_path = metadata.path / "benchmarks"
-    file_path = dir_path / "benchmarks_01.json"
-    os.makedirs(dir_path, exist_ok=True)
-    save_benchmarks(results, file_path)
+    benchmarks = Benchmark.load_benchmarks("benchmarks_01")
+    print(benchmarks)
 
 
 if __name__ == "__main__":

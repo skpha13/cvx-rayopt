@@ -7,25 +7,13 @@ from stringart.utils.types import Mode, Point
 
 
 class ImageWrapper:
-    def __init__(self) -> None:
-        self.image: np.ndarray | None = None
+    @staticmethod
+    def read_bw(file_path: str | Path) -> np.ndarray:
+        return rgb2gray(imread(file_path))
 
-    def check_image_loaded(self) -> None:
-        if self.image is None:
-            raise ValueError("Image cannot be None. Most probably it was not loaded.")
-
-    def read_bw(self, file_path: str | Path) -> None:
-        self.image = rgb2gray(imread(file_path))
-
-    def flatten_image(self) -> np.ndarray:
-        self.check_image_loaded()
-
-        return self.image.flatten()
-
-    def get_shape(self) -> tuple[int, ...]:
-        self.check_image_loaded()
-
-        return self.image.shape
+    @staticmethod
+    def flatten_image(image: np.ndarray) -> np.ndarray:
+        return image.flatten()
 
 
 def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = None) -> tuple[int, Point | None]:

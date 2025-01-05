@@ -17,8 +17,8 @@ class Solver:
 
     Parameters
     ----------
-    image : ImageWrapper
-        An object representing the image to be processed.
+    image : np.ndarray
+        A numpy array representing the image to be processed.
     image_mode : Mode
         The mode in which the image is being processed. This determines cropping behaviour.
     number_of_pegs : int, optional
@@ -27,9 +27,9 @@ class Solver:
 
     __greedy_map_selector: dict[str, type[Selector]] = {"random": RandomSelector, "dot-product": DotProductSelector}
 
-    def __init__(self, image: ImageWrapper, image_mode: Mode, number_of_pegs: int = 100):
-        self.shape: tuple[int, ...] = image.get_shape()
-        self.b: np.ndarray = image.flatten_image()
+    def __init__(self, image: np.ndarray, image_mode: Mode, number_of_pegs: int = 100):
+        self.shape: tuple[int, ...] = image.shape
+        self.b: np.ndarray = ImageWrapper.flatten_image(image)
         self.image_mode: Mode = image_mode
         self.number_of_pegs: int = number_of_pegs
 

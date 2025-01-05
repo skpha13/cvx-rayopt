@@ -4,23 +4,25 @@
         "params": {
             "method": "dense"
         },
+        "number_of_pegs": 100,
         "output_image_shape": [
             328,
             328
         ],
-        "elapsed_monotonic_time": 97.40599999995902,
-        "peak_memory_usage": 8625841472,
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_000.png",
+        "elapsed_monotonic_time": 95.17200000002049,
+        "peak_memory_usage": 8625841824,
         "elapsed_time": {
             "hours": 0,
             "minutes": 1,
-            "seconds": 37,
-            "milliseconds": 405
+            "seconds": 35,
+            "milliseconds": 172
         },
         "peak_memory_size": {
             "gigabytes": 8,
             "megabytes": 34,
             "kilobytes": 249,
-            "bytes": 320
+            "bytes": 672
         }
     },
     {
@@ -28,48 +30,25 @@
         "params": {
             "method": "sparse"
         },
+        "number_of_pegs": 100,
         "output_image_shape": [
             328,
             328
         ],
-        "elapsed_monotonic_time": 3.6089999999385327,
-        "peak_memory_usage": 81615068,
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_001.png",
+        "elapsed_monotonic_time": 3.625,
+        "peak_memory_usage": 81615164,
         "elapsed_time": {
             "hours": 0,
             "minutes": 0,
             "seconds": 3,
-            "milliseconds": 608
+            "milliseconds": 625
         },
         "peak_memory_size": {
             "gigabytes": 0,
             "megabytes": 77,
             "kilobytes": 854,
-            "bytes": 220
-        }
-    },
-    {
-        "solver": "greedy",
-        "params": {
-            "number_of_lines": 1000,
-            "selector_type": "dot-product"
-        },
-        "output_image_shape": [
-            328,
-            328
-        ],
-        "elapsed_monotonic_time": 219.5470000000205,
-        "peak_memory_usage": 813120974,
-        "elapsed_time": {
-            "hours": 0,
-            "minutes": 3,
-            "seconds": 39,
-            "milliseconds": 547
-        },
-        "peak_memory_size": {
-            "gigabytes": 0,
-            "megabytes": 775,
-            "kilobytes": 463,
-            "bytes": 462
+            "bytes": 316
         }
     },
     {
@@ -78,23 +57,52 @@
             "number_of_lines": 1000,
             "selector_type": "random"
         },
+        "number_of_pegs": 100,
         "output_image_shape": [
             328,
             328
         ],
-        "elapsed_monotonic_time": 340.0779999999795,
-        "peak_memory_usage": 713147251,
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_002.png",
+        "elapsed_monotonic_time": 367.0,
+        "peak_memory_usage": 709946111,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 5,
-            "seconds": 40,
-            "milliseconds": 77
+            "minutes": 6,
+            "seconds": 7,
+            "milliseconds": 0
         },
         "peak_memory_size": {
             "gigabytes": 0,
-            "megabytes": 680,
-            "kilobytes": 112,
-            "bytes": 883
+            "megabytes": 677,
+            "kilobytes": 58,
+            "bytes": 767
+        }
+    },
+    {
+        "solver": "greedy",
+        "params": {
+            "number_of_lines": 1000,
+            "selector_type": "dot-product"
+        },
+        "number_of_pegs": 100,
+        "output_image_shape": [
+            328,
+            328
+        ],
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_003.png",
+        "elapsed_monotonic_time": 213.03099999995902,
+        "peak_memory_usage": 809541986,
+        "elapsed_time": {
+            "hours": 0,
+            "minutes": 3,
+            "seconds": 33,
+            "milliseconds": 30
+        },
+        "peak_memory_size": {
+            "gigabytes": 0,
+            "megabytes": 772,
+            "kilobytes": 40,
+            "bytes": 354
         }
     }
 ]
