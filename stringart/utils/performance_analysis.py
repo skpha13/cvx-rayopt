@@ -211,12 +211,12 @@ class Benchmark:
 
         for benchmark_to_run in self.benchmarks_to_run:
             func, params = benchmark_to_run
-            logger.info(f"Started Function: {func.__name__}, Params: {params}\n")
+            logger.info(f" Started Function: {func.__name__}, Params: {params}")
 
             result = self.run_benchmark(func, **params)
             results.append(result)
 
-            logger.info(f"Finished\n")
+            logger.info(f" Finished")
 
         return results
 
