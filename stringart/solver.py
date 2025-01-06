@@ -17,8 +17,8 @@ class Solver:
 
     Parameters
     ----------
-    image : ImageWrapper
-        An object representing the image to be processed.
+    image : np.ndarray
+        A numpy array representing the image to be processed.
     image_mode : Mode
         The mode in which the image is being processed. This determines cropping behaviour.
     number_of_pegs : int, optional
@@ -27,9 +27,9 @@ class Solver:
 
     __greedy_map_selector: dict[str, type[Selector]] = {"random": RandomSelector, "dot-product": DotProductSelector}
 
-    def __init__(self, image: ImageWrapper, image_mode: Mode, number_of_pegs: int = 100):
-        self.shape: tuple[int, ...] = image.get_shape()
-        self.b: np.ndarray = image.flatten_image()
+    def __init__(self, image: np.ndarray, image_mode: Mode, number_of_pegs: int = 100):
+        self.shape: tuple[int, ...] = image.shape
+        self.b: np.ndarray = ImageWrapper.flatten_image(image)
         self.image_mode: Mode = image_mode
         self.number_of_pegs: int = number_of_pegs
 
@@ -53,6 +53,7 @@ class Solver:
 
         solution = A @ x
         solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
+        solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
         solution = crop_image(solution, self.image_mode)
 
@@ -148,7 +149,7 @@ class Solver:
             top_candidates = selector.get_top_k_candidates()
 
             for column_index in top_candidates:
-                # check if we already included the line; TODO: might be redundant with the remaining_candidate logic
+                # check if we already included the line
                 if column_index in selected_lines:
                     continue
 

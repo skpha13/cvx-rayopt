@@ -7,12 +7,11 @@ from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.types import Method, Mode
 
-image = ImageWrapper()
-image.read_bw("../../imgs/lena.png")
+image = ImageWrapper.read_bw("../../imgs/lena.png")
 mode: Mode = "center"
 method: Method = "sparse"
-shape = image.get_shape()
-b = image.flatten_image()
+shape = image.shape
+b = ImageWrapper.flatten_image(image)
 
 
 def display_line_console(A: np.ndarray, pegs: np.ndarray) -> None:
