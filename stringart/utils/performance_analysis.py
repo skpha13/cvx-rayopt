@@ -280,23 +280,80 @@ class Benchmark:
         return benchmarks_class
 
     def run_analysis(
-        self, benchmarks: List[BenchmarkResult], ground_truth_image: np.ndarray, filename: str = "benchmark"
+        self, benchmarks: List[BenchmarkResult], ground_truth_image: np.ndarray, dirname: str = "analysis"
     ) -> None:
+        """Perform an analysis of benchmarking results by generating and saving plots that show the differences
+        between output images and the ground truth image, as well as RMSE and time and memory usage for each benchmark.
+
+        Parameters
+        ----------
+        benchmarks : List[BenchmarkResult]
+            A list of benchmark results to analyze.
+
+        ground_truth_image : np.ndarray
+            The ground truth image to compare the benchmarked images against. It is expected to be a
+            2D array representing the image in a NumPy array format.
+
+        dirname : str, optional, default: "analysis"
+            The directory where the analysis results (plots) will be saved. If the directory does not
+            exist, it will be created inside the `docs/plots` directory.
+        """
+
+        directory = self.PLOTS_PATH / dirname
+        os.makedirs(directory, exist_ok=True)
+
         output_images = [benchmark.output_image for benchmark in benchmarks]
         ground_truth_image = crop_image(ground_truth_image, self.mode)
 
+        labels = [
+            f"{benchmark.solver}\n{"\n".join(f"{key}: {value}" for key, value in benchmark.params.items())}"
+            for benchmark in benchmarks
+        ]
+
+        # plot diff images and rmses
         rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
         diff_images = [ground_truth_image - test_image for test_image in output_images]
 
-        fig, axs = plt.subplots(1, len(output_images), figsize=(12, 4))
+        fig, axs = plt.subplots(1, len(output_images), figsize=(16, 6))
         plot_name = "Difference Images"
         fig.suptitle(plot_name)
 
         for index, diff_image in enumerate(diff_images):
             axs[index].imshow(diff_image, cmap="plasma")
             axs[index].axis("off")
+            axs[index].text(
+                0.5,
+                -0.1,
+                f"{labels[index]}\nRMS: {rmses[index]:.4f}",
+                ha="center",
+                va="center",
+                transform=axs[index].transAxes,
+                fontsize=10,
+            )
+        fig.tight_layout()
+        fig.savefig(f"{directory / plot_name}.svg", format="svg")
+        fig.show()
 
-        plt.show()
+        # plot time and memory
+        monotonic_time = [benchmark.elapsed_monotonic_time for benchmark in benchmarks]
+        memory_size = [benchmark.peak_memory_usage / (1024**2) for benchmark in benchmarks]
 
-        # TODO: plot with lowest time and lowest memory
-        print(rmses)
+        def plot_bar_graph(name: str, ylabel: str, values: List | np.ndarray, color: str = "skyblue") -> None:
+            plt.figure(figsize=(10, 6))
+
+            plt.bar(labels, values, color=color)
+
+            plt.xlabel("Solvers")
+            plt.ylabel(ylabel)
+
+            plt.title(name)
+            plt.xticks(rotation=45)
+            plt.tight_layout()
+
+            plt.savefig(f"{directory / name}.svg", format="svg")
+            plt.show()
+
+        # time plot
+        plot_bar_graph("Time Usage", "Time (s)", monotonic_time, "skyblue")
+        # memory plot
+        plot_bar_graph("Memory Usage", "Memory (MB)", memory_size, "orange")

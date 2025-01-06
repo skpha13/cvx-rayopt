@@ -52,7 +52,7 @@ def main() -> None:
     benchmark.run_analysis(
         benchmarks=benchmarks,
         ground_truth_image=ground_truth_image,
-        filename="benchmark_and_analysis",
+        dirname="analysis_01",
     )
 
 
