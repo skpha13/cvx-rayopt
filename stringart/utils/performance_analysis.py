@@ -310,9 +310,16 @@ class Benchmark:
             for benchmark in benchmarks
         ]
 
+        # TODO: move this un utils
+        # used to normalize images from [0,255] range to [0,1] because solvers return in [0, 255] range
+        def norm_image(image):
+            minv = np.min(image)
+            maxv = np.max(image)
+            return (image - minv) / (maxv - minv)
+
         # plot diff images and rmses
         rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
-        diff_images = [ground_truth_image - test_image for test_image in output_images]
+        diff_images = [ground_truth_image - norm_image(test_image) for test_image in output_images]
 
         fig, axs = plt.subplots(1, len(output_images), figsize=(16, 6))
         plot_name = "Difference Images"
