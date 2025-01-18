@@ -3,6 +3,7 @@ from typing import Literal
 
 import numpy as np
 from scipy.sparse import csr_matrix
+from sklearn.preprocessing import normalize
 
 GreedySelector = Literal["random", "dot-product"]
 
@@ -77,7 +78,9 @@ class DotProductSelector(Selector):
 
     def __init__(self, A: csr_matrix, b: np.ndarray, indices: np.ndarray):
         super().__init__(A, b, indices)
-        self.dot_products = A.T @ b
+
+        A_norm = normalize(A, norm="l2", axis=0, copy=True)
+        self.dot_products = A_norm.T @ b
 
     def get_top_k_candidates(self):
         """Selects the top-k candidate indices based on the highest absolute dot products between the columns of `A` and `b`.

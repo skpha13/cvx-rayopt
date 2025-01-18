@@ -16,6 +16,31 @@ class ImageWrapper:
     def flatten_image(image: np.ndarray) -> np.ndarray:
         return image.flatten()
 
+    @staticmethod
+    def scale_image(image: np.ndarray) -> np.ndarray:
+        """Scale an image to the range [0, 1].
+
+        This function scales the pixel values of an input image to lie between 0 and 1.
+        The scaling is performed using the formula:
+            scaled_image = (image - min_value) / (max_value - min_value)
+        where `min_value` and `max_value` are the minimum and maximum values of the image, respectively.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            The input image represented as a NumPy array. It can have any shape,
+            such as (H, W) for grayscale images or (H, W, C) for color images.
+
+        Returns
+        -------
+        np.ndarray
+            A NumPy array of the same shape as the input, with values normalized to the range [0, 1].
+        """
+
+        min_value = np.min(image)
+        max_value = np.max(image)
+        return (image - min_value) / (max_value - min_value)
+
 
 def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = None) -> tuple[int, Point | None]:
     """Calculate the radius and center point of a region within an image shape.

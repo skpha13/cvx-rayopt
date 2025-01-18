@@ -12,7 +12,7 @@ import numpy as np
 from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
-from stringart.utils.image import crop_image
+from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.time_and_memory_utils import (
     ElapsedTime,
     MemorySize,
@@ -310,20 +310,18 @@ class Benchmark:
             for benchmark in benchmarks
         ]
 
-        # TODO: move this un utils
-        # used to normalize images from [0,255] range to [0,1] because solvers return in [0, 255] range
-        def norm_image(image):
-            minv = np.min(image)
-            maxv = np.max(image)
-            return (image - minv) / (maxv - minv)
-
         # plot diff images and rmses
         rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
-        diff_images = [ground_truth_image - norm_image(test_image) for test_image in output_images]
+        # images are scaled in [0, 1] range because the solvers return them in range [0, 255]
+        diff_images = [ground_truth_image - ImageWrapper.scale_image(test_image) for test_image in output_images]
 
         fig, axs = plt.subplots(1, len(output_images), figsize=(16, 6))
         plot_name = "Difference Images"
         fig.suptitle(plot_name)
+
+        # plt.subplots behaves differently when the length of output_images is 1
+        if len(output_images) == 1:
+            axs = [axs]
 
         for index, diff_image in enumerate(diff_images):
             axs[index].imshow(diff_image, cmap="plasma")
