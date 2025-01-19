@@ -138,10 +138,10 @@ class Benchmark:
 
         self.solver = Solver(image, mode, number_of_pegs=100)
         self.benchmarks_to_run = [
-            (self.solver.least_squares, {"method": "dense"}),
-            (self.solver.least_squares, {"method": "sparse"}),
-            (self.solver.greedy, {"number_of_lines": 1000, "selector_type": "random"}),
-            (self.solver.greedy, {"number_of_lines": 1000, "selector_type": "dot-product"}),
+            # (self.solver.least_squares, {"method": "dense"}),
+            # (self.solver.least_squares, {"method": "sparse"}),
+            # (self.solver.matching_pursuit, {"number_of_lines": 1000, "selector_type": "random"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "selector_type": "dot-product"}),
         ]
 
     def run_benchmark(self, func: Callable, *args, **kwargs) -> BenchmarkResult:
