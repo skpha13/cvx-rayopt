@@ -7,10 +7,9 @@ from scipy.sparse.linalg import lsqr
 
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
-from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.matching_pursuit import Greedy, Orthogonal
-from stringart.utils.types import Method, Mode, Point
+from stringart.utils.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
+from stringart.utils.types import MatchingPursuitMethod, Method, Mode, Point
 
 
 class Solver:
@@ -85,7 +84,12 @@ class Solver:
 
         return self.compute_solution(A, x)
 
-    def matching_pursuit(self, number_of_lines: int, selector_type: GreedySelector = "random") -> np.ndarray:
+    def matching_pursuit(
+        self,
+        number_of_lines: int,
+        method: MatchingPursuitMethod = "orthogonal",
+        **kwargs,
+    ) -> np.ndarray:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
@@ -95,9 +99,11 @@ class Solver:
         number_of_lines : int
            The number of lines to select and add to the solution.
 
-        selector_type : GreedySelector, optional
-           The type of selector to use for candidate selection.
-           Can be either "random" or "dot-product". Default is "random".
+        method : MatchingPursuitMethod, optional
+           The matching pursuit method, either "orthogonal" or "greedy". Default is "orthogonal".
+
+        **kwargs:
+            Additional parameters for the 'greedy' method, such as selector_type.
 
         Returns
         -------
@@ -131,16 +137,21 @@ class Solver:
         A = csr_matrix((rows, 0))
         x = None
 
+        mp_instance: MatchingPursuit | None = None
+        if method == "greedy":
+            selector_type = kwargs.get("selector_type", "random")
+            mp_instance = Greedy(A, self.b, selector_type=selector_type)
+        elif method == "orthogonal":
+            mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
+
         for step in range(number_of_lines):
             # exclude already selected lines
             remaining_lines_indices = all_line_indices - selected_lines
             remaining_candidate_lines = candidate_lines[:, list(remaining_lines_indices)]
 
-            greedy = Greedy(A, self.b, selector_type=selector_type)
-            omp = Orthogonal(A, self.b)
+            best_index = 0
             try:
-                # best_index = greedy.compute_best_column(remaining_candidate_lines)
-                best_index = omp.compute_best_column(remaining_candidate_lines)
+                best_index = mp_instance.compute_best_column(remaining_candidate_lines)
                 best_index = list(remaining_lines_indices)[best_index]
             except ValueError:
                 # it means no line was found
