@@ -3,16 +3,17 @@ from abc import ABC, abstractmethod
 import numpy as np
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
+from sklearn.preprocessing import normalize
 from stringart.utils.greedy_selector import DotProductSelector, GreedySelector, RandomSelector, Selector
 
 
 class MatchingPursuit(ABC):
     def __init__(self, A: csr_matrix, b: np.ndarray):
         self.A = A
-        self.b = b
+        self.b = b.copy()
 
     @abstractmethod
-    def compute_best_column(self, remaining_candidate_lines: csr_matrix):
+    def compute_best_column(self, remaining_candidate_lines: csr_matrix) -> int:
         pass
 
 
@@ -23,7 +24,7 @@ class Greedy(MatchingPursuit):
         super().__init__(A, b)
         self.selector_type = selector_type
 
-    def compute_best_column(self, remaining_candidate_lines: csr_matrix):
+    def compute_best_column(self, remaining_candidate_lines: csr_matrix) -> int:
         # initialize selector
         selector: Selector = Greedy.__greedy_map_selector[self.selector_type](
             remaining_candidate_lines,
@@ -53,5 +54,12 @@ class Greedy(MatchingPursuit):
 
 
 class Orthogonal(MatchingPursuit):
-    def compute_best_column(self, remaining_candidate_lines: csr_matrix):
-        pass
+    def compute_best_column(self, remaining_candidate_lines: csr_matrix) -> int:
+        # normalize column vectors
+        A_norm = normalize(remaining_candidate_lines, norm="l2", axis=0, copy=True)
+
+        dot_products = A_norm.T @ self.b
+        best_index = np.argmax(dot_products)
+        self.b = self.b - A_norm[:, best_index].toarray().ravel()  # to flatten the array as it comes in matrix form
+
+        return best_index

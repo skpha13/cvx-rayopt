@@ -9,7 +9,7 @@ from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
 from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.matching_pursuit import Greedy
+from stringart.utils.matching_pursuit import Greedy, Orthogonal
 from stringart.utils.types import Method, Mode, Point
 
 
@@ -137,8 +137,10 @@ class Solver:
             remaining_candidate_lines = candidate_lines[:, list(remaining_lines_indices)]
 
             greedy = Greedy(A, self.b, selector_type=selector_type)
+            omp = Orthogonal(A, self.b)
             try:
-                best_index = greedy.compute_best_column(remaining_candidate_lines)
+                # best_index = greedy.compute_best_column(remaining_candidate_lines)
+                best_index = omp.compute_best_column(remaining_candidate_lines)
                 best_index = list(remaining_lines_indices)[best_index]
             except ValueError:
                 # it means no line was found
