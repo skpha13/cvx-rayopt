@@ -12,17 +12,23 @@
 
 > Least Squares Dense (left) and Sparse (right) Methods
 
-![Greedy Random Heuristic](../../benchmarks/img_outputs/benchmarks_01/image_002.png) ![Greedy Dot Product Heuristic](../../benchmarks/img_outputs/benchmarks_01/image_003.png)
+![Orthogonal Matching Pursuit](../../benchmarks/img_outputs/benchmarks_01/image_002.png)
 
-> Greedy with Random Heuristic (left) and Dot Product Heuristic (right)
+> Orthogonal  Matching Pursuit
+ 
+![Matching Pursuit Greedy Random Heuristic](../../benchmarks/img_outputs/benchmarks_01/image_003.png) ![Matching Pursuit Greedy Dot Product Heuristic](../../benchmarks/img_outputs/benchmarks_01/image_004.png)
+
+> Matching Pursuit with Random Heuristic (left) and Dot Product Heuristic (right)
 
 ## Visual Observations
 
 Right off the bat we can see that the best results to the human eye are clearly the ones using the **Least Squares** approach. That is because they utilize all possible lines and adjust their intensity between 0 (white) and 1 (black) (**NOTE**: values are inverted so we can draw black lines rather than white ones. In computer graphics 0 represents black and 1 white).
 
-On the other hand, the **Greedy** approaches, which select a limited number of lines (in this case, 1000), produce less smooth reconstructions. The random heuristic (left) tends to be more chaotic, choosing lines from various regions of the image. In contrast, the dot product heuristic (right) focuses on certain areas, leading to more localized but less varied results.
+On the other hand, the **Matching Pursuit Greedy** approaches, which select a limited number of lines (in this case, 1000), produce less smooth reconstructions. The random heuristic tends to be more chaotic, choosing lines from various regions of the image. In contrast, the dot product heuristic focuses on certain areas, leading to more localized but less varied results.
 
-Increasing the number of selected lines in the **Greedy** approaches could improve their results, but the trade-off lies in the **high computational cost**. 
+Increasing the number of selected lines in the **Matching Pursuit Greedy** approaches could improve their results, but the trade-off lies in the **high computational cost**. 
+
+The **Orthogonal Matching Pursuit** method seems to strike a balance between the random heuristic and dot product heuristic of the greedy alternative.
 
 ## Difference Images
 
@@ -32,7 +38,7 @@ The difference images highlight the discrepancy between the target and each meth
 
 Results could be improved by choosing another target image with a higher contrast, or enabling some image preprocessing (such as contrast adjustment or compressing/expanding the brightness range) on it before. 
 
-The **Least Squares** approaches produced the smallest errors. The experiment should also be tried with an increased number of lines for the **Greedy** approaches as it can increase accuracy.
+The **Least Squares** approaches produced the smallest errors. The experiment should also be tried with an increased number of lines for the **Matching Pursuit** approaches as it can increase accuracy.
 And another interesting experiment would be to allow the subtracting of edges. This experiment works for both approaches.
 
 ## Time Taken for Computation
@@ -41,7 +47,9 @@ And another interesting experiment would be to allow the subtracting of edges. T
 
 In terms of computational time, the **Least Squares Sparse** approach is the most efficient, completing in just a few seconds. The **Least Squares Dense** approach, while taking more time, remains relatively fast compared to the greedy algorithms.
 
-The **Greedy** methods, particularly the **Random Heuristic**, exhibit the longest computation times. This is due to the fact that they must repeatedly compute the least squares solution for each potential line and select the one that minimizes the error at each step. We can see that the **Dot Product Heuristic** is a couple of minutes faster than the **Random Heuristic**. This is because the dot product between the possible lines and our target image is only computed once, whereas the random selection process is computed every time we calculate the error (at each step and for each potential line).
+The **Matching Pursuit (Greedy)** methods, particularly the **Random Heuristic**, exhibit the longest computation times. This is due to the fact that they must repeatedly compute the least squares solution for each potential line and select the one that minimizes the error at each step. We can see that the **Dot Product Heuristic** is a couple of minutes faster than the **Random Heuristic**. This is because the dot product between the possible lines and our target image is only computed once, whereas the random selection process is computed every time we calculate the error (at each step and for each potential line).
+
+The **Orthogonal Matching Pursuit** method seems to be faster than the dense approach of the least squares method, but still doesn't come close to the sparse approach.
 
 ## Peak Memory Usage
 
@@ -49,7 +57,7 @@ The **Greedy** methods, particularly the **Random Heuristic**, exhibit the longe
 
 Memory usage provides an interesting insight into the efficiency of the algorithms. All methods except the **Least Squares Dense** approach utilize less than `1GB` of memory. 
 
-The **Dense** method requires significantly more memory because it needs to store a large matrix of size: `m = 108.900, n = 4.950`. In contrast, the **Least Squares Sparse** method only needs to store non-zero elements, representing a more memory-efficient solution. And the **Greedy** approaches hold at maximum a matrix of size: `m = 108.900, n = 1000`.
+The **Dense** method requires significantly more memory because it needs to store a large matrix of size: `m = 108.900, n = 4.950`. In contrast, the **Least Squares Sparse** method only needs to store non-zero elements, representing a more memory-efficient solution. And the **Matching Pursuit** approaches hold at maximum a matrix of size: `m = 108.900, n = 1000`.
 
 ## Observations
 
