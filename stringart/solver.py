@@ -7,9 +7,9 @@ from scipy.sparse.linalg import lsqr
 
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
-from stringart.utils.greedy_selector import DotProductSelector, GreedySelector, RandomSelector, Selector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import Method, Mode, Point
+from stringart.utils.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
+from stringart.utils.types import MatchingPursuitMethod, Method, Mode, Point
 
 
 class Solver:
@@ -24,8 +24,6 @@ class Solver:
     number_of_pegs : int, optional
         The number of pegs to be used in the string art computation. Default is 100.
     """
-
-    __greedy_map_selector: dict[str, type[Selector]] = {"random": RandomSelector, "dot-product": DotProductSelector}
 
     def __init__(self, image: np.ndarray, image_mode: Mode, number_of_pegs: int = 100):
         self.shape: tuple[int, ...] = image.shape
@@ -86,8 +84,13 @@ class Solver:
 
         return self.compute_solution(A, x)
 
-    def greedy(self, number_of_lines: int, selector_type: GreedySelector = "random") -> np.ndarray:
-        """Performs a greedy algorithm to select the best lines from the candidate lines matrix,
+    def matching_pursuit(
+        self,
+        number_of_lines: int,
+        method: MatchingPursuitMethod = "orthogonal",
+        **kwargs,
+    ) -> np.ndarray:
+        """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
 
@@ -96,9 +99,11 @@ class Solver:
         number_of_lines : int
            The number of lines to select and add to the solution.
 
-        selector_type : GreedySelector, optional
-           The type of selector to use for candidate selection.
-           Can be either "random" or "dot-product". Default is "random".
+        method : MatchingPursuitMethod, optional
+           The matching pursuit method, either "orthogonal" or "greedy". Default is "orthogonal".
+
+        **kwargs:
+            Additional parameters for the 'greedy' method, such as selector_type.
 
         Returns
         -------
@@ -132,43 +137,29 @@ class Solver:
         A = csr_matrix((rows, 0))
         x = None
 
-        for step in range(number_of_lines):
-            best_index = -1
-            best_residual = np.inf
+        mp_instance: MatchingPursuit | None = None
+        if method == "greedy":
+            selector_type = kwargs.get("selector_type", "random")
+            mp_instance = Greedy(A, self.b, selector_type=selector_type)
+        elif method == "orthogonal":
+            mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
 
+        for step in range(number_of_lines):
             # exclude already selected lines
             remaining_lines_indices = all_line_indices - selected_lines
             remaining_candidate_lines = candidate_lines[:, list(remaining_lines_indices)]
 
-            # initialize selector
-            selector = Solver.__greedy_map_selector[selector_type](
-                remaining_candidate_lines,
-                self.b,
-                np.array(list(remaining_lines_indices)),
-            )
-            top_candidates = selector.get_top_k_candidates()
-
-            for column_index in top_candidates:
-                # check if we already included the line
-                if column_index in selected_lines:
-                    continue
-
-                trial_column = candidate_lines[:, column_index]
-                A_trial = hstack([A, trial_column])
-                x_trial = lsqr(A_trial, self.b)[0]
-
-                residual = np.linalg.norm(self.b - A_trial @ x_trial)
-
-                if residual < best_residual:
-                    best_index = column_index
-                    best_residual = residual
-
-            # if no line was found to be drawn
-            if best_index == -1:
+            best_index = 0
+            try:
+                best_index = mp_instance.compute_best_column(remaining_candidate_lines)
+                best_index = list(remaining_lines_indices)[best_index]
+            except ValueError:
+                # it means no line was found
                 break
 
             selected_lines.add(best_index)
             best_column = candidate_lines[:, best_index]
+
             A = hstack([A, best_column])
             x = lsqr(A, self.b)[0]
 

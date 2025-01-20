@@ -13,14 +13,8 @@ from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.time_and_memory_utils import (
-    ElapsedTime,
-    MemorySize,
-    convert_memory_size,
-    convert_monotonic_time,
-    format_memory_size,
-    format_time,
-)
+from stringart.utils.time_and_memory_utils import (ElapsedTime, MemorySize, convert_memory_size, convert_monotonic_time,
+                                                   format_memory_size, format_time)
 from stringart.utils.types import Mode
 
 logger = logging.getLogger(__name__)
@@ -138,10 +132,14 @@ class Benchmark:
 
         self.solver = Solver(image, mode, number_of_pegs=100)
         self.benchmarks_to_run = [
+            # fmt: off
+
             (self.solver.least_squares, {"method": "dense"}),
             (self.solver.least_squares, {"method": "sparse"}),
-            (self.solver.greedy, {"number_of_lines": 1000, "selector_type": "random"}),
-            (self.solver.greedy, {"number_of_lines": 1000, "selector_type": "dot-product"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "method": "orthogonal"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "method": "greedy", "selector_type": "random"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "method": "greedy", "selector_type": "dot-product"}),
+            # fmt: on
         ]
 
     def run_benchmark(self, func: Callable, *args, **kwargs) -> BenchmarkResult:
@@ -203,8 +201,9 @@ class Benchmark:
         This function runs the following benchmarks:
         1. **Least Squares Solver** with a dense matrix method.
         2. **Least Squares Solver** with a sparse matrix method.
-        3. **Greedy Solver** with 1000 lines and a random selector type.
-        4. **Greedy Solver** with 1000 lines and a dot-product selector type.
+        3. **Matching Pursuit Solver** with orthogonal method.
+        4. **Matching Pursuit Solver** with greedy solver, 1000 lines and a random selector type.
+        5. **Matching Pursuit Solver** with greedy solver, 1000 lines and a dot-product selector type.
         """
 
         results: List[BenchmarkResult] = []
@@ -313,11 +312,14 @@ class Benchmark:
         # plot diff images and rmses
         rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
         # images are scaled in [0, 1] range because the solvers return them in range [0, 255]
-        diff_images = [ground_truth_image - ImageWrapper.scale_image(test_image) for test_image in output_images]
+        diff_images = [
+            ImageWrapper.scale_image(ground_truth_image - ImageWrapper.scale_image(test_image))
+            for test_image in output_images
+        ]
+        diff_images = prepare_diff_images(diff_images, self.mode)
 
         fig, axs = plt.subplots(1, len(output_images), figsize=(16, 6))
         plot_name = "Difference Images"
-        fig.suptitle(plot_name)
 
         # plt.subplots behaves differently when the length of output_images is 1
         if len(output_images) == 1:
@@ -328,7 +330,7 @@ class Benchmark:
             axs[index].axis("off")
             axs[index].text(
                 0.5,
-                -0.1,
+                -0.2,
                 f"{labels[index]}\nRMS: {rmses[index]:.4f}",
                 ha="center",
                 va="center",
@@ -336,7 +338,7 @@ class Benchmark:
                 fontsize=10,
             )
         fig.tight_layout()
-        fig.savefig(f"{directory / plot_name}.svg", format="svg")
+        fig.savefig(f"{directory / plot_name}.png", format="png")
         fig.show()
 
         # plot time and memory
@@ -351,14 +353,49 @@ class Benchmark:
             plt.xlabel("Solvers")
             plt.ylabel(ylabel)
 
-            plt.title(name)
             plt.xticks(rotation=45)
             plt.tight_layout()
 
-            plt.savefig(f"{directory / name}.svg", format="svg")
+            plt.savefig(f"{directory / name}.png", format="png")
             plt.show()
 
         # time plot
         plot_bar_graph("Time Usage", "Time (s)", monotonic_time, "skyblue")
         # memory plot
         plot_bar_graph("Memory Usage", "Memory (MB)", memory_size, "orange")
+
+
+def prepare_diff_images(diff_images: list[np.ndarray], mode: Mode) -> list[np.ndarray]:
+    """Processes a list of difference images by applying an alpha map and colormap to each image, converting them to RGBA.
+
+    Parameters
+    ----------
+    diff_images : list of np.ndarray
+        A list of 2D NumPy arrays (height, width) representing difference images. Each image should be in black-and-white (grayscale).
+    mode : Mode
+        The cropping mode that was used on the diff_images.
+
+    Returns
+    -------
+    list of np.ndarray
+        A list of 3D NumPy arrays (height, width, 4) representing the processed RGBA images. Each image will have the
+        red, green, and blue channels updated with a colormap (plasma), and the alpha channel applied from the corresponding
+        alpha map based on the mode.
+    """
+
+    def apply_cmap_bw_to_rgb(rgba_image: np.ndarray) -> np.ndarray:
+        bw_image = rgba_image[..., 0]
+
+        colormap = plt.cm.plasma(bw_image)
+        rgba_image[..., 0:3] = colormap[..., 0:3]
+
+        return rgba_image
+
+    diff_images = [
+        apply_cmap_bw_to_rgb(
+            ImageWrapper.apply_alpha_map_bw_to_rgba(diff_image, ImageWrapper.alpha_map(diff_image, mode))
+        )
+        for diff_image in diff_images
+    ]
+
+    return diff_images
