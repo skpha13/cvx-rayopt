@@ -41,6 +41,77 @@ class ImageWrapper:
         max_value = np.max(image)
         return (image - min_value) / (max_value - min_value)
 
+    @staticmethod
+    def alpha_map(image: np.ndarray, image_mode: Mode) -> np.ndarray:
+        """Generates an alpha map based on the center and radius derived from the image dimensions and mode.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            A NumPy array representing the image. Its shape should be in the format (height, width, channels) or (height, width).
+        image_mode : Mode
+            Image cropping mode that will be used on the image.
+
+        Returns
+        -------
+        np.ndarray
+            A 2D NumPy array (height, width) representing the alpha map, where each pixel value is either 0.0 or 1.0,
+            indicating transparency (0) or full opacity (1) based on the distance from the center point.
+
+        Raises
+        ------
+        ValueError
+            If the image shape is not compatible with the Mode.
+        """
+
+        radius, center_point = find_radius_and_center_point(image.shape, image_mode)
+        alpha_map = np.zeros(image.shape[:2])
+
+        for y in range(image.shape[0]):
+            for x in range(image.shape[1]):
+                distance = np.sqrt((x - center_point.x) ** 2 + (y - center_point.y) ** 2)
+
+                if distance <= radius:
+                    alpha_map[y, x] = 1.0
+
+        return alpha_map
+
+    @staticmethod
+    def apply_alpha_map_bw_to_rgba(bw_image: np.ndarray, alpha_map: np.ndarray) -> np.ndarray:
+        """Applies an alpha map to a black-and-white image, converting it into an RGBA image.
+
+        Parameters
+        ----------
+        bw_image : np.ndarray
+            A NumPy array representing a black-and-white image with shape (height, width).
+        alpha_map : np.ndarray
+            A 2D NumPy array representing the alpha map, with the same height and width as the black-and-white image.
+
+        Returns
+        -------
+        np.ndarray
+            A 3D NumPy array of shape (height, width, 4) representing the RGBA image, where the first three channels
+            (red, green, and blue) are set to the grayscale values of the black-and-white image, and the fourth channel
+            (alpha) is set based on the alpha map.
+
+        Raises
+        ------
+        ValueError
+            If the black-and-white image and the alpha map do not have the same dimensions.
+        """
+
+        if bw_image.shape != alpha_map.shape:
+            raise ValueError("The alpha map and the black-and-white image must have the same dimensions.")
+
+        rgba_image = np.zeros((bw_image.shape[0], bw_image.shape[1], 4))
+
+        rgba_image[..., 0] = bw_image  # red channel
+        rgba_image[..., 1] = bw_image  # green channel
+        rgba_image[..., 2] = bw_image  # blue channel
+        rgba_image[..., 3] = alpha_map  # alpha channel
+
+        return rgba_image
+
 
 def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = None) -> tuple[int, Point | None]:
     """Calculate the radius and center point of a region within an image shape.
