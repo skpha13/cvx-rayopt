@@ -13,14 +13,8 @@ from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.time_and_memory_utils import (
-    ElapsedTime,
-    MemorySize,
-    convert_memory_size,
-    convert_monotonic_time,
-    format_memory_size,
-    format_time,
-)
+from stringart.utils.time_and_memory_utils import (ElapsedTime, MemorySize, convert_memory_size, convert_monotonic_time,
+                                                   format_memory_size, format_time)
 from stringart.utils.types import Mode
 
 logger = logging.getLogger(__name__)
@@ -207,8 +201,9 @@ class Benchmark:
         This function runs the following benchmarks:
         1. **Least Squares Solver** with a dense matrix method.
         2. **Least Squares Solver** with a sparse matrix method.
-        3. **Greedy Solver** with 1000 lines and a random selector type.
-        4. **Greedy Solver** with 1000 lines and a dot-product selector type.
+        3. **Matching Pursuit Solver** with orthogonal method.
+        4. **Matching Pursuit Solver** with greedy solver, 1000 lines and a random selector type.
+        5. **Matching Pursuit Solver** with greedy solver, 1000 lines and a dot-product selector type.
         """
 
         results: List[BenchmarkResult] = []
