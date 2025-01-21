@@ -13,8 +13,14 @@ from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.time_and_memory_utils import (ElapsedTime, MemorySize, convert_memory_size, convert_monotonic_time,
-                                                   format_memory_size, format_time)
+from stringart.utils.time_and_memory_utils import (
+    ElapsedTime,
+    MemorySize,
+    convert_memory_size,
+    convert_monotonic_time,
+    format_memory_size,
+    format_time,
+)
 from stringart.utils.types import Mode
 
 logger = logging.getLogger(__name__)
@@ -100,7 +106,7 @@ class Benchmark:
         os.makedirs(Benchmark.BENCHMARKS_PATH, exist_ok=True)
         os.makedirs(Benchmark.BENCHMARKS_IMAGE_OUTPUT_PATH, exist_ok=True)
 
-    def __init__(self, image: np.ndarray, mode: Mode, number_of_pegs: int = 100):
+    def __init__(self, image: np.ndarray, mode: Mode | None, number_of_pegs: int | None = 100):
         """A class to perform benchmarking on various stringart solving methods.
 
         Parameters
@@ -125,6 +131,8 @@ class Benchmark:
         benchmarks_to_run : list
             A list of tuples defining the solver methods to benchmark and their respective parameters.
         """
+        mode = mode if mode else "center"
+        number_of_pegs = number_of_pegs if number_of_pegs else 100
 
         self.image = image
         self.mode = mode

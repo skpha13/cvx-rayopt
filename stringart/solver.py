@@ -25,7 +25,10 @@ class Solver:
         The number of pegs to be used in the string art computation. Default is 100.
     """
 
-    def __init__(self, image: np.ndarray, image_mode: Mode, number_of_pegs: int = 100):
+    def __init__(self, image: np.ndarray, image_mode: Mode | None = "center", number_of_pegs: int | None = 100):
+        image_mode = image_mode if image_mode else "center"
+        number_of_pegs = number_of_pegs if number_of_pegs else 100
+
         self.shape: tuple[int, ...] = image.shape
         self.b: np.ndarray = ImageWrapper.flatten_image(image)
         self.image_mode: Mode = image_mode
@@ -73,6 +76,7 @@ class Solver:
             The reconstructed image as a 2D greyscale array.
             The pixel values are scaled between 0 and 255 and cropped according to the image mode.
         """
+        method = method if method else "sparse"
 
         A, pegs = MatrixGenerator.compute_matrix(self.shape, self.number_of_pegs, self.image_mode, method)
 
@@ -121,6 +125,8 @@ class Solver:
         selector type) and minimizes the residual error in the least squares problem.
         """
 
+        method = method if method else "orthogonal"
+
         radius, center_point = find_radius_and_center_point(self.shape, self.image_mode)
         pegs: List[Point] = compute_pegs(
             number_of_pegs=self.number_of_pegs,
@@ -139,7 +145,7 @@ class Solver:
 
         mp_instance: MatchingPursuit | None = None
         if method == "greedy":
-            selector_type = kwargs.get("selector_type", "random")
+            selector_type = kwargs.get("selector_type", "dot-product")
             mp_instance = Greedy(A, self.b, selector_type=selector_type)
         elif method == "orthogonal":
             mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
