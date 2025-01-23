@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import numpy as np
-from imageio.v3 import imread
+from matplotlib.pyplot import imread
 from skimage.color import rgb2gray
 from stringart.utils.types import Mode, Point
 
@@ -9,7 +9,13 @@ from stringart.utils.types import Mode, Point
 class ImageWrapper:
     @staticmethod
     def read_bw(file_path: str | Path) -> np.ndarray:
-        grayscale_image = rgb2gray(imread(file_path))
+        image = imread(file_path)
+
+        # remove alpha channel
+        if image.shape[-1] == 4:
+            image = image[..., :3]
+
+        grayscale_image = rgb2gray(image)
         return 1 - grayscale_image  # inverting black with white
 
     @staticmethod
