@@ -67,13 +67,16 @@ python ./stringart/main.py --image-path ./imgs/lena.png run-benchmarks
 python ./stringart/main.py --image-path ./imgs/lena.png run-analysis
 
 # runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 100 and the crop mode for the image center.
-python ./stringart/main.py solve --solver least-squares --image-path ./imgs/lena.png 
+python ./stringart/main.py --image-path ./imgs/lena.png solve --solver least-squares 
 
 # runs the matching pursuit solver with the orthogonal method (OMP) on the provided image, selecting 1000 lines.
-python ./stringart/main.py solve --solver matching-pursuit --method orthogonal --image-path ./imgs/lena.png 
+python ./stringart/main.py --image-path ./imgs/lena.png solve --solver matching-pursuit --method orthogonal --number-of-lines 1000
 
 # runs the matching pursuit solver with the greedy method on the provided image, using the dot-product heuristic, selecting 1000 lines.
-python ./stringart/main.py solve --solver matching-pursuit --method greedy --image-path ./imgs/lena.png 
+python ./stringart/main.py --image-path ./imgs/lena.png solve --solver matching-pursuit --method greedy --number-of-lines 1000
+
+# runs the least squares solver with the sparse matrix representation, a crop mode using the first half of the image and a number of pegs of 50
+python ./stringart/main.py --image-path ./imgs/lena.png --crop-mode first-half --number-of-pegs 50 solve --solver least-squares 
 ```
 
 ## Developer Documentation
