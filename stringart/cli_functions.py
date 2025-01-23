@@ -42,12 +42,12 @@ class Configuration:
             if self.solver == "least-squares":
                 solution = solver.least_squares(self.matrix_representation)
             else:
-                solution = solver.matching_pursuit(self.number_of_lines, self.method, self.selector)
+                solution = solver.matching_pursuit(self.number_of_lines, self.method, selector=self.selector)
 
             plt.axis("off")
             plt.title("Computed Image")
-            io.imshow(solution)
-            io.imsave(save_path, solution)
+            plt.imshow(solution, cmap="grey")
+            plt.imsave(save_path, solution)
             plt.show()
 
             logger.info(f"Image saved to: {save_path}")

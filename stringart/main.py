@@ -61,6 +61,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     matching_pursuit_group.add_argument(
         "--selector",
         choices=get_args(GreedySelector),
+        required=False,
         help="Selector method to use (only applicable to matching-pursuit with greedy method). Defaults to `dot-product`.",
     )
 
@@ -93,11 +94,6 @@ def validate_arguments(args):
     if args.command == SOLVE_COMMAND_NAME and args.solver == "matching-pursuit":
         if args.number_of_lines is None:
             raise ValueError("The `number-of-lines` argument can not be None with the matching-pursuit solver.")
-
-        if args.method == "greedy" and args.selector is None:
-            raise ValueError(
-                "The 'selector' option can not be None with the 'greedy' method of the 'matching-pursuit' solver."
-            )
 
 
 def main() -> None:
