@@ -1,5 +1,6 @@
 import logging
 from dataclasses import dataclass
+from importlib.metadata import metadata
 from pathlib import Path
 
 import numpy as np
@@ -8,7 +9,7 @@ from skimage import io
 
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper
-from stringart.utils.performance_analysis import Benchmark
+from stringart.utils.performance_analysis import Benchmark, BenchmarkResult
 from stringart.utils.types import Metadata
 from utils.greedy_selector import GreedySelector
 from utils.types import Method, Mode
@@ -32,10 +33,9 @@ class Configuration:
 
     def run_configuration(self):
         image = ImageWrapper.read_bw(self.image_path)
-        solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs)
-        benchmark = Benchmark(image=image, mode=self.crop_mode, number_of_pegs=self.number_of_pegs)
 
         if self.command == "solve":
+            solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs)
             solution: np.ndarray | None = None
             save_path = self.metadata.path / "outputs/lena_stringart_sparse.png"
 
@@ -51,7 +51,12 @@ class Configuration:
             plt.show()
 
             logger.info(f"Image saved to: {save_path}")
-        elif self.command == "run-benchmarks":
+            return
+
+        Benchmark.initialize_metadata(self.metadata.path)
+        benchmark = Benchmark(image=image, mode=self.crop_mode, number_of_pegs=self.number_of_pegs)
+
+        if self.command == "run-benchmarks":
             results = benchmark.run_benchmarks()
 
             formatted_results = "\n\n".join([str(result) for result in results])
@@ -61,7 +66,9 @@ class Configuration:
             Benchmark.save_benchmarks(results, "benchmarks_01")
 
             logger.info(f"Benchmarks saved to: {Benchmark.BENCHMARKS_PATH}")
-        elif self.command == "run-analysis":
+            return
+
+        if self.command == "run-analysis":
             # TODO: give name of benchmark output
             benchmarks = Benchmark.load_benchmarks("benchmarks_01")
 

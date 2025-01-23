@@ -65,19 +65,19 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
 
     # Common Arguments
-    compute_parser.add_argument(
+    parser.add_argument(
         "--image-path",
         type=str,
         required=True,
         help="The file path to the image you want to process. The path can be absolute or relative, and the image should be in a supported format (e.g., PNG, JPEG).",
     )
-    compute_parser.add_argument(
+    parser.add_argument(
         "--number-of-pegs",
         type=int,
         required=False,
         help="Number of pegs to use in the computation. Defaults to 100.",
     )
-    compute_parser.add_argument(
+    parser.add_argument(
         "--crop-mode",
         choices=get_args(Mode),
         required=False,
@@ -116,14 +116,14 @@ def main() -> None:
     configuration = Configuration(
         metadata=metadata,
         command=args.command,
-        solver=args.solver,
-        image_path=args.image_path,
-        number_of_pegs=args.number_of_pegs,
-        crop_mode=args.crop_mode,
-        matrix_representation=args.matrix_representation,
-        method=args.method,
-        number_of_lines=args.number_of_lines,
-        selector=args.selector,
+        solver=getattr(args, "solver", None),
+        image_path=getattr(args, "image_path", None),
+        number_of_pegs=getattr(args, "number_of_pegs", None),
+        crop_mode=getattr(args, "crop_mode", None),
+        matrix_representation=getattr(args, "matrix_representation", None),
+        method=getattr(args, "method", None),
+        number_of_lines=getattr(args, "number_of_lines", None),
+        selector=getattr(args, "selector", None),
     )
 
     configuration.run_configuration()
