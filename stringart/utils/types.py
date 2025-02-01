@@ -9,6 +9,8 @@ Mode = Literal["first-half", "center", "second-half"]
 
 Method = Literal["dense", "sparse"]
 
+MatchingPursuitMethod = Literal["greedy", "orthogonal"]
+
 
 @dataclass
 class Metadata:

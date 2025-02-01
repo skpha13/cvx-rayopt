@@ -10,19 +10,19 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_000.png",
-        "elapsed_monotonic_time": 96.5,
-        "peak_memory_usage": 8625841792,
+        "elapsed_monotonic_time": 95.20299999997951,
+        "peak_memory_usage": 8625841400,
         "elapsed_time": {
             "hours": 0,
             "minutes": 1,
-            "seconds": 36,
-            "milliseconds": 500
+            "seconds": 35,
+            "milliseconds": 202
         },
         "peak_memory_size": {
             "gigabytes": 8,
             "megabytes": 34,
             "kilobytes": 249,
-            "bytes": 640
+            "bytes": 248
         }
     },
     {
@@ -36,26 +36,26 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_001.png",
-        "elapsed_monotonic_time": 3.797000000020489,
-        "peak_memory_usage": 81615164,
+        "elapsed_monotonic_time": 3.547000000020489,
+        "peak_memory_usage": 81615276,
         "elapsed_time": {
             "hours": 0,
             "minutes": 0,
             "seconds": 3,
-            "milliseconds": 797
+            "milliseconds": 547
         },
         "peak_memory_size": {
             "gigabytes": 0,
             "megabytes": 77,
             "kilobytes": 854,
-            "bytes": 316
+            "bytes": 428
         }
     },
     {
-        "solver": "greedy",
+        "solver": "matching_pursuit",
         "params": {
             "number_of_lines": 1000,
-            "selector_type": "random"
+            "method": "orthogonal"
         },
         "number_of_pegs": 100,
         "output_image_shape": [
@@ -63,26 +63,27 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_002.png",
-        "elapsed_monotonic_time": 316.8279999999795,
-        "peak_memory_usage": 730736051,
+        "elapsed_monotonic_time": 43.45299999997951,
+        "peak_memory_usage": 729960280,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 5,
-            "seconds": 16,
-            "milliseconds": 827
+            "minutes": 0,
+            "seconds": 43,
+            "milliseconds": 452
         },
         "peak_memory_size": {
             "gigabytes": 0,
             "megabytes": 696,
-            "kilobytes": 905,
-            "bytes": 435
+            "kilobytes": 147,
+            "bytes": 856
         }
     },
     {
-        "solver": "greedy",
+        "solver": "matching_pursuit",
         "params": {
             "number_of_lines": 1000,
-            "selector_type": "dot-product"
+            "method": "greedy",
+            "selector_type": "random"
         },
         "number_of_pegs": 100,
         "output_image_shape": [
@@ -90,19 +91,47 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_003.png",
-        "elapsed_monotonic_time": 215.03100000019185,
-        "peak_memory_usage": 811975436,
+        "elapsed_monotonic_time": 327.73399999999674,
+        "peak_memory_usage": 727954371,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 3,
-            "seconds": 35,
-            "milliseconds": 31
+            "minutes": 5,
+            "seconds": 27,
+            "milliseconds": 733
         },
         "peak_memory_size": {
             "gigabytes": 0,
-            "megabytes": 774,
-            "kilobytes": 368,
-            "bytes": 780
+            "megabytes": 694,
+            "kilobytes": 236,
+            "bytes": 963
+        }
+    },
+    {
+        "solver": "matching_pursuit",
+        "params": {
+            "number_of_lines": 1000,
+            "method": "greedy",
+            "selector_type": "dot-product"
+        },
+        "number_of_pegs": 100,
+        "output_image_shape": [
+            328,
+            328
+        ],
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_01\\image_004.png",
+        "elapsed_monotonic_time": 234.375,
+        "peak_memory_usage": 795176651,
+        "elapsed_time": {
+            "hours": 0,
+            "minutes": 3,
+            "seconds": 54,
+            "milliseconds": 375
+        },
+        "peak_memory_size": {
+            "gigabytes": 0,
+            "megabytes": 758,
+            "kilobytes": 347,
+            "bytes": 715
         }
     }
 ]

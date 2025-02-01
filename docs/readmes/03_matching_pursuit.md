@@ -10,7 +10,7 @@ This concept has been adopted and integrated into this context to explore its pe
 
 You can read more here: [Wikipedia Matching Pursuit](https://en.wikipedia.org/wiki/Matching_pursuit)
 
-## Implementation
+## Implementation Greedy Method
 
 As I said above the implementation is very close to the one used in signal processing. I will go over the steps:
     
@@ -42,7 +42,7 @@ The iteration continues until one of the following conditions is met:
 
 - The residual error stagnates (i.e., the current residual is not lower than or equal to the one at previous step).
 
-## Heuristics
+### Heuristics
 
 The current implementation, even when using **sparse matrices** is quite slow. To improve the time efficiency of the algorithm, I chose to integrate two heuristics.
 
@@ -53,17 +53,29 @@ For example, with a number of pegs `p = 100`, we would have `4950` possible line
 
 To address this problem, the following heuristics have been implemented:
 
-### 1. Random Heuristic
+#### 1. Random Heuristic
 
 This heuristic is straightforward: we randomly select the `TOP_K` candidates.
 
-### 2. Dot Product Heuristic
+#### 2. Dot Product Heuristic
 
 Here, the dot product between each **candidate atom** and the target vector `b` is computed. The `TOP_K` candidates with the highest dot products are selected.
 
 > [!NOTE]
 > Both heuristics select an empirically tested number of candidates, `TOP_K = 10`. So, the top 10 candidates will be used for each iteration.
 
-## Observations
+### Observations
 
 - Even with the current optimizations, this approach is still quite slow. For example, using an image of shape `330 x 330` with `1000` lines to select takes approximately `5 minutes`. Compared to the **dense least squares approach**, that is **2.5 times higher**, while the **sparse least squares approach** only takes a few seconds. It's important to note that both least squares approaches select all `p * (p-1) / 2` possible lines.
+
+## Implementation Orthogonal Matching Pursuit (OMP)
+
+The initialization phase of the Orthogonal Matching Pursuit (OMP) method is similar to the greedy approach, but the iterative steps involve a key difference that makes **OMP** more efficient.
+
+In the **OMP** method, the algorithm proceeds as follows:
+
+1. **Selection of Atoms:** At each iteration, we select the **atom** from the **dictionary** that has the greatest correlation with the current residual vector `b`. This is done by calculating the dot product between `b` and each **atom** in the **dictionary**. The **atom** with the largest dot product is chosen, similar to our **Dot Product Heuristic**.
+2. **Update the Residual:** Recompute the **Least Squares** solution after each selection. **OMP** updates the residual vector `b` by subtracting the contribution of the selected **atom** from it. This step reduces the residual error in the approximation.
+3. **Repeat the Process:** The procedure repeats for a set number of iterations or until the residual no longer decreases significantly. At each iteration, the selected **atom** is added to the active set, and the residual is updated.
+
+The key advantage of **OMP** over the original greedy methods is that it avoids repeatedly solving the **least squares** problem for each candidate **atom**. Instead, it only updates the residual, which significantly speeds up the computation.

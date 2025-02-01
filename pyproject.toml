@@ -6,8 +6,7 @@ authors = [
   { name="Adrian Mincu", email="mincu.adrian13@gmail.com" },
 ]
 
-# TODO: project description
-description = ""
+description = "StringArt is a Python-based package used to generate string art configurations from an input image."
 readme = "README.md"
 
 requires-python = ">=3.12"
@@ -20,6 +19,7 @@ dependencies = [
     'numpy~=2.1',
     'imageio~=2.36',
     'scikit-image~=0.24',
+    'scikit-learn~=1.6',
     'scipy~=1.14',
     'matplotlib~=3.9'
 ]
