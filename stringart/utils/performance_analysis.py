@@ -172,7 +172,8 @@ class Benchmark:
         time_start = time.monotonic()
         tracemalloc.start()
 
-        output = func(*args, **kwargs)
+        A, x = func(*args, **kwargs)
+        output = self.solver.compute_solution(A, x)
 
         time_end = time.monotonic()
         elapsed_monotonic_time = time_end - time_start
