@@ -13,10 +13,9 @@ image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 image_mode = "center"
 # number_of_pegs = 100 -> 6513.97 seconds
-number_of_pegs = 40
+number_of_pegs = 100
 
 # TODO: scipy.optimize.nnls or scipy.optimize.lsq_linear
-# TODO: to do calculation for jump from 30 to 40 number of pegs. as it takes a lot more time than 30.
 
 
 def linear_programming(

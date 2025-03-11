@@ -45,7 +45,7 @@ The modified method produced the following result:
 
 <img src="../../outputs/misc/least_squares_lena_rounding.png" alt="binary least squares output">
 
-## Issue with This Approach
+## Issue with ahis approach
 
 The resulting image does not resemble the input:
 
