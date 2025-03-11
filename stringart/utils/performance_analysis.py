@@ -138,7 +138,7 @@ class Benchmark:
         self.mode = mode
         self.number_of_pegs = number_of_pegs
 
-        self.solver = Solver(image, mode, number_of_pegs=100)
+        self.solver = Solver(image, mode, number_of_pegs=number_of_pegs)
         self.benchmarks_to_run = [
             # fmt: off
 

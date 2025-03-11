@@ -21,7 +21,8 @@ dependencies = [
     'scikit-image~=0.24',
     'scikit-learn~=1.6',
     'scipy~=1.14',
-    'matplotlib~=3.9'
+    'matplotlib~=3.9',
+    'pulp~=3.0'
 ]
 
 [project.optional-dependencies]
