@@ -6,29 +6,29 @@
                 330,
                 330
             ],
-            "number_of_pegs": 10,
+            "number_of_pegs": 30,
             "image_mode": "center",
             "method": "sparse"
         },
-        "number_of_pegs": 10,
+        "number_of_pegs": 30,
         "output_image_shape": [
             328,
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_programming\\image_000.png",
-        "elapsed_monotonic_time": 22.764999999999418,
-        "peak_memory_usage": 403903987,
+        "elapsed_monotonic_time": 152.45300000000043,
+        "peak_memory_usage": 451851169,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 0,
-            "seconds": 22,
-            "milliseconds": 764
+            "minutes": 2,
+            "seconds": 32,
+            "milliseconds": 453
         },
         "peak_memory_size": {
             "gigabytes": 0,
-            "megabytes": 385,
-            "kilobytes": 197,
-            "bytes": 499
+            "megabytes": 430,
+            "kilobytes": 940,
+            "bytes": 929
         }
     }
 ]

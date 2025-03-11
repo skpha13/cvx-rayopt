@@ -6,13 +6,17 @@ import pulp
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import Metadata, Method, Mode
+from stringart.utils.types import Method, Mode
 
 image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 image_mode = "center"
-number_of_pegs = 10
+# number_of_pegs = 100 -> 6513.97 seconds
+number_of_pegs = 40
+
+# TODO: scipy.optimize.nnls or scipy.optimize.lsq_linear
+# TODO: to do calculation for jump from 30 to 40 number of pegs. as it takes a lot more time than 30.
 
 
 def linear_programming(
