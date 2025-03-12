@@ -9,8 +9,7 @@ shape = image.shape
 image_mode = "center"
 
 
-def compute_solution(A: np.ndarray, x: np.ndarray) -> np.ndarray:
-    l = 1000
+def compute_solution(A: np.ndarray, x: np.ndarray, l: int = 1000) -> np.ndarray:
     value = x[np.argsort(x)[-l]]
 
     xp = x.copy()
