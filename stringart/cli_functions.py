@@ -7,11 +7,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from stringart.solver import Solver
+from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import Metadata
-from utils.greedy_selector import GreedySelector
-from utils.types import Method, Mode
+from stringart.utils.types import MatchingPursuitMethod, Metadata, Method, Mode
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -25,12 +24,12 @@ class Configuration:
     image_path: str | Path
     number_of_pegs: int | None
     crop_mode: Mode | None
-    matrix_representation: str
-    method: Method | None
+    matrix_representation: Method | None
+    method: MatchingPursuitMethod | None
     number_of_lines: int
     selector: GreedySelector | None
 
-    def run_configuration(self):
+    def run_configuration(self, running_tests: bool = False):
         image = ImageWrapper.read_bw(self.image_path)
         image_name = os.path.splitext(os.path.basename(self.image_path))[0]
 
@@ -40,18 +39,20 @@ class Configuration:
 
             if self.solver == "least-squares":
                 A, x = solver.least_squares(self.matrix_representation)
-            else:
+            elif self.solver == "matching-pursuit":
                 A, x = solver.matching_pursuit(self.number_of_lines, self.method, selector=self.selector)
 
             solution: np.ndarray | None = solver.compute_solution(A, x)
 
-            plt.axis("off")
-            plt.title("Computed Image")
-            plt.imshow(solution, cmap="grey")
-            plt.imsave(save_path, solution, cmap="grey")
-            plt.show()
+            if not running_tests:
+                plt.axis("off")
+                plt.title("Computed Image")
+                plt.imshow(solution, cmap="grey")
+                plt.imsave(save_path, solution, cmap="grey")
+                plt.show()
 
-            logger.info(f"Image saved to: {save_path}")
+                logger.info(f"Image saved to: {save_path}")
+
             return
 
         Benchmark.initialize_metadata(self.metadata.path)
@@ -64,9 +65,10 @@ class Configuration:
             logger.info(formatted_results)
 
             # TODO: user should be able to change the filename
-            Benchmark.save_benchmarks(results, "benchmarks_01")
+            if not running_tests:
+                Benchmark.save_benchmarks(results, "benchmarks_01")
+                logger.info(f"Benchmarks saved to: {Benchmark.BENCHMARKS_PATH}")
 
-            logger.info(f"Benchmarks saved to: {Benchmark.BENCHMARKS_PATH}")
             return
 
         if self.command == "run-analysis":
