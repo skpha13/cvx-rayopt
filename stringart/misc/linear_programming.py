@@ -13,7 +13,7 @@ image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 image_mode = "center"
 # number_of_pegs = 100 -> 6513.97 seconds
-number_of_pegs = 100
+number_of_pegs = 30
 
 
 def linear_programming(
@@ -43,6 +43,7 @@ def linear_programming(
         row_data = A.data[row_start:row_end]
         row_indices = A.indices[row_start:row_end]
 
+        # https://en.wikipedia.org/wiki/Least_absolute_deviations#Solution_using_linear_programming
         model += r[i] >= pulp.lpSum(row_data[k] * x[row_indices[k]] for k in range(len(row_data))) - b[i]
         model += r[i] >= b[i] - pulp.lpSum(row_data[k] * x[row_indices[k]] for k in range(len(row_data)))
 

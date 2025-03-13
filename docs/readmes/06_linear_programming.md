@@ -63,3 +63,5 @@ Using `PuLP`'s sparse matrix representation, we observe the following real model
 ## **Conclusion**
 
 The current approach does not scale efficiently due to the rapid growth of constraints and matrix size. Alternative optimization techniques or solver libraries like: `scipy.optimize.lin_prog` or `scipy.optimize.nnls` may be required to handle larger values of **n_pegs** effectively.
+
+> See solution using `scipy.optimize.lsq_linear`: [Linear Least Squares Solution](./07_linear_least_squares.md)
