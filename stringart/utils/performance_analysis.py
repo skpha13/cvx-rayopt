@@ -21,7 +21,7 @@ from stringart.utils.time_and_memory_utils import (
     format_memory_size,
     format_time,
 )
-from stringart.utils.types import Mode
+from stringart.utils.types import CropMode
 
 logger = logging.getLogger(__name__)
 
@@ -106,14 +106,14 @@ class Benchmark:
         os.makedirs(Benchmark.BENCHMARKS_PATH, exist_ok=True)
         os.makedirs(Benchmark.BENCHMARKS_IMAGE_OUTPUT_PATH, exist_ok=True)
 
-    def __init__(self, image: np.ndarray, mode: Mode | None, number_of_pegs: int | None = 100):
+    def __init__(self, image: np.ndarray, crop_mode: CropMode | None, number_of_pegs: int | None = 100):
         """A class to perform benchmarking on various stringart solving methods.
 
         Parameters
         ----------
         image : np.ndarray
             The input image to be processed.
-        mode : Mode
+        crop_mode : CropMode
             The mode in which the image is being processed. This determines cropping behaviour.
         number_of_pegs : int, optional
             The number of pegs used in the solving process. Default is 100.
@@ -122,7 +122,7 @@ class Benchmark:
         ----------
         image : np.ndarray
             The input image to be processed.
-        mode : Mode
+        crop_mode : CropMode
             The mode in which the image is being processed. This determines cropping behaviour.
         number_of_pegs : int, optional
             The number of pegs used in the solving process. Default is 100.
@@ -131,22 +131,22 @@ class Benchmark:
         benchmarks_to_run : list
             A list of tuples defining the solver methods to benchmark and their respective parameters.
         """
-        mode = mode if mode else "center"
+        crop_mode: CropMode = crop_mode if crop_mode else "center"
         number_of_pegs = number_of_pegs if number_of_pegs else 100
 
         self.image = image
-        self.mode = mode
+        self.crop_mode = crop_mode
         self.number_of_pegs = number_of_pegs
 
-        self.solver = Solver(image, mode, number_of_pegs=number_of_pegs)
+        self.solver = Solver(image, crop_mode, number_of_pegs=number_of_pegs)
         self.benchmarks_to_run = [
             # fmt: off
 
-            (self.solver.least_squares, {"method": "dense"}),
-            (self.solver.least_squares, {"method": "sparse"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 1000, "method": "orthogonal"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 1000, "method": "greedy", "selector_type": "random"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 1000, "method": "greedy", "selector_type": "dot-product"}),
+            (self.solver.least_squares, {"matrix_representation": "dense"}),
+            (self.solver.least_squares, {"matrix_representation": "sparse"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "orthogonal"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "random"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "dot-product"}),
             # fmt: on
         ]
 
@@ -272,8 +272,6 @@ class Benchmark:
         List[BenchmarkResult]
             A list of `BenchmarkResult` objects created from the benchmark data in the JSON file.
         """
-        benchmarks: List = []
-
         with open(Benchmark.BENCHMARKS_PATH / f"{filename}.json", "r") as file:
             benchmarks = json.load(file)
 
@@ -311,7 +309,7 @@ class Benchmark:
         os.makedirs(directory, exist_ok=True)
 
         output_images = [benchmark.output_image for benchmark in benchmarks]
-        ground_truth_image = crop_image(ground_truth_image, self.mode)
+        ground_truth_image = crop_image(ground_truth_image, self.crop_mode)
 
         labels = [
             f"{benchmark.solver}\n{"\n".join(f"{key}: {value}" for key, value in benchmark.params.items())}"
@@ -325,7 +323,7 @@ class Benchmark:
             ImageWrapper.scale_image(ground_truth_image - ImageWrapper.scale_image(test_image))
             for test_image in output_images
         ]
-        diff_images = prepare_diff_images(diff_images, self.mode)
+        diff_images = prepare_diff_images(diff_images, self.crop_mode)
 
         fig, axs = plt.subplots(1, len(output_images), figsize=(16, 6))
         plot_name = "Difference Images"
@@ -374,14 +372,14 @@ class Benchmark:
         plot_bar_graph("Memory Usage", "Memory (MB)", memory_size, "orange")
 
 
-def prepare_diff_images(diff_images: list[np.ndarray], mode: Mode) -> list[np.ndarray]:
+def prepare_diff_images(diff_images: list[np.ndarray], crop_mode: CropMode) -> list[np.ndarray]:
     """Processes a list of difference images by applying an alpha map and colormap to each image, converting them to RGBA.
 
     Parameters
     ----------
     diff_images : list of np.ndarray
         A list of 2D NumPy arrays (height, width) representing difference images. Each image should be in black-and-white (grayscale).
-    mode : Mode
+    crop_mode : CropMode
         The cropping mode that was used on the diff_images.
 
     Returns
@@ -402,7 +400,7 @@ def prepare_diff_images(diff_images: list[np.ndarray], mode: Mode) -> list[np.nd
 
     diff_images = [
         apply_cmap_bw_to_rgb(
-            ImageWrapper.apply_alpha_map_bw_to_rgba(diff_image, ImageWrapper.alpha_map(diff_image, mode))
+            ImageWrapper.apply_alpha_map_bw_to_rgba(diff_image, ImageWrapper.alpha_map(diff_image, crop_mode))
         )
         for diff_image in diff_images
     ]

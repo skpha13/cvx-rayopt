@@ -8,23 +8,23 @@ from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.misc.least_squares_rounding_trial import compute_solution
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import Method, Mode
+from stringart.utils.types import CropMode, MatrixRepresentation
 
 image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
-image_mode = "center"
+crop_mode: CropMode = "center"
 number_of_pegs = 100
-method = "sparse"
+matrix_representation: MatrixRepresentation = "sparse"
 
 
-def linear_programming(
+def linear_least_squares(
     shape: tuple[int, ...],
     number_of_pegs: int = 100,
-    image_mode: Mode = "center",
-    method: Method = "sparse",
+    crop_mode: CropMode = "center",
+    matrix_representation: MatrixRepresentation = "sparse",
 ) -> tuple[np.ndarray, np.ndarray]:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, image_mode, method)
+    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
     b: np.ndarray = ImageWrapper.flatten_image(image)
 
     optimize_results = scipy.optimize.lsq_linear(A, b, bounds=(0, np.inf))
@@ -37,17 +37,17 @@ def main():
     directory: Path = stringart_directory.parent.resolve()
 
     Benchmark.initialize_metadata(directory)
-    benchmark = Benchmark(image, image_mode, number_of_pegs)
+    benchmark = Benchmark(image, crop_mode, number_of_pegs)
     benchmarks_result = benchmark.run_benchmark(
-        linear_programming,
+        linear_least_squares,
         shape=shape,
         number_of_pegs=number_of_pegs,
-        image_mode=image_mode,
-        method=method,
+        crop_mode=crop_mode,
+        matrix_representation=matrix_representation,
     )
 
     benchmark.save_benchmarks([benchmarks_result], "linear_least_squares")
-    A, x = linear_programming(shape, number_of_pegs, image_mode, method)
+    A, x = linear_least_squares(shape, number_of_pegs, crop_mode, matrix_representation)
     solution = compute_solution(A, x)
 
     plt.imshow(solution, cmap="grey")

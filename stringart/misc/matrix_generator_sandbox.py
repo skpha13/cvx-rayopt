@@ -5,11 +5,11 @@ from scipy.sparse.linalg import lsqr
 from skimage import io
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.types import Method, Mode
+from stringart.utils.types import CropMode, MatrixRepresentation
 
 image = ImageWrapper.read_bw("../../imgs/lena.png")
-mode: Mode = "center"
-method: Method = "sparse"
+crop_mode: CropMode = "center"
+matrix_representation: MatrixRepresentation = "sparse"
 shape = image.shape
 b = ImageWrapper.flatten_image(image)
 
@@ -29,18 +29,18 @@ def display_line_console(A: np.ndarray, pegs: np.ndarray) -> None:
 
 
 def matrix_solver() -> None:
-    A, pegs = MatrixGenerator.compute_matrix(shape, 100, mode, method)
+    A, pegs = MatrixGenerator.compute_matrix(shape, 100, crop_mode, matrix_representation)
 
     x = None
-    if method == "dense":
+    if matrix_representation == "dense":
         x, _, _, _ = lstsq(A, b)
-    elif method == "sparse":
+    elif matrix_representation == "sparse":
         x = lsqr(A, b)[0]
 
     solution = A @ x
     solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
     solution = np.multiply(solution, 255).astype(np.uint8)
-    solution = crop_image(solution, mode)
+    solution = crop_image(solution, crop_mode)
 
     io.imsave("../../outputs/lena_stringart_sparse.png", solution)
     io.imshow(solution)

@@ -22,7 +22,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs = MatrixGenerator.compute_matrix(shape, 10, image_mode="center")
+            _, pegs = MatrixGenerator.compute_matrix(shape, 10, crop_mode="center")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
@@ -36,7 +36,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs = MatrixGenerator.compute_matrix(shape, 10, image_mode="first-half")
+            _, pegs = MatrixGenerator.compute_matrix(shape, 10, crop_mode="first-half")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)
@@ -55,7 +55,7 @@ class TestPegPlacement:
         pegs_computed = []
 
         for shape in TestPegPlacement.shapes:
-            _, pegs = MatrixGenerator.compute_matrix(shape, 10, image_mode="second-half")
+            _, pegs = MatrixGenerator.compute_matrix(shape, 10, crop_mode="second-half")
             pegs_arr = [[point.y, point.x] for point in pegs]
 
             pegs_computed.append(pegs_arr)

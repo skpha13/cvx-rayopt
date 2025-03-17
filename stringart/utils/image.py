@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 from matplotlib.pyplot import imread
 from skimage.color import rgb2gray
-from stringart.utils.types import Mode, Point
+from stringart.utils.types import CropMode, Point
 
 
 class ImageWrapper:
@@ -48,14 +48,14 @@ class ImageWrapper:
         return (image - min_value) / (max_value - min_value)
 
     @staticmethod
-    def alpha_map(image: np.ndarray, image_mode: Mode) -> np.ndarray:
+    def alpha_map(image: np.ndarray, crop_mode: CropMode) -> np.ndarray:
         """Generates an alpha map based on the center and radius derived from the image dimensions and mode.
 
         Parameters
         ----------
         image : np.ndarray
             A NumPy array representing the image. Its shape should be in the format (height, width, channels) or (height, width).
-        image_mode : Mode
+        crop_mode : CropMode
             Image cropping mode that will be used on the image.
 
         Returns
@@ -70,7 +70,7 @@ class ImageWrapper:
             If the image shape is not compatible with the Mode.
         """
 
-        radius, center_point = find_radius_and_center_point(image.shape, image_mode)
+        radius, center_point = find_radius_and_center_point(image.shape, crop_mode)
         alpha_map = np.zeros(image.shape[:2])
 
         for y in range(image.shape[0]):
@@ -119,7 +119,7 @@ class ImageWrapper:
         return rgba_image
 
 
-def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = None) -> tuple[int, Point | None]:
+def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | None = None) -> tuple[int, Point | None]:
     """Calculate the radius and center point of a region within an image shape.
 
     Parameters
@@ -127,7 +127,7 @@ def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = Non
         shape : (tuple[int, ...])
             The dimensions of the image (height, width).
 
-        mode : Mode | None
+        crop_mode : CropMode | None
             Specifies the location of the center point to start the peg arrangement. Can be one of:
             - "center" (default): Pegs are placed symmetrically around the center.
             - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
@@ -141,28 +141,28 @@ def find_radius_and_center_point(shape: tuple[int, ...], mode: Mode | None = Non
     """
     radius = min(shape[0], shape[1]) // 2 - 1
 
-    if mode is None:
+    if crop_mode is None:
         return radius, None
 
     center_point = None
-    if mode == "center":
+    if crop_mode == "center":
         center_point = Point(radius, shape[0] // 2) if shape[0] > shape[1] else Point(shape[1] // 2, radius)
-    elif mode == "first-half":
+    elif crop_mode == "first-half":
         center_point = Point(radius, radius)
-    elif mode == "second-half":
+    elif crop_mode == "second-half":
         center_point = Point(radius, shape[0] - radius) if shape[0] > shape[1] else Point(shape[1] - radius, radius)
 
     return radius, center_point
 
 
-def crop_image(image: np.ndarray, mode: Mode) -> np.ndarray:
+def crop_image(image: np.ndarray, crop_mode: CropMode) -> np.ndarray:
     """Crops an input image according to a specified mode.
 
     Parameters
     ----------
         image : np.ndarray
             The input image array (height, width, channels).
-        mode : Mode
+        crop_mode : CropMode
             The cropping mode.
             Options are:
                 - "center": Crop around the geometric center of the image.
@@ -175,7 +175,7 @@ def crop_image(image: np.ndarray, mode: Mode) -> np.ndarray:
             The cropped square region of the image.
     """
     shape = np.shape(image)
-    radius, center_point = find_radius_and_center_point(shape, mode)
+    radius, center_point = find_radius_and_center_point(shape, crop_mode)
 
     top = center_point.y - radius
     left = center_point.x - radius

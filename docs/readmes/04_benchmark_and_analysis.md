@@ -32,7 +32,7 @@ The **Orthogonal Matching Pursuit** method seems to strike a balance between the
 
 ## Difference Images
 
-![Difference Images](../../docs/plots/analysis_01/Difference%20Images.svg) 
+![Difference Images](../../docs/plots/analysis_01/Difference%20Images.png) 
 
 The difference images highlight the discrepancy between the target and each method’s output. As we can observe, the difference images look quite the same to the output images, that is because our target image has more shades of gray and the algorithm can only pick one consistent color along each line. The best effect can be seen on the second to last image (**Greedy** approach with **Random** heuristic).
 
@@ -43,7 +43,7 @@ And another interesting experiment would be to allow the subtracting of edges. T
 
 ## Time Taken for Computation
 
-![Difference Images](../../docs/plots/analysis_01/Time%20Usage.svg)
+![Difference Images](../../docs/plots/analysis_01/Time%20Usage.png)
 
 In terms of computational time, the **Least Squares Sparse** approach is the most efficient, completing in just a few seconds. The **Least Squares Dense** approach, while taking more time, remains relatively fast compared to the greedy algorithms.
 
@@ -53,7 +53,7 @@ The **Orthogonal Matching Pursuit** method seems to be faster than the dense app
 
 ## Peak Memory Usage
 
-![Difference Images](../../docs/plots/analysis_01/Memory%20Usage.svg)
+![Difference Images](../../docs/plots/analysis_01/Memory%20Usage.png)
 
 Memory usage provides an interesting insight into the efficiency of the algorithms. All methods except the **Least Squares Dense** approach utilize less than `1GB` of memory. 
 

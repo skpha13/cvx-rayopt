@@ -5,12 +5,13 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.sparse import csr_matrix
 
 from stringart.solver import Solver
 from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import MatchingPursuitMethod, Metadata, Method, Mode
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -23,11 +24,11 @@ class Configuration:
     solver: str
     image_path: str | Path
     number_of_pegs: int | None
-    crop_mode: Mode | None
-    matrix_representation: Method | None
-    method: MatchingPursuitMethod | None
+    crop_mode: CropMode | None
+    matrix_representation: MatrixRepresentation | None
+    mp_method: MatchingPursuitMethod | None
     number_of_lines: int
-    selector: GreedySelector | None
+    selector_type: GreedySelector | None
 
     def run_configuration(self, running_tests: bool = False):
         image = ImageWrapper.read_bw(self.image_path)
@@ -37,10 +38,13 @@ class Configuration:
             solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs)
             save_path = self.metadata.path / "outputs" / f"{image_name}.png"
 
+            A: np.ndarray | csr_matrix | None = None
+            x: np.ndarray | None = None
+
             if self.solver == "least-squares":
                 A, x = solver.least_squares(self.matrix_representation)
             elif self.solver == "matching-pursuit":
-                A, x = solver.matching_pursuit(self.number_of_lines, self.method, selector=self.selector)
+                A, x = solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type)
 
             solution: np.ndarray | None = solver.compute_solution(A, x)
 
@@ -56,7 +60,7 @@ class Configuration:
             return
 
         Benchmark.initialize_metadata(self.metadata.path)
-        benchmark = Benchmark(image=image, mode=self.crop_mode, number_of_pegs=self.number_of_pegs)
+        benchmark = Benchmark(image=image, crop_mode=self.crop_mode, number_of_pegs=self.number_of_pegs)
 
         if self.command == "run-benchmarks":
             results = benchmark.run_benchmarks()

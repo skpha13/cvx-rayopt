@@ -5,7 +5,7 @@ from scipy.sparse import csr_matrix
 from stringart.line_algorithms.bresenham import Bresenham
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import find_radius_and_center_point
-from stringart.utils.types import Method, Mode, Point
+from stringart.utils.types import CropMode, MatrixRepresentation, Point
 
 
 class MatrixGenerator:
@@ -13,7 +13,10 @@ class MatrixGenerator:
 
     @staticmethod
     def compute_matrix(
-        shape: tuple[int, ...], number_of_pegs: int, image_mode: Mode = "center", method: Method = "dense"
+        shape: tuple[int, ...],
+        number_of_pegs: int,
+        crop_mode: CropMode = "center",
+        matrix_representation: MatrixRepresentation = "sparse",
     ) -> tuple[np.ndarray | csr_matrix, List[Point]]:
         """Computes the matrix representation of lines drawn between pegs placed on a grid.
 
@@ -25,13 +28,13 @@ class MatrixGenerator:
         number_of_pegs : int
             The number of pegs to be placed on the grid.
 
-        image_mode : Mode | None
+        crop_mode : CropMode
             Specifies the location of the center point to start the peg arrangement. Can be one of:
             - "center" (default): Pegs are placed symmetrically around the center.
             - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
             - "second-half": Pegs are placed in the bottom-half/right-half portion of the rectangle.
 
-        method: Method
+        matrix_representation: MatrixRepresentation
             The method used to generate the matrix. Can be "dense" or "sparse".
 
         Returns
@@ -41,17 +44,19 @@ class MatrixGenerator:
               representing a line drawn between two pegs.
             - A list of Points representing the locations of the pegs.
         """
-        radius, center_point = find_radius_and_center_point(shape, image_mode)
+        radius, center_point = find_radius_and_center_point(shape, crop_mode)
         pegs: List[Point] = compute_pegs(
             number_of_pegs=number_of_pegs,
             radius=radius,
             center_point=center_point,
         )
 
-        if method not in MatrixGenerator.method_map:
-            raise ValueError(f"Unknown method: {method}. Valid options are {list(MatrixGenerator.method_map.keys())}")
+        if matrix_representation not in MatrixGenerator.method_map:
+            raise ValueError(
+                f"Unknown method: {matrix_representation}. Valid options are {list(MatrixGenerator.method_map.keys())}"
+            )
 
-        A = MatrixGenerator.method_map[method](shape, pegs)
+        A = MatrixGenerator.method_map[matrix_representation](shape, pegs)
 
         return A, pegs
 

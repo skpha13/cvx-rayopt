@@ -24,9 +24,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             matrix_representation="dense",
-            method=None,
+            mp_method=None,
             number_of_lines=10,
-            selector=None,
+            selector_type=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -40,9 +40,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             matrix_representation="sparse",
-            method=None,
+            mp_method=None,
             number_of_lines=10,
-            selector=None,
+            selector_type=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -56,9 +56,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             matrix_representation=None,
-            method="greedy",
+            mp_method="greedy",
             number_of_lines=10,
-            selector="random",
+            selector_type="random",
         )
 
         configuration.run_configuration(running_tests=True)
@@ -72,9 +72,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             matrix_representation=None,
-            method="greedy",
+            mp_method="greedy",
             number_of_lines=10,
-            selector="dot-product",
+            selector_type="dot-product",
         )
 
         configuration.run_configuration(running_tests=True)
@@ -88,9 +88,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             matrix_representation=None,
-            method="orthogonal",
+            mp_method="orthogonal",
             number_of_lines=10,
-            selector=None,
+            selector_type=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -104,9 +104,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="first-half",
             matrix_representation="dense",
-            method=None,
+            mp_method=None,
             number_of_lines=10,
-            selector=None,
+            selector_type=None,
         )
 
         configuration_second_half = Configuration(
@@ -117,9 +117,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="second-half",
             matrix_representation="dense",
-            method=None,
+            mp_method=None,
             number_of_lines=10,
-            selector=None,
+            selector_type=None,
         )
 
         configuration_center = Configuration(
@@ -130,9 +130,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             matrix_representation="dense",
-            method=None,
+            mp_method=None,
             number_of_lines=10,
-            selector=None,
+            selector_type=None,
         )
 
         configuration_first_half.run_configuration(running_tests=True)

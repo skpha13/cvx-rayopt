@@ -5,9 +5,9 @@ from typing import Literal
 
 Point = namedtuple("Point", ["x", "y"])
 
-Mode = Literal["first-half", "center", "second-half"]
+CropMode = Literal["first-half", "center", "second-half"]
 
-Method = Literal["dense", "sparse"]
+MatrixRepresentation = Literal["dense", "sparse"]
 
 MatchingPursuitMethod = Literal["greedy", "orthogonal"]
 

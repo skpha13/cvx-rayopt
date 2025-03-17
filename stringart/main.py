@@ -7,7 +7,7 @@ from typing import get_args
 
 from stringart.cli_functions import Configuration
 from stringart.utils.greedy_selector import GreedySelector
-from stringart.utils.types import MatchingPursuitMethod, Metadata, Method, Mode
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata
 
 SOLVE_COMMAND_NAME = "solve"
 
@@ -35,8 +35,8 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     least_squares_group.add_argument(
         "--matrix-representation",
-        type=str,
-        choices=get_args(Method),
+        type=MatrixRepresentation,
+        choices=get_args(MatrixRepresentation),
         required=False,
         help="Matrix representation method. Defaults to `sparse`.",
     )
@@ -47,7 +47,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     matching_pursuit_group.add_argument(
         "--method",
-        type=str,
+        type=MatchingPursuitMethod,
         choices=get_args(MatchingPursuitMethod),
         required=False,
         help="Algorithm selection, either Greedy or Orthogonal Matching Pursuit. Defaults to `orthogonal`.",
@@ -60,6 +60,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     matching_pursuit_group.add_argument(
         "--selector",
+        type=GreedySelector,
         choices=get_args(GreedySelector),
         required=False,
         help="Selector method to use (only applicable to matching-pursuit with greedy method). Defaults to `dot-product`.",
@@ -80,7 +81,8 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     parser.add_argument(
         "--crop-mode",
-        choices=get_args(Mode),
+        type=CropMode,
+        choices=get_args(CropMode),
         required=False,
         help="Crop mode to use on the provided image. Default to `center`.",
     )
@@ -97,7 +99,6 @@ def validate_arguments(args):
 
 
 def main() -> None:
-    logger = logging.getLogger(__name__)
     logging.basicConfig(level=logging.INFO)
 
     stringart_directory: Path = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -117,9 +118,9 @@ def main() -> None:
         number_of_pegs=getattr(args, "number_of_pegs", None),
         crop_mode=getattr(args, "crop_mode", None),
         matrix_representation=getattr(args, "matrix_representation", None),
-        method=getattr(args, "method", None),
+        mp_method=getattr(args, "method", None),
         number_of_lines=getattr(args, "number_of_lines", None),
-        selector=getattr(args, "selector", None),
+        selector_type=getattr(args, "selector", None),
     )
 
     configuration.run_configuration()

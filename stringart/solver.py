@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast
 
 import numpy as np
 from numpy.linalg import lstsq
@@ -7,9 +7,10 @@ from scipy.sparse.linalg import lsqr
 
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
+from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
-from stringart.utils.types import MatchingPursuitMethod, Method, Mode, Point
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point
 
 
 class Solver:
@@ -19,19 +20,19 @@ class Solver:
     ----------
     image : np.ndarray
         A numpy array representing the image to be processed.
-    image_mode : Mode
+    image_mode : CropMode
         The mode in which the image is being processed. This determines cropping behaviour.
     number_of_pegs : int, optional
         The number of pegs to be used in the string art computation. Default is 100.
     """
 
-    def __init__(self, image: np.ndarray, image_mode: Mode | None = "center", number_of_pegs: int | None = 100):
-        image_mode = image_mode if image_mode else "center"
+    def __init__(self, image: np.ndarray, image_mode: CropMode | None = "center", number_of_pegs: int | None = 100):
+        image_mode: CropMode = image_mode if image_mode else "center"
         number_of_pegs = number_of_pegs if number_of_pegs else 100
 
         self.shape: tuple[int, ...] = image.shape
         self.b: np.ndarray = ImageWrapper.flatten_image(image)
-        self.image_mode: Mode = image_mode
+        self.image_mode: CropMode = image_mode
         self.number_of_pegs: int = number_of_pegs
 
     def compute_solution(self, A: np.ndarray, x: np.ndarray) -> np.ndarray:
@@ -59,12 +60,14 @@ class Solver:
 
         return solution
 
-    def least_squares(self, method: Method = "sparse") -> tuple[np.ndarray, np.ndarray]:
+    def least_squares(
+        self, matrix_representation: MatrixRepresentation | None = "sparse"
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Solve the string art problem using the least squares method.
 
         Parameters
         ----------
-        method : {'dense', 'sparse'}, optional
+        matrix_representation : {'dense', 'sparse'}, optional
             The method to use for solving the least squares problem. Defaults to 'sparse'.
             - 'dense': Uses dense matrix operations via `numpy.linalg.lstsq`.
             - 'sparse': Uses sparse matrix operations via `scipy.sparse.linalg.lsqr`.
@@ -75,14 +78,16 @@ class Solver:
             The initial matrix of column vectors representing lines to be drawn.
             And the x solution of the system.
         """
-        method = method if method else "sparse"
+        matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
 
-        A, pegs = MatrixGenerator.compute_matrix(self.shape, self.number_of_pegs, self.image_mode, method)
+        A, pegs = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.image_mode, matrix_representation
+        )
 
         x = None
-        if method == "dense":
+        if matrix_representation == "dense":
             x, _, _, _ = lstsq(A, self.b)
-        elif method == "sparse":
+        elif matrix_representation == "sparse":
             x = lsqr(A, self.b)[0]
 
         return A, x
@@ -90,7 +95,7 @@ class Solver:
     def matching_pursuit(
         self,
         number_of_lines: int,
-        method: MatchingPursuitMethod = "orthogonal",
+        mp_method: MatchingPursuitMethod | None = "orthogonal",
         **kwargs,
     ) -> tuple[np.ndarray, np.ndarray]:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
@@ -102,7 +107,7 @@ class Solver:
         number_of_lines : int
            The number of lines to select and add to the solution.
 
-        method : MatchingPursuitMethod, optional
+        mp_method : MatchingPursuitMethod, optional
            The matching pursuit method, either "orthogonal" or "greedy". Default is "orthogonal".
 
         **kwargs:
@@ -125,7 +130,7 @@ class Solver:
         selector type) and minimizes the residual error in the least squares problem.
         """
 
-        method = method if method else "orthogonal"
+        mp_method = mp_method if mp_method else "orthogonal"
 
         radius, center_point = find_radius_and_center_point(self.shape, self.image_mode)
         pegs: List[Point] = compute_pegs(
@@ -144,10 +149,10 @@ class Solver:
         x = None
 
         mp_instance: MatchingPursuit | None = None
-        if method == "greedy":
-            selector_type = kwargs.get("selector_type", "dot-product")
+        if mp_method == "greedy":
+            selector_type = cast(GreedySelector, kwargs.get("selector_type", "dot-product"))
             mp_instance = Greedy(A, self.b, selector_type=selector_type)
-        elif method == "orthogonal":
+        elif mp_method == "orthogonal":
             mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
 
         for step in range(number_of_lines):
