@@ -36,13 +36,14 @@ class Configuration:
 
         if self.command == "solve":
             solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs)
-            solution: np.ndarray | None = None
             save_path = self.metadata.path / "outputs" / f"{image_name}.png"
 
             if self.solver == "least-squares":
-                solution = solver.least_squares(self.matrix_representation)
+                A, x = solver.least_squares(self.matrix_representation)
             else:
-                solution = solver.matching_pursuit(self.number_of_lines, self.method, selector=self.selector)
+                A, x = solver.matching_pursuit(self.number_of_lines, self.method, selector=self.selector)
+
+            solution: np.ndarray | None = solver.compute_solution(A, x)
 
             plt.axis("off")
             plt.title("Computed Image")

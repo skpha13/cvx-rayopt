@@ -14,7 +14,7 @@ class MatrixGenerator:
     @staticmethod
     def compute_matrix(
         shape: tuple[int, ...], number_of_pegs: int, image_mode: Mode = "center", method: Method = "dense"
-    ) -> tuple[np.ndarray, List[Point]]:
+    ) -> tuple[np.ndarray | csr_matrix, List[Point]]:
         """Computes the matrix representation of lines drawn between pegs placed on a grid.
 
         Parameters
@@ -179,7 +179,7 @@ class MatrixGenerator:
 
         return A
 
-    method_map: dict[str, Callable] = {
+    method_map: dict[str, Callable[[tuple[int, ...], list[Point]], np.ndarray | csr_matrix]] = {
         "dense": generate_dense_matrix,
         "sparse": generate_sparse_matrix,
     }

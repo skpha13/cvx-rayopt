@@ -51,7 +51,6 @@ class Solver:
            0 and 1, scaled to 255, converted to an 8-bit format, and cropped
            according to the specified image mode.
         """
-
         solution = A @ x
         solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
         solution = 1 - solution
@@ -60,7 +59,7 @@ class Solver:
 
         return solution
 
-    def least_squares(self, method: Method = "sparse") -> np.ndarray:
+    def least_squares(self, method: Method = "sparse") -> tuple[np.ndarray, np.ndarray]:
         """Solve the string art problem using the least squares method.
 
         Parameters
@@ -72,9 +71,9 @@ class Solver:
 
         Returns
         -------
-        numpy.ndarray
-            The reconstructed image as a 2D greyscale array.
-            The pixel values are scaled between 0 and 255 and cropped according to the image mode.
+        tuple[numpy.ndarray, numpy.ndarray]
+            The initial matrix of column vectors representing lines to be drawn.
+            And the x solution of the system.
         """
         method = method if method else "sparse"
 
@@ -86,14 +85,14 @@ class Solver:
         elif method == "sparse":
             x = lsqr(A, self.b)[0]
 
-        return self.compute_solution(A, x)
+        return A, x
 
     def matching_pursuit(
         self,
         number_of_lines: int,
         method: MatchingPursuitMethod = "orthogonal",
         **kwargs,
-    ) -> np.ndarray:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
@@ -111,8 +110,9 @@ class Solver:
 
         Returns
         -------
-        np.ndarray
-           The final solution vector `x` after the greedy line selection process.
+        tuple[numpy.ndarray, numpy.ndarray]
+            The initial matrix of column vectors representing lines to be drawn.
+            And the x solution of the system.
 
         Notes
         -----
@@ -174,4 +174,4 @@ class Solver:
             if not residual <= past_residual:
                 break
 
-        return self.compute_solution(A, x)
+        return A, x

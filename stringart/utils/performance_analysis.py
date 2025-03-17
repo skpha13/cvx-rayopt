@@ -138,7 +138,7 @@ class Benchmark:
         self.mode = mode
         self.number_of_pegs = number_of_pegs
 
-        self.solver = Solver(image, mode, number_of_pegs=100)
+        self.solver = Solver(image, mode, number_of_pegs=number_of_pegs)
         self.benchmarks_to_run = [
             # fmt: off
 
@@ -172,7 +172,8 @@ class Benchmark:
         time_start = time.monotonic()
         tracemalloc.start()
 
-        output = func(*args, **kwargs)
+        A, x = func(*args, **kwargs)
+        output = self.solver.compute_solution(A, x)
 
         time_end = time.monotonic()
         elapsed_monotonic_time = time_end - time_start
