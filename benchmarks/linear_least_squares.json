@@ -1,14 +1,14 @@
 [
     {
-        "solver": "linear_programming",
+        "solver": "linear_least_squares",
         "params": {
             "shape": [
                 330,
                 330
             ],
             "number_of_pegs": 100,
-            "image_mode": "center",
-            "method": "sparse"
+            "crop_mode": "center",
+            "matrix_representation": "sparse"
         },
         "number_of_pegs": 100,
         "output_image_shape": [
@@ -16,19 +16,19 @@
             328
         ],
         "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_least_squares\\image_000.png",
-        "elapsed_monotonic_time": 30.92199999999957,
-        "peak_memory_usage": 229400816,
+        "elapsed_monotonic_time": 29.96799999999348,
+        "peak_memory_usage": 229399322,
         "elapsed_time": {
             "hours": 0,
             "minutes": 0,
-            "seconds": 30,
-            "milliseconds": 921
+            "seconds": 29,
+            "milliseconds": 967
         },
         "peak_memory_size": {
             "gigabytes": 0,
             "megabytes": 218,
-            "kilobytes": 792,
-            "bytes": 240
+            "kilobytes": 790,
+            "bytes": 794
         }
     }
 ]
