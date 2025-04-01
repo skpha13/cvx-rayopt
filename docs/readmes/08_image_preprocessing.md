@@ -27,7 +27,7 @@ For more details, check the official [OpenCV tutorial](https://docs.opencv.org/4
 
 <img src="../../outputs/preprocess/histogram_equalization_preprocess.png" alt="Lena Histogram Equalization Preprocess" width=256>
 
-> Lena after Hisogram Equalization
+> Lena after Histogram Equalization
 
 ### Grayscale Quantization
 
