@@ -8,7 +8,7 @@ from stringart.utils.types import CropMode, Point
 
 class ImageWrapper:
     @staticmethod
-    def read_bw(file_path: str | Path) -> np.ndarray:
+    def read_bw(file_path: str | Path, inverted: bool = True) -> np.ndarray:
         image = imread(file_path)
 
         # remove alpha channel
@@ -16,7 +16,11 @@ class ImageWrapper:
             image = image[..., :3]
 
         grayscale_image = rgb2gray(image)
-        return 1 - grayscale_image  # inverting black with white
+
+        if inverted:
+            return 1 - grayscale_image  # inverting black with white
+
+        return grayscale_image
 
     @staticmethod
     def flatten_image(image: np.ndarray) -> np.ndarray:
@@ -117,6 +121,70 @@ class ImageWrapper:
         rgba_image[..., 3] = alpha_map  # alpha channel
 
         return rgba_image
+
+    @staticmethod
+    def histogram_equalization(src: np.ndarray) -> np.ndarray:
+        """Perform histogram equalization on a grayscale image.
+
+        Histogram equalization improves the contrast of the image by
+        spreading out the most frequent intensity values.
+
+        Parameters
+        ----------
+        src : np.ndarray
+            A grayscale image represented as a 2D NumPy array with
+            pixel intensity values ranging from 0 to 255.
+
+        Returns
+        -------
+        np.ndarray
+            The equalized grayscale image with enhanced contrast.
+
+        Notes
+        -------
+
+        See link for more details: https://docs.opencv.org/4.x/d4/d1b/tutorial_histogram_equalization.html
+        """
+        src = (src * 255).astype(np.uint8)
+        hist, bins = np.histogram(src.flatten(), 256, [0, 256])
+
+        cdf = hist.cumsum()
+
+        # normalize the cdf while avoiding zeros
+        cdf_m = np.ma.masked_equal(cdf, 0)
+        cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min())
+        cdf = np.ma.filled(cdf_m, 0).astype("uint8")
+
+        dst = cdf[src]
+        dst = dst.astype(np.float32) / 255.0
+
+        return dst
+
+    @staticmethod
+    def grayscale_quantization(src: np.ndarray, n_levels: int = 2) -> np.ndarray:
+        """Perform grayscale quantization on an image with a specified number of quantization levels.
+
+        Parameters
+        ----------
+        src : np.ndarray
+            A grayscale image represented as a 2D NumPy array with pixel values in the range [0, 1].
+
+        n_levels : int, optional
+            The number of quantization levels. The default is 2.
+
+        Returns
+        -------
+        np.ndarray
+            A grayscale image with quantized pixel values in the range [0, 1].
+        """
+
+        src = (src * 255).astype(np.uint8)
+
+        delta = 255 / n_levels
+        dst = np.floor(src / delta) * delta + delta / 2
+        dst = dst.astype(np.float32) / 255.0
+
+        return dst
 
 
 def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | None = None) -> tuple[int, Point | None]:

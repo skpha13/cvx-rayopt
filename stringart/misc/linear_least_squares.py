@@ -19,13 +19,14 @@ matrix_representation: MatrixRepresentation = "sparse"
 
 
 def linear_least_squares(
+    src: np.ndarray,
     shape: tuple[int, ...],
     number_of_pegs: int = 100,
     crop_mode: CropMode = "center",
     matrix_representation: MatrixRepresentation = "sparse",
 ) -> tuple[np.ndarray, np.ndarray]:
     A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
-    b: np.ndarray = ImageWrapper.flatten_image(image)
+    b: np.ndarray = ImageWrapper.flatten_image(src)
 
     optimize_results = scipy.optimize.lsq_linear(A, b, bounds=(0, np.inf))
 
@@ -40,6 +41,7 @@ def main():
     benchmark = Benchmark(image, crop_mode, number_of_pegs)
     benchmarks_result = benchmark.run_benchmark(
         linear_least_squares,
+        image,
         shape=shape,
         number_of_pegs=number_of_pegs,
         crop_mode=crop_mode,
@@ -47,7 +49,7 @@ def main():
     )
 
     benchmark.save_benchmarks([benchmarks_result], "linear_least_squares")
-    A, x = linear_least_squares(shape, number_of_pegs, crop_mode, matrix_representation)
+    A, x = linear_least_squares(image, shape, number_of_pegs, crop_mode, matrix_representation)
     solution = compute_solution(A, x)
 
     plt.imshow(solution, cmap="grey")

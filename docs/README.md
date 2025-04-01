@@ -7,4 +7,5 @@
       - [Linear Least Squares](./readmes/07_linear_least_squares.md)
    - [Matching Pursuit](./readmes/03_matching_pursuit.md)
    - [Linear Programming](./readmes/06_linear_programming.md)
+## [Image Preprocessing](./readmes/08_image_preprocessing.md)
 ## [Benchmarks and Analysis](./readmes/04_benchmark_and_analysis.md)
