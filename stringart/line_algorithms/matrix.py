@@ -90,6 +90,11 @@ class MatrixGenerator:
         return vector
 
     @staticmethod
+    def generate_dense_rasterized_line(shape: tuple[int, ...], line: List[Point], values: List[float]) -> np.ndarray:
+        # TODO: implement
+        pass
+
+    @staticmethod
     def generate_sparse_line(shape: tuple[int, ...], line: List[Point]) -> List[int]:
         """Generates a list of indices representing the positions of points in the line on a flattened grid.
 
@@ -109,6 +114,11 @@ class MatrixGenerator:
 
         indices = [point.y * shape[1] + point.x for point in line]
         return indices
+
+    @staticmethod
+    def generate_sparse_rasterized_line(shape: tuple[int, ...], line: List[Point]) -> List[int]:
+        # TODO: implement
+        pass
 
     @staticmethod
     def generate_dense_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
@@ -137,6 +147,7 @@ class MatrixGenerator:
             for j in range(i + 1, len(pegs)):
                 line = Bresenham.compute_line(pegs[i], pegs[j])
 
+                # TODO: if else with Bresenham/Xiaolin Wu
                 vector = MatrixGenerator.generate_dense_line(shape, line)
                 A.append(vector)
 
@@ -172,12 +183,14 @@ class MatrixGenerator:
             for j in range(i + 1, len(pegs)):
                 line = Bresenham.compute_line(pegs[i], pegs[j])
 
+                # TODO: if else with Bresenham/Xiaolin Wu
                 sparse_line = MatrixGenerator.generate_sparse_line(shape, line)
                 row_indices += sparse_line
                 column_indices += [column_index] * len(sparse_line)
 
                 column_index += 1
 
+        # TODO: Xiaolin Wu data values will differ
         A = csr_matrix(
             ([1.0] * len(row_indices), (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index)
         )
