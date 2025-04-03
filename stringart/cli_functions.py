@@ -11,13 +11,12 @@ from stringart.solver import Solver
 from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, Rasterization
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-# TODO: add XiaolinWu params
 @dataclass
 class Configuration:
     metadata: Metadata
@@ -26,6 +25,7 @@ class Configuration:
     image_path: str | Path
     number_of_pegs: int | None
     crop_mode: CropMode | None
+    rasterization: Rasterization | None
     matrix_representation: MatrixRepresentation | None
     mp_method: MatchingPursuitMethod | None
     number_of_lines: int
@@ -36,7 +36,7 @@ class Configuration:
         image_name = os.path.splitext(os.path.basename(self.image_path))[0]
 
         if self.command == "solve":
-            solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs)
+            solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization)
             save_path = self.metadata.path / "outputs" / f"{image_name}.png"
 
             A: np.ndarray | csr_matrix | None = None

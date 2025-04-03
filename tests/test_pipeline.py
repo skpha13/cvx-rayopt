@@ -4,8 +4,6 @@ from pathlib import Path
 from stringart.cli_functions import Configuration
 from stringart.utils.types import Metadata
 
-# TODO: add XiaolinWu pipeline tests
-
 
 class TestPipeline:
     @classmethod
@@ -25,6 +23,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
+            rasterization="bresenham",
             matrix_representation="dense",
             mp_method=None,
             number_of_lines=10,
@@ -41,6 +40,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
+            rasterization="xiaolin-wu",
             matrix_representation="sparse",
             mp_method=None,
             number_of_lines=10,
@@ -57,6 +57,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
+            rasterization=None,
             matrix_representation=None,
             mp_method="greedy",
             number_of_lines=10,
@@ -73,6 +74,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
+            rasterization="bresenham",
             matrix_representation=None,
             mp_method="greedy",
             number_of_lines=10,
@@ -89,6 +91,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
+            rasterization="xiaolin-wu",
             matrix_representation=None,
             mp_method="orthogonal",
             number_of_lines=10,
@@ -105,6 +108,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="first-half",
+            rasterization=None,
             matrix_representation="dense",
             mp_method=None,
             number_of_lines=10,
@@ -118,6 +122,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="second-half",
+            rasterization=None,
             matrix_representation="dense",
             mp_method=None,
             number_of_lines=10,
@@ -131,6 +136,7 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
+            rasterization=None,
             matrix_representation="dense",
             mp_method=None,
             number_of_lines=10,

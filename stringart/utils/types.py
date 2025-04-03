@@ -11,6 +11,8 @@ MatrixRepresentation = Literal["dense", "sparse"]
 
 MatchingPursuitMethod = Literal["greedy", "orthogonal"]
 
+Rasterization = Literal["bresenham", "xiaolin-wu"]
+
 
 @dataclass
 class Metadata:

@@ -7,7 +7,7 @@ from typing import get_args
 
 from stringart.cli_functions import Configuration
 from stringart.utils.greedy_selector import GreedySelector
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, Rasterization
 
 SOLVE_COMMAND_NAME = "solve"
 
@@ -86,6 +86,15 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         required=False,
         help="Crop mode to use on the provided image. Default to `center`.",
     )
+    parser.add_argument(
+        "--rasterization",
+        type=str,
+        choices=get_args(Rasterization),
+        required=False,
+        help="Specifies the line rasterization algorithm to use. "
+        "'bresenham' is an efficient integer-based algorithm for drawing lines, "
+        "while 'xiaolin-wu' produces anti-aliased lines for smoother results.",
+    )
 
     return parser
 
@@ -117,6 +126,7 @@ def main() -> None:
         image_path=getattr(args, "image_path", None),
         number_of_pegs=getattr(args, "number_of_pegs", None),
         crop_mode=getattr(args, "crop_mode", None),
+        rasterization=getattr(args, "rasterization", "bresenham"),
         matrix_representation=getattr(args, "matrix_representation", None),
         mp_method=getattr(args, "method", None),
         number_of_lines=getattr(args, "number_of_lines", None),

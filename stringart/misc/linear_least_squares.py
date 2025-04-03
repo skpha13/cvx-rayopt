@@ -24,8 +24,9 @@ def linear_least_squares(
     number_of_pegs: int = 100,
     crop_mode: CropMode = "center",
     matrix_representation: MatrixRepresentation = "sparse",
+    rasterize: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
+    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterize)
     b: np.ndarray = ImageWrapper.flatten_image(src)
 
     optimize_results = scipy.optimize.lsq_linear(A, b, bounds=(0, np.inf))
