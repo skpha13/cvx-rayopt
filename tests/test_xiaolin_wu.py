@@ -5,19 +5,16 @@ from stringart.utils.types import Point
 
 class TestXiaolinWu:
     def test_ipart(self):
-        # Test the ipart method, which should return the integer part of a number
         assert XiaolinWu.ipart(3.7) == 3
         assert XiaolinWu.ipart(-3.7) == -4
         assert XiaolinWu.ipart(5.0) == 5
 
     def test_fpart(self):
-        # Test the fpart method, which should return the fractional part
         assert XiaolinWu.fpart(3.7) == pytest.approx(0.7, rel=1e-7)
         assert XiaolinWu.fpart(-3.7) == pytest.approx(0.3, rel=1e-7)
         assert XiaolinWu.fpart(5.0) == pytest.approx(0.0, rel=1e-7)
 
     def test_rfpart(self):
-        # Test the rfpart method, which should return 1 - the fractional part
         assert XiaolinWu.rfpart(3.7) == pytest.approx(0.3, rel=1e-7)
         assert XiaolinWu.rfpart(-3.7) == pytest.approx(0.7, rel=1e-7)
         assert XiaolinWu.rfpart(5.0) == pytest.approx(1.0, rel=1e-7)

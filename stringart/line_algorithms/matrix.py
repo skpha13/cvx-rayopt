@@ -39,7 +39,7 @@ class MatrixGenerator:
         matrix_representation: MatrixRepresentation
             The method used to generate the matrix. Can be "dense" or "sparse".
 
-        rasterization : bool, optional
+        rasterization : Rasterization, optional
             If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
             If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
 
@@ -158,7 +158,7 @@ class MatrixGenerator:
         pegs : List[Point]
             A list of Points representing the coordinates of the pegs.
 
-        rasterization : bool, optional
+        rasterization : Rasterization, optional
             If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
             If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
 
