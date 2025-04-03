@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+# TODO: add XiaolinWu params
 @dataclass
 class Configuration:
     metadata: Metadata

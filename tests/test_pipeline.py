@@ -4,6 +4,8 @@ from pathlib import Path
 from stringart.cli_functions import Configuration
 from stringart.utils.types import Metadata
 
+# TODO: add XiaolinWu pipeline tests
+
 
 class TestPipeline:
     @classmethod

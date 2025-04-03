@@ -9,7 +9,7 @@ class XiaolinWu:
     """A class that implements the Xiaolin Wu's antialiased line algorithm.
 
     This algorithm computes the pixel positions and associated intensities for a line
-    between two points in a way that smooths the line's appearance by anti-aliasing.
+    between two points in a way that smooths the line's appearance by antialiasing.
     """
 
     @staticmethod
@@ -78,23 +78,26 @@ class XiaolinWu:
         values += val
 
         # main loop
-        x_px_l1 = round(point0.x)
-        x_px_l2 = round(point1.x)
-        for x in range(x_px_l1 + 1, x_px_l2):
-            if steep:
+        xpx1 = round(point0.x)
+        xpx2 = round(point1.x)
+        if steep:
+            for x in range(xpx1 + 1, xpx2):
                 indices.append(Point(XiaolinWu.ipart(interpolated_y), x))
                 values.append(XiaolinWu.rfpart(interpolated_y))
 
                 indices.append(Point(XiaolinWu.ipart(interpolated_y) + 1, x))
                 values.append(XiaolinWu.fpart(interpolated_y))
-            else:
+
+                interpolated_y += gradient
+        else:
+            for x in range(xpx1 + 1, xpx2):
                 indices.append(Point(x, XiaolinWu.ipart(interpolated_y)))
                 values.append(XiaolinWu.rfpart(interpolated_y))
 
                 indices.append(Point(x, XiaolinWu.ipart(interpolated_y) + 1))
                 values.append(XiaolinWu.fpart(interpolated_y))
 
-            interpolated_y += gradient
+                interpolated_y += gradient
 
         return indices, values
 
