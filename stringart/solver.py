@@ -10,7 +10,7 @@ from stringart.utils.circle import compute_pegs
 from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, Rasterization
 
 
 class Solver:
@@ -24,16 +24,27 @@ class Solver:
         The mode in which the image is being processed. This determines cropping behaviour.
     number_of_pegs : int, optional
         The number of pegs to be used in the string art computation. Default is 100.
+    rasterization: Rasterization, optional
+        If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
+        If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
     """
 
-    def __init__(self, image: np.ndarray, image_mode: CropMode | None = "center", number_of_pegs: int | None = 100):
+    def __init__(
+        self,
+        image: np.ndarray,
+        image_mode: CropMode | None = "center",
+        number_of_pegs: int | None = 100,
+        rasterization: Rasterization | None = "bresenham",
+    ):
         image_mode: CropMode = image_mode if image_mode else "center"
         number_of_pegs = number_of_pegs if number_of_pegs else 100
+        rasterization: Rasterization = rasterization if rasterization else "bresenham"
 
         self.shape: tuple[int, ...] = image.shape
         self.b: np.ndarray = ImageWrapper.flatten_image(image)
         self.image_mode: CropMode = image_mode
         self.number_of_pegs: int = number_of_pegs
+        self.rasterization: Rasterization = rasterization
 
     def compute_solution(self, A: np.ndarray, x: np.ndarray) -> np.ndarray:
         """Computes the solution image for the string art procedure.
@@ -81,7 +92,7 @@ class Solver:
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
 
         A, pegs = MatrixGenerator.compute_matrix(
-            self.shape, self.number_of_pegs, self.image_mode, matrix_representation
+            self.shape, self.number_of_pegs, self.image_mode, matrix_representation, self.rasterization
         )
 
         x = None

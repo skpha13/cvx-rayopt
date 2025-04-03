@@ -3,9 +3,10 @@ from typing import Callable, List
 import numpy as np
 from scipy.sparse import csr_matrix
 from stringart.line_algorithms.bresenham import Bresenham
+from stringart.line_algorithms.xiaolin_wu import XiaolinWu
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import find_radius_and_center_point
-from stringart.utils.types import CropMode, MatrixRepresentation, Point
+from stringart.utils.types import CropMode, MatrixRepresentation, Point, Rasterization
 
 
 class MatrixGenerator:
@@ -17,6 +18,7 @@ class MatrixGenerator:
         number_of_pegs: int,
         crop_mode: CropMode = "center",
         matrix_representation: MatrixRepresentation = "sparse",
+        rasterization: Rasterization = "bresenham",
     ) -> tuple[np.ndarray | csr_matrix, List[Point]]:
         """Computes the matrix representation of lines drawn between pegs placed on a grid.
 
@@ -37,6 +39,10 @@ class MatrixGenerator:
         matrix_representation: MatrixRepresentation
             The method used to generate the matrix. Can be "dense" or "sparse".
 
+        rasterization : Rasterization, optional
+            If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
+            If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
+
         Returns
         -------
         tuple[np.ndarray, List[Point], List[Point]]
@@ -56,7 +62,7 @@ class MatrixGenerator:
                 f"Unknown method: {matrix_representation}. Valid options are {list(MatrixGenerator.method_map.keys())}"
             )
 
-        A = MatrixGenerator.method_map[matrix_representation](shape, pegs)
+        A = MatrixGenerator.method_map[matrix_representation](shape, pegs, rasterization)
 
         return A, pegs
 
@@ -90,6 +96,31 @@ class MatrixGenerator:
         return vector
 
     @staticmethod
+    def generate_dense_rasterized_line(shape: tuple[int, ...], line: List[Point], values: List[float]) -> np.ndarray:
+        """Generate a dense rasterized line on the grid (the vector is in flattened matrix representation).
+
+        Parameters
+        ----------
+        shape : tuple of int
+            The shape of the output array, typically representing the dimensions (height, width).
+        line : list of Point
+            A list of Point objects, where each Point represents the (x, y) coordinates of a point on the line.
+        values : list of float
+            A list of values corresponding to each point in the line. The length of `values` must match the length of `line`.
+
+        Returns
+        -------
+        np.ndarray
+            A flattened 1-dimensional NumPy array of shape `shape`, where the specified points from the line are set to the given values.
+        """
+        vector = np.zeros(shape=shape, dtype=np.float32)
+
+        for point, value in zip(line, values):
+            vector[point.y, point.x] = value
+
+        return vector.flatten(order="C")
+
+    @staticmethod
     def generate_sparse_line(shape: tuple[int, ...], line: List[Point]) -> List[int]:
         """Generates a list of indices representing the positions of points in the line on a flattened grid.
 
@@ -111,7 +142,9 @@ class MatrixGenerator:
         return indices
 
     @staticmethod
-    def generate_dense_matrix(shape: tuple[int, ...], pegs: List[Point]) -> np.ndarray:
+    def generate_dense_matrix(
+        shape: tuple[int, ...], pegs: List[Point], rasterization: Rasterization = "bresenham"
+    ) -> np.ndarray:
         """Generates a dense matrix representation of lines drawn between all pairs of pegs.
 
         Each column in the resulting matrix corresponds to a line between two pegs, represented as a binary vector
@@ -125,6 +158,10 @@ class MatrixGenerator:
         pegs : List[Point]
             A list of Points representing the coordinates of the pegs.
 
+        rasterization : Rasterization, optional
+            If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
+            If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
+
         Returns
         -------
         np.ndarray
@@ -135,15 +172,21 @@ class MatrixGenerator:
 
         for i in range(len(pegs)):
             for j in range(i + 1, len(pegs)):
-                line = Bresenham.compute_line(pegs[i], pegs[j])
+                if rasterization == "xiaolin-wu":
+                    indices, values = XiaolinWu.compute_line(pegs[i], pegs[j])
+                    vector = MatrixGenerator.generate_dense_rasterized_line(shape, indices, values)
+                else:
+                    line = Bresenham.compute_line(pegs[i], pegs[j])
+                    vector = MatrixGenerator.generate_dense_line(shape, line)
 
-                vector = MatrixGenerator.generate_dense_line(shape, line)
                 A.append(vector)
 
         return np.array(A).T
 
     @staticmethod
-    def generate_sparse_matrix(shape: tuple[int, ...], pegs: List[Point]) -> csr_matrix:
+    def generate_sparse_matrix(
+        shape: tuple[int, ...], pegs: List[Point], rasterization: Rasterization = "bresenham"
+    ) -> csr_matrix:
         """Generates a sparse matrix representation of lines drawn between all pairs of pegs.
 
         The sparse matrix is in CSR format, where each non-zero entry corresponds to a point in the grid
@@ -157,6 +200,10 @@ class MatrixGenerator:
         pegs : List[Point]
             A list of Points representing the coordinates of the pegs.
 
+        rasterization : Rasterization, optional
+            If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
+            If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
+
         Returns
         -------
         scipy.sparse.csr_matrix
@@ -166,25 +213,30 @@ class MatrixGenerator:
 
         row_indices: List[int] = []
         column_indices: List[int] = []
+        data: List[float] = []
         column_index: int = 0
 
         for i in range(len(pegs)):
             for j in range(i + 1, len(pegs)):
-                line = Bresenham.compute_line(pegs[i], pegs[j])
+                if rasterization == "xiaolin-wu":
+                    line, values = XiaolinWu.compute_line(pegs[i], pegs[j])
+
+                else:
+                    line = Bresenham.compute_line(pegs[i], pegs[j])
+                    values = [1.0] * len(line)
 
                 sparse_line = MatrixGenerator.generate_sparse_line(shape, line)
                 row_indices += sparse_line
                 column_indices += [column_index] * len(sparse_line)
+                data += values
 
                 column_index += 1
 
-        A = csr_matrix(
-            ([1.0] * len(row_indices), (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index)
-        )
+        A = csr_matrix((data, (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index))
 
         return A
 
-    method_map: dict[str, Callable[[tuple[int, ...], list[Point]], np.ndarray | csr_matrix]] = {
+    method_map: dict[str, Callable[[tuple[int, ...], list[Point], Rasterization], np.ndarray | csr_matrix]] = {
         "dense": generate_dense_matrix,
         "sparse": generate_sparse_matrix,
     }

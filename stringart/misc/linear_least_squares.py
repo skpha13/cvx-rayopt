@@ -8,7 +8,7 @@ from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.misc.least_squares_rounding_trial import compute_solution
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import CropMode, MatrixRepresentation
+from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization
 
 image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
@@ -24,8 +24,9 @@ def linear_least_squares(
     number_of_pegs: int = 100,
     crop_mode: CropMode = "center",
     matrix_representation: MatrixRepresentation = "sparse",
+    rasterization: Rasterization = "bresenham",
 ) -> tuple[np.ndarray, np.ndarray]:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
+    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterization)
     b: np.ndarray = ImageWrapper.flatten_image(src)
 
     optimize_results = scipy.optimize.lsq_linear(A, b, bounds=(0, np.inf))
