@@ -113,7 +113,7 @@ class MatrixGenerator:
         np.ndarray
             A flattened 1-dimensional NumPy array of shape `shape`, where the specified points from the line are set to the given values.
         """
-        vector = np.zeros(shape=shape, dtype=int)
+        vector = np.zeros(shape=shape, dtype=np.float32)
 
         for point, value in zip(line, values):
             vector[point.y, point.x] = value
