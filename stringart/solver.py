@@ -43,7 +43,7 @@ class Solver:
 
         self.shape: tuple[int, ...] = image.shape
         self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
-        self.b = ImageWrapper.flatten_image(image).astype(np.float64)
+        self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
         self.image_mode: CropMode = image_mode
         self.number_of_pegs: int = number_of_pegs
         self.rasterization: Rasterization = rasterization
