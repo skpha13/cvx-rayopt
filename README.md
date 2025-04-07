@@ -25,8 +25,6 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Summary of Key Commands
 
-[//]: # (TODO: add rasterization)
-
 | **Command**        | **Description**                                                                                                                  |
 |--------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | `run-benchmarks`   | Run all benchmarks for StringArt.                                                                                                |
@@ -37,12 +35,13 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--number-of-pegs` | Number of pegs to use in computation. Default: 100.                                                                              |
 | `--crop-mode`      | Specify the crop mode for the image. Choices: `first-half`, `center`, `second-half`. Default: `center`.                          |
 | `--rasterization`  | Specify the rasterization algorithm to use for drawing the StringArt. Choices: `bresenham` or `xiaolin-wu`. Default: `bresenham` |
+| `--number-of-lines`| Specify the number of lines to select for `matching-pursuit`.                                                                    |
 
 #### Solve Arguments
 
-| **Argument**              | **Description**                                                                                    |
-|---------------------------|----------------------------------------------------------------------------------------------------|
-| `--solver`                | Specify the solver to use for computation. Choices: `least-squares`, `matching-pursuit`. Required. |
+| **Argument** | **Description**                                                                                                              |
+|--------------|------------------------------------------------------------------------------------------------------------------------------|
+| `--solver`   | Specify the solver to use for computation. Choices: `least-squares`, `linear-least-squares` or `matching-pursuit`. Required. |
 
 
 #### Least Squares Solver Arguments
@@ -56,7 +55,6 @@ This package provides a simple and intuitive CLI for computing string art images
 | **Argument**              | **Description**                                                                                                                         |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | `--method`                | Specify the algorithm selection for `matching-pursuit`. Choices: `greedy`, `orthogonal`.                                                |
-| `--number-of-lines`       | Specify the number of lines to select for `matching-pursuit`.                                                                           |
 | `--selector`              | Specify the selector method for `matching-pursuit` with the `greedy` method. Choices: `random`, `dot-product`. Default: `dot-product`.  |
 
 #### Example Commands:
@@ -73,10 +71,10 @@ python ./stringart/main.py --image-path ./imgs/lena.png run-analysis
 python ./stringart/main.py --image-path ./imgs/lena.png --rasterization xiaolin-wu solve --solver least-squares 
 
 # runs the matching pursuit solver with the orthogonal method (OMP) on the provided image, selecting 1000 lines.
-python ./stringart/main.py --image-path ./imgs/lena.png solve --solver matching-pursuit --method orthogonal --number-of-lines 1000
+python ./stringart/main.py --image-path ./imgs/lena.png --number-of-lines 1000 solve --solver matching-pursuit --method orthogonal 
 
 # runs the matching pursuit solver with the greedy method on the provided image, using the dot-product heuristic, selecting 1000 lines.
-python ./stringart/main.py --image-path ./imgs/lena.png solve --solver matching-pursuit --method greedy --number-of-lines 1000
+python ./stringart/main.py --image-path ./imgs/lena.png --number-of-lines 1000 solve --solver matching-pursuit --method greedy
 
 # runs the least squares solver with the sparse matrix representation, a crop mode using the first half of the image and a number of pegs of 50
 python ./stringart/main.py --image-path ./imgs/lena.png --crop-mode first-half --number-of-pegs 50 solve --solver least-squares 

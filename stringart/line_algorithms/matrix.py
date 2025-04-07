@@ -63,6 +63,7 @@ class MatrixGenerator:
             )
 
         A = MatrixGenerator.method_map[matrix_representation](shape, pegs, rasterization)
+        A = A.astype(np.float64)
 
         return A, pegs
 

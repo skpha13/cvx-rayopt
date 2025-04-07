@@ -35,7 +35,7 @@ def linear_programming(
     # objective function
     model += pulp.lpSum(r[i] for i in range(A.shape[0]))
 
-    # residual contraints
+    # residual constraints
     for i in range(A.shape[0]):
         row_start = A.indptr[i]
         row_end = A.indptr[i + 1]

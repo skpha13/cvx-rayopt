@@ -146,7 +146,7 @@ class ImageWrapper:
         See link for more details: https://docs.opencv.org/4.x/d4/d1b/tutorial_histogram_equalization.html
         """
         src = (src * 255).astype(np.uint8)
-        hist, bins = np.histogram(src.flatten(), 256, [0, 256])
+        hist, bins = np.histogram(src.flatten(), 256, (0, 256))
 
         cdf = hist.cumsum()
 
