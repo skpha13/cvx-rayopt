@@ -42,7 +42,8 @@ class Solver:
         rasterization: Rasterization = rasterization if rasterization else "bresenham"
 
         self.shape: tuple[int, ...] = image.shape
-        self.b: np.ndarray = ImageWrapper.flatten_image(image).astype(np.float64)
+        self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
+        self.b = ImageWrapper.flatten_image(image).astype(np.float64)
         self.image_mode: CropMode = image_mode
         self.number_of_pegs: int = number_of_pegs
         self.rasterization: Rasterization = rasterization
@@ -65,6 +66,48 @@ class Solver:
            according to the specified image mode.
         """
         solution = A @ x
+        solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
+        solution = 1 - solution
+        solution = np.multiply(solution, 255).astype(np.uint8)
+        solution = crop_image(solution, self.image_mode)
+
+        return solution
+
+    # TODO: think if we should expose binary to CLI
+    def compute_solution_top_k(self, A: np.ndarray, x: np.ndarray, k: int = 1000, binary: bool = False) -> np.ndarray:
+        """Computes the solution image using only the top-k elements from the input vector.
+
+        Parameters
+        ----------
+        A : np.ndarray
+            The transformation matrix used to generate the solution.
+        x : np.ndarray
+            The input vector representing the parameters of the transformation.
+        k : int, optional
+            The number of top elements to retain from the input vector, by default 1000.
+        binary : bool, optional
+            If True, converts the top-k vector to binary values (0 or 1). If False, retains original values
+            for the top-k elements and sets others to 0.
+
+        Returns
+        -------
+        np.ndarray
+            The processed solution image. The image is clipped to values between
+            0 and 1, scaled to 255, converted to an 8-bit format, and cropped
+            according to the specified image mode.
+        """
+
+        value = x[np.argsort(x)[-k]]
+
+        xp = x.copy()
+        xp[xp < value] = 0
+        # used to fully transform values to 0/1
+        # if false it will keep the Least Squares coefficients
+        if binary:
+            xp[xp >= value] = 1
+        xp = np.clip(xp, a_min=0, a_max=1)
+
+        solution = A @ xp
         solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)

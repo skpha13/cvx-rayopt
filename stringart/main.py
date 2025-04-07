@@ -7,8 +7,14 @@ from typing import get_args
 
 from stringart.cli_functions import Configuration
 from stringart.utils.greedy_selector import GreedySelector
-from stringart.utils.types import (CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, Rasterization,
-                                   SolverType)
+from stringart.utils.types import (
+    CropMode,
+    MatchingPursuitMethod,
+    MatrixRepresentation,
+    Metadata,
+    Rasterization,
+    SolverType,
+)
 
 SOLVE_COMMAND_NAME = "solve"
 
@@ -52,12 +58,6 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         help="Algorithm selection, either Greedy or Orthogonal Matching Pursuit. Defaults to `orthogonal`.",
     )
     matching_pursuit_group.add_argument(
-        "--number-of-lines",
-        type=int,
-        required=False,
-        help="Number of lines to select.",
-    )
-    matching_pursuit_group.add_argument(
         "--selector",
         choices=get_args(GreedySelector),
         required=False,
@@ -90,6 +90,12 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         help="Specifies the line rasterization algorithm to use. "
         "'bresenham' is an efficient integer-based algorithm for drawing lines, "
         "while 'xiaolin-wu' produces anti-aliased lines for smoother results.",
+    )
+    parser.add_argument(
+        "--number-of-lines",
+        type=int,
+        required=False,
+        help="Top K number of lines to select.",
     )
 
     return parser

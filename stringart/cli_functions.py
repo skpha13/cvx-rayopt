@@ -2,10 +2,9 @@ import logging
 import os.path
 from dataclasses import dataclass
 from pathlib import Path
+from typing import get_args
 
-import numpy as np
 from matplotlib import pyplot as plt
-from scipy.sparse import csr_matrix
 
 from stringart.solver import Solver
 from stringart.utils.greedy_selector import GreedySelector
@@ -46,17 +45,29 @@ class Configuration:
             solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization)
             save_path = self.metadata.path / "outputs" / f"{image_name}.png"
 
-            A: np.ndarray | csr_matrix | None = None
-            x: np.ndarray | None = None
+            solver_methods = {
+                "least-squares": solver.least_squares,
+                "linear-least-squares": solver.linear_least_squares,
+                "matching-pursuit": lambda: solver.matching_pursuit(
+                    self.number_of_lines, self.mp_method, selector_type=self.selector_type
+                ),
+            }
 
-            if self.solver == "least-squares":
-                A, x = solver.least_squares(self.matrix_representation)
-            elif self.solver == "linear-least-squares":
-                A, x = solver.linear_least_squares(self.matrix_representation)
-            elif self.solver == "matching-pursuit":
-                A, x = solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type)
+            if self.solver not in solver_methods:
+                raise ValueError(
+                    f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}"
+                )
 
-            solution: np.ndarray | None = solver.compute_solution(A, x)
+            if self.solver == "matching-pursuit":
+                A, x = solver_methods[self.solver]()
+                solution = solver.compute_solution(A, x)
+            else:
+                A, x = solver_methods[self.solver](self.matrix_representation)
+
+                if self.number_of_lines is not None:
+                    solution = solver.compute_solution_top_k(A, x, k=self.number_of_lines)
+                else:
+                    solution = solver.compute_solution(A, x)
 
             if not running_tests:
                 plt.axis("off")
