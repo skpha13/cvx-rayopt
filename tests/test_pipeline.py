@@ -49,6 +49,23 @@ class TestPipeline:
 
         configuration.run_configuration(running_tests=True)
 
+    def test_lsq_linear(self):
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="linear-least-squares",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="xiaolin-wu",
+            matrix_representation="sparse",
+            mp_method=None,
+            number_of_lines=10,
+            selector_type=None,
+        )
+
+        configuration.run_configuration(running_tests=True)
+
     def test_gmp_random(self):
         configuration = Configuration(
             metadata=self.metadata,

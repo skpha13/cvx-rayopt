@@ -13,6 +13,8 @@ MatchingPursuitMethod = Literal["greedy", "orthogonal"]
 
 Rasterization = Literal["bresenham", "xiaolin-wu"]
 
+SolverType = Literal["least-squares", "linear-least-squares", "matching-pursuit"]
+
 
 @dataclass
 class Metadata:

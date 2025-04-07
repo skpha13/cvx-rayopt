@@ -7,7 +7,8 @@ from typing import get_args
 
 from stringart.cli_functions import Configuration
 from stringart.utils.greedy_selector import GreedySelector
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, Rasterization
+from stringart.utils.types import (CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, Rasterization,
+                                   SolverType)
 
 SOLVE_COMMAND_NAME = "solve"
 
@@ -24,7 +25,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
 
     compute_parser.add_argument(
         "--solver",
-        choices=["least-squares", "matching-pursuit"],
+        choices=get_args(SolverType),
         required=True,
         help="Solver to use for computation.",
     )
@@ -35,7 +36,6 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     least_squares_group.add_argument(
         "--matrix-representation",
-        type=MatrixRepresentation,
         choices=get_args(MatrixRepresentation),
         required=False,
         help="Matrix representation method. Defaults to `sparse`.",
@@ -47,7 +47,6 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     matching_pursuit_group.add_argument(
         "--method",
-        type=MatchingPursuitMethod,
         choices=get_args(MatchingPursuitMethod),
         required=False,
         help="Algorithm selection, either Greedy or Orthogonal Matching Pursuit. Defaults to `orthogonal`.",
@@ -60,7 +59,6 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     matching_pursuit_group.add_argument(
         "--selector",
-        type=GreedySelector,
         choices=get_args(GreedySelector),
         required=False,
         help="Selector method to use (only applicable to matching-pursuit with greedy method). Defaults to `dot-product`.",
@@ -81,14 +79,12 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
     parser.add_argument(
         "--crop-mode",
-        type=CropMode,
         choices=get_args(CropMode),
         required=False,
         help="Crop mode to use on the provided image. Default to `center`.",
     )
     parser.add_argument(
         "--rasterization",
-        type=str,
         choices=get_args(Rasterization),
         required=False,
         help="Specifies the line rasterization algorithm to use. "

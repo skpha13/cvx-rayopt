@@ -11,7 +11,14 @@ from stringart.solver import Solver
 from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper
 from stringart.utils.performance_analysis import Benchmark
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, Rasterization
+from stringart.utils.types import (
+    CropMode,
+    MatchingPursuitMethod,
+    MatrixRepresentation,
+    Metadata,
+    Rasterization,
+    SolverType,
+)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +28,7 @@ logging.basicConfig(level=logging.INFO)
 class Configuration:
     metadata: Metadata
     command: str
-    solver: str
+    solver: SolverType
     image_path: str | Path
     number_of_pegs: int | None
     crop_mode: CropMode | None
@@ -44,6 +51,8 @@ class Configuration:
 
             if self.solver == "least-squares":
                 A, x = solver.least_squares(self.matrix_representation)
+            elif self.solver == "linear-least-squares":
+                A, x = solver.linear_least_squares(self.matrix_representation)
             elif self.solver == "matching-pursuit":
                 A, x = solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type)
 

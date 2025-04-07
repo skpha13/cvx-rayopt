@@ -40,9 +40,9 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Solve Arguments
 
-| **Argument**              | **Description**                                                                                    |
-|---------------------------|----------------------------------------------------------------------------------------------------|
-| `--solver`                | Specify the solver to use for computation. Choices: `least-squares`, `matching-pursuit`. Required. |
+| **Argument** | **Description**                                                                                                              |
+|--------------|------------------------------------------------------------------------------------------------------------------------------|
+| `--solver`   | Specify the solver to use for computation. Choices: `least-squares`, `linear-least-squares` or `matching-pursuit`. Required. |
 
 
 #### Least Squares Solver Arguments

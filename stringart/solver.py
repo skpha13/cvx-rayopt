@@ -1,6 +1,7 @@
 from typing import List, cast
 
 import numpy as np
+import scipy
 from numpy.linalg import lstsq
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -41,7 +42,7 @@ class Solver:
         rasterization: Rasterization = rasterization if rasterization else "bresenham"
 
         self.shape: tuple[int, ...] = image.shape
-        self.b: np.ndarray = ImageWrapper.flatten_image(image)
+        self.b: np.ndarray = ImageWrapper.flatten_image(image).astype(np.float64)
         self.image_mode: CropMode = image_mode
         self.number_of_pegs: int = number_of_pegs
         self.rasterization: Rasterization = rasterization
@@ -102,6 +103,41 @@ class Solver:
             x = lsqr(A, self.b)[0]
 
         return A, x
+
+    # TODO: think if we should let the user choose custom bounds
+    def linear_least_squares(
+        self, matrix_representation: MatrixRepresentation | None = "sparse", bounds: scipy.optimize.Bounds = (0, np.inf)
+    ):
+        """Solve the string art problem using the linear least squares method bounded to have positive x values.
+
+        Parameters
+        ----------
+        matrix_representation : {'dense', 'sparse'}, optional
+            The method to use for solving the least squares problem. Defaults to 'sparse'.
+            - 'dense': Uses dense matrix operations via `numpy.linalg.lstsq`.
+            - 'sparse': Uses sparse matrix operations via `scipy.sparse.linalg.lsqr`.
+
+        bounds : tuple or scipy.optimize.Bounds, optional
+            Lower and upper bounds on the solution. Defaults to non-negative values (0, np.inf).
+
+        Returns
+        -------
+        A : ndarray
+            The initial matrix of column vectors representing lines to be drawn.
+
+        x : ndarray
+            The solution vector `x` that minimizes the least squares problem `||Ax - b||^2`
+            subject to the specified bounds.
+        """
+
+        matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+
+        A, _ = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.image_mode, matrix_representation, self.rasterization
+        )
+        optimize_results: scipy.optimize.OptimizeResult = scipy.optimize.lsq_linear(A, self.b, bounds=bounds)
+
+        return A, optimize_results.x
 
     def matching_pursuit(
         self,
