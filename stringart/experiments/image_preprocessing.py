@@ -3,7 +3,7 @@ from typing import Callable
 
 import numpy as np
 from matplotlib import pyplot as plt
-from stringart.experiments.least_squares_rounding_trial import compute_solution
+from stringart.experiments.least_squares_rounding import compute_solution
 from stringart.experiments.linear_least_squares import linear_least_squares
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import prepare_diff_images

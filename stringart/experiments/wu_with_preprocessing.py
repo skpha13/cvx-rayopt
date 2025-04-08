@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from stringart.experiments.least_squares_rounding_trial import compute_solution
+from stringart.experiments.least_squares_rounding import compute_solution
 from stringart.experiments.linear_least_squares import linear_least_squares
 from stringart.utils.image import ImageWrapper
 from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization

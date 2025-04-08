@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import scipy
 from matplotlib import pyplot as plt
-from stringart.experiments.least_squares_rounding_trial import compute_solution
+from stringart.experiments.least_squares_rounding import compute_solution
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import Benchmark
