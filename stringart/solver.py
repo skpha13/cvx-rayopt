@@ -8,9 +8,9 @@ from scipy.sparse.linalg import lsqr
 
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
-from stringart.utils.greedy_selector import GreedySelector
+from stringart.mp.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
+from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, Rasterization
 
 

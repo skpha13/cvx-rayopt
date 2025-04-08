@@ -4,7 +4,7 @@ import numpy as np
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
 from sklearn.preprocessing import normalize
-from stringart.utils.greedy_selector import DotProductSelector, GreedySelector, RandomSelector, Selector
+from stringart.mp.greedy_selector import DotProductSelector, GreedySelector, RandomSelector, Selector
 
 
 class MatchingPursuit(ABC):

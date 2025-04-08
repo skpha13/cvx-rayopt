@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.misc.least_squares_rounding_trial import compute_solution
 from stringart.utils.image import ImageWrapper
-from stringart.utils.performance_analysis import Benchmark
+from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization
 
 image_path = "../../imgs/lena.png"

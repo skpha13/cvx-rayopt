@@ -7,9 +7,9 @@ from typing import get_args
 from matplotlib import pyplot as plt
 
 from stringart.solver import Solver
-from stringart.utils.greedy_selector import GreedySelector
+from stringart.mp.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper
-from stringart.utils.performance_analysis import Benchmark
+from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import (
     CropMode,
     MatchingPursuitMethod,

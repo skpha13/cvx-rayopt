@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import get_args
 
 from stringart.cli_functions import Configuration
-from stringart.utils.greedy_selector import GreedySelector
+from stringart.mp.greedy_selector import GreedySelector
 from stringart.utils.types import (
     CropMode,
     MatchingPursuitMethod,

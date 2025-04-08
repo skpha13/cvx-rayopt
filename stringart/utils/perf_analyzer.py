@@ -13,15 +13,13 @@ from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.time_and_memory_utils import (
-    ElapsedTime,
-    MemorySize,
+from stringart.utils.time_memory_format import (
     convert_memory_size,
     convert_monotonic_time,
     format_memory_size,
     format_time,
 )
-from stringart.utils.types import CropMode
+from stringart.utils.types import CropMode, ElapsedTime, MemorySize
 
 logger = logging.getLogger(__name__)
 

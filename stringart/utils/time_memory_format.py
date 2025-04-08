@@ -1,11 +1,4 @@
-from typing import TypedDict
-
-
-class ElapsedTime(TypedDict):
-    hours: int
-    minutes: int
-    seconds: int
-    milliseconds: int
+from stringart.utils.types import ElapsedTime, MemorySize
 
 
 def format_time(elapsed_time: ElapsedTime) -> str:
@@ -59,13 +52,6 @@ def convert_monotonic_time(elapsed_time: float) -> ElapsedTime:
         seconds=seconds,
         milliseconds=milliseconds,
     )
-
-
-class MemorySize(TypedDict):
-    gigabytes: int
-    megabytes: int
-    kilobytes: int
-    bytes: int
 
 
 def format_memory_size(memory_size: MemorySize) -> str:

@@ -5,7 +5,7 @@ import numpy as np
 import pulp
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
-from stringart.utils.performance_analysis import Benchmark
+from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, MatrixRepresentation
 
 image_path = "../../imgs/lena.png"
