@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import get_args
 
+import numpy as np
 from matplotlib import pyplot as plt
 
-from stringart.solver import Solver
 from stringart.mp.greedy_selector import GreedySelector
+from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import (
@@ -34,40 +35,54 @@ class Configuration:
     rasterization: Rasterization | None
     matrix_representation: MatrixRepresentation | None
     mp_method: MatchingPursuitMethod | None
-    number_of_lines: int
+    number_of_lines: int | None
     selector_type: GreedySelector | None
+    binary: bool | None
+
+    def _get_solver_instance(self) -> Solver:
+        image = ImageWrapper.read_bw(self.image_path)
+        return Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization)
+
+    def _solve(self, solver: Solver) -> np.ndarray:
+        binary = self.binary if self.binary else False
+
+        solver_methods = {
+            "least-squares": solver.least_squares,
+            "linear-least-squares": solver.linear_least_squares,
+            "matching-pursuit": lambda: solver.matching_pursuit(
+                self.number_of_lines, self.mp_method, selector_type=self.selector_type
+            ),
+        }
+
+        if self.solver not in solver_methods:
+            raise ValueError(f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}")
+
+        if self.solver == "matching-pursuit":
+            A, x = solver_methods[self.solver]()
+            return solver.compute_solution(A, x)
+
+        A, x = solver_methods[self.solver](self.matrix_representation)
+        if self.number_of_lines is not None:
+            return solver.compute_solution_top_k(A, x, k=self.number_of_lines, binary=binary)
+
+        return solver.compute_solution(A, x)
+
+    def run_config_lite(self) -> np.ndarray:
+        if self.command != "solve":
+            raise RuntimeError(f"`run_config_lite` only supports the 'solve' command, but got '{self.command}'.")
+
+        solver = self._get_solver_instance()
+        return self._solve(solver)
 
     def run_configuration(self, running_tests: bool = False):
         image = ImageWrapper.read_bw(self.image_path)
         image_name = os.path.splitext(os.path.basename(self.image_path))[0]
 
         if self.command == "solve":
-            solver = Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization)
+            solver = self._get_solver_instance()
             save_path = self.metadata.path / "outputs" / f"{image_name}.png"
 
-            solver_methods = {
-                "least-squares": solver.least_squares,
-                "linear-least-squares": solver.linear_least_squares,
-                "matching-pursuit": lambda: solver.matching_pursuit(
-                    self.number_of_lines, self.mp_method, selector_type=self.selector_type
-                ),
-            }
-
-            if self.solver not in solver_methods:
-                raise ValueError(
-                    f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}"
-                )
-
-            if self.solver == "matching-pursuit":
-                A, x = solver_methods[self.solver]()
-                solution = solver.compute_solution(A, x)
-            else:
-                A, x = solver_methods[self.solver](self.matrix_representation)
-
-                if self.number_of_lines is not None:
-                    solution = solver.compute_solution_top_k(A, x, k=self.number_of_lines)
-                else:
-                    solution = solver.compute_solution(A, x)
+            solution = self._solve(solver)
 
             if not running_tests:
                 plt.axis("off")

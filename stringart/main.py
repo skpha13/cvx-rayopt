@@ -133,6 +133,7 @@ def main() -> None:
         mp_method=getattr(args, "method", None),
         number_of_lines=getattr(args, "number_of_lines", None),
         selector_type=getattr(args, "selector", None),
+        binary=None,
     )
 
     configuration.run_configuration()
