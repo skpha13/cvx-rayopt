@@ -25,17 +25,17 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Summary of Key Commands
 
-| **Command**        | **Description**                                                                                                                  |
-|--------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| `run-benchmarks`   | Run all benchmarks for StringArt.                                                                                                |
-| `run-analysis`     | Run analysis on StringArt benchmarks.                                                                                            |
-| `solve`            | Compute StringArt configurations using the specified solver and options.                                                         |
-| `--help`           | Displays help information.                                                                                                       |
-| `--image-path`     | File path to the image to process. Supported formats: PNG, JPEG. Required.                                                       |
-| `--number-of-pegs` | Number of pegs to use in computation. Default: 100.                                                                              |
-| `--crop-mode`      | Specify the crop mode for the image. Choices: `first-half`, `center`, `second-half`. Default: `center`.                          |
-| `--rasterization`  | Specify the rasterization algorithm to use for drawing the StringArt. Choices: `bresenham` or `xiaolin-wu`. Default: `bresenham` |
-| `--number-of-lines`| Specify the number of lines to select for `matching-pursuit`.                                                                    |
+| **Command**         | **Description**                                                                                                                  |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| `run-benchmarks`    | Run all benchmarks for StringArt.                                                                                                |
+| `run-analysis`      | Run analysis on StringArt benchmarks.                                                                                            |
+| `solve`             | Compute StringArt configurations using the specified solver and options.                                                         |
+| `--help`            | Displays help information.                                                                                                       |
+| `--image-path`      | File path to the image to process. Supported formats: PNG, JPEG. Required.                                                       |
+| `--number-of-pegs`  | Number of pegs to use in computation. Default: 100.                                                                              |
+| `--crop-mode`       | Specify the crop mode for the image. Choices: `first-half`, `center`, `second-half`. Default: `center`.                          |
+| `--rasterization`   | Specify the rasterization algorithm to use for drawing the StringArt. Choices: `bresenham` or `xiaolin-wu`. Default: `bresenham` |
+| `--number-of-lines` | Specify the number of lines to select for `matching-pursuit`.                                                                    |
 
 #### Solve Arguments
 

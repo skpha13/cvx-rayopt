@@ -118,7 +118,7 @@ class Configuration:
             # TODO: configurable name for analysis
             benchmark.run_analysis(
                 benchmarks=benchmarks,
-                ground_truth_image=image,
+                ground_truth_image=1 - image,
                 dirname="analysis_01",
             )
 

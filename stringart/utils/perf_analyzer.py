@@ -9,6 +9,7 @@ from typing import Callable, List
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import Colormap
 from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
@@ -306,7 +307,8 @@ class Benchmark:
         directory = self.PLOTS_PATH / dirname
         os.makedirs(directory, exist_ok=True)
 
-        output_images = [benchmark.output_image for benchmark in benchmarks]
+        # images are scaled in [0, 1] range because the solvers return them in range [0, 255]
+        output_images = [ImageWrapper.scale_image(benchmark.output_image) for benchmark in benchmarks]
         ground_truth_image = crop_image(ground_truth_image, self.crop_mode)
 
         labels = [
@@ -316,10 +318,8 @@ class Benchmark:
 
         # plot diff images and rmses
         rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
-        # images are scaled in [0, 1] range because the solvers return them in range [0, 255]
         diff_images = [
-            ImageWrapper.scale_image(ground_truth_image - ImageWrapper.scale_image(test_image))
-            for test_image in output_images
+            ImageWrapper.scale_image(np.abs(ground_truth_image - test_image)) for test_image in output_images
         ]
         diff_images = prepare_diff_images(diff_images, self.crop_mode)
 
@@ -370,7 +370,9 @@ class Benchmark:
         plot_bar_graph("Memory Usage", "Memory (MB)", memory_size, "orange")
 
 
-def prepare_diff_images(diff_images: list[np.ndarray], crop_mode: CropMode) -> list[np.ndarray]:
+def prepare_diff_images(
+    diff_images: list[np.ndarray], crop_mode: CropMode, colormap: str | Colormap = "plasma"
+) -> list[np.ndarray]:
     """Processes a list of difference images by applying an alpha map and colormap to each image, converting them to RGBA.
 
     Parameters
@@ -379,6 +381,8 @@ def prepare_diff_images(diff_images: list[np.ndarray], crop_mode: CropMode) -> l
         A list of 2D NumPy arrays (height, width) representing difference images. Each image should be in black-and-white (grayscale).
     crop_mode : CropMode
         The cropping mode that was used on the diff_images.
+    colormap : str or matplotlib.colors.Colormap, optional
+        The name of the Matplotlib colormap to apply or a Colormap object. Default is 'plasma'.
 
     Returns
     -------
@@ -387,12 +391,13 @@ def prepare_diff_images(diff_images: list[np.ndarray], crop_mode: CropMode) -> l
         red, green, and blue channels updated with a colormap (plasma), and the alpha channel applied from the corresponding
         alpha map based on the mode.
     """
+    cmap = plt.get_cmap(colormap) if isinstance(colormap, str) else colormap
 
     def apply_cmap_bw_to_rgb(rgba_image: np.ndarray) -> np.ndarray:
         bw_image = rgba_image[..., 0]
 
-        colormap = plt.cm.plasma(bw_image)
-        rgba_image[..., 0:3] = colormap[..., 0:3]
+        colorized = cmap(bw_image)
+        rgba_image[..., 0:3] = colorized[..., 0:3]
 
         return rgba_image
 
