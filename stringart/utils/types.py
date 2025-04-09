@@ -1,7 +1,7 @@
 from collections import namedtuple
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypedDict
 
 Point = namedtuple("Point", ["x", "y"])
 
@@ -19,3 +19,17 @@ SolverType = Literal["least-squares", "linear-least-squares", "matching-pursuit"
 @dataclass
 class Metadata:
     path: Path
+
+
+class ElapsedTime(TypedDict):
+    hours: int
+    minutes: int
+    seconds: int
+    milliseconds: int
+
+
+class MemorySize(TypedDict):
+    gigabytes: int
+    megabytes: int
+    kilobytes: int
+    bytes: int

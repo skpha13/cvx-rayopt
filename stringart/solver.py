@@ -7,10 +7,10 @@ from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
 
 from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.mp.greedy_selector import GreedySelector
+from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
-from stringart.utils.greedy_selector import GreedySelector
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, Rasterization
 
 
@@ -21,7 +21,7 @@ class Solver:
     ----------
     image : np.ndarray
         A numpy array representing the image to be processed.
-    image_mode : CropMode
+    crop_mode : CropMode
         The mode in which the image is being processed. This determines cropping behaviour.
     number_of_pegs : int, optional
         The number of pegs to be used in the string art computation. Default is 100.
@@ -33,18 +33,18 @@ class Solver:
     def __init__(
         self,
         image: np.ndarray,
-        image_mode: CropMode | None = "center",
+        crop_mode: CropMode | None = "center",
         number_of_pegs: int | None = 100,
         rasterization: Rasterization | None = "bresenham",
     ):
-        image_mode: CropMode = image_mode if image_mode else "center"
+        crop_mode: CropMode = crop_mode if crop_mode else "center"
         number_of_pegs = number_of_pegs if number_of_pegs else 100
         rasterization: Rasterization = rasterization if rasterization else "bresenham"
 
         self.shape: tuple[int, ...] = image.shape
         self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
         self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
-        self.image_mode: CropMode = image_mode
+        self.crop_mode: CropMode = crop_mode
         self.number_of_pegs: int = number_of_pegs
         self.rasterization: Rasterization = rasterization
 
@@ -69,7 +69,7 @@ class Solver:
         solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
-        solution = crop_image(solution, self.image_mode)
+        solution = crop_image(solution, self.crop_mode)
 
         return solution
 
@@ -96,7 +96,7 @@ class Solver:
             0 and 1, scaled to 255, converted to an 8-bit format, and cropped
             according to the specified image mode.
         """
-
+        k = min(k, len(x))
         value = x[np.argsort(x)[-k]]
 
         xp = x.copy()
@@ -111,7 +111,7 @@ class Solver:
         solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
-        solution = crop_image(solution, self.image_mode)
+        solution = crop_image(solution, self.crop_mode)
 
         return solution
 
@@ -136,7 +136,7 @@ class Solver:
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
 
         A, pegs = MatrixGenerator.compute_matrix(
-            self.shape, self.number_of_pegs, self.image_mode, matrix_representation, self.rasterization
+            self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
 
         x = None
@@ -176,7 +176,7 @@ class Solver:
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
 
         A, _ = MatrixGenerator.compute_matrix(
-            self.shape, self.number_of_pegs, self.image_mode, matrix_representation, self.rasterization
+            self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
         optimize_results: scipy.optimize.OptimizeResult = scipy.optimize.lsq_linear(A, self.b, bounds=bounds)
 
@@ -222,7 +222,7 @@ class Solver:
 
         mp_method = mp_method if mp_method else "orthogonal"
 
-        radius, center_point = find_radius_and_center_point(self.shape, self.image_mode)
+        radius, center_point = find_radius_and_center_point(self.shape, self.crop_mode)
         pegs: List[Point] = compute_pegs(
             number_of_pegs=self.number_of_pegs,
             radius=radius,

@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import get_args
 
 from stringart.cli_functions import Configuration
-from stringart.utils.greedy_selector import GreedySelector
+from stringart.mp.greedy_selector import GreedySelector
 from stringart.utils.types import (
     CropMode,
     MatchingPursuitMethod,
@@ -133,6 +133,7 @@ def main() -> None:
         mp_method=getattr(args, "method", None),
         number_of_lines=getattr(args, "number_of_lines", None),
         selector_type=getattr(args, "selector", None),
+        binary=None,
     )
 
     configuration.run_configuration()

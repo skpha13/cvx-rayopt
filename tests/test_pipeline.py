@@ -28,6 +28,7 @@ class TestPipeline:
             mp_method=None,
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -45,6 +46,7 @@ class TestPipeline:
             mp_method=None,
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -62,6 +64,7 @@ class TestPipeline:
             mp_method=None,
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -79,6 +82,7 @@ class TestPipeline:
             mp_method="greedy",
             number_of_lines=10,
             selector_type="random",
+            binary=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -96,6 +100,7 @@ class TestPipeline:
             mp_method="greedy",
             number_of_lines=10,
             selector_type="dot-product",
+            binary=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -113,6 +118,7 @@ class TestPipeline:
             mp_method="orthogonal",
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -130,6 +136,7 @@ class TestPipeline:
             mp_method=None,
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration_second_half = Configuration(
@@ -144,6 +151,7 @@ class TestPipeline:
             mp_method=None,
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration_center = Configuration(
@@ -158,6 +166,7 @@ class TestPipeline:
             mp_method=None,
             number_of_lines=10,
             selector_type=None,
+            binary=None,
         )
 
         configuration_first_half.run_configuration(running_tests=True)
