@@ -66,7 +66,7 @@ class Solver:
            according to the specified image mode.
         """
         solution = A @ x
-        solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
+        solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
         solution = crop_image(solution, self.crop_mode)
@@ -108,7 +108,7 @@ class Solver:
         xp = np.clip(xp, a_min=0, a_max=1)
 
         solution = A @ xp
-        solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
+        solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
         solution = crop_image(solution, self.crop_mode)
