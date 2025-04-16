@@ -15,22 +15,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-dependencies = [
-    'numpy~=2.1',
-    'imageio~=2.36',
-    'scikit-image~=0.24',
-    'scikit-learn~=1.6',
-    'scipy~=1.14',
-    'matplotlib~=3.9',
-    'pulp~=3.0'
-]
+dependencies = []
 
 [project.optional-dependencies]
-dev = [
-    'pytest~=8.3',
-    'black~=24.10',
-    'isort~=5.13',
-]
+dev = []
 
 [tool.pytest.ini_options]
 minversion = "8.3"
