@@ -5,6 +5,9 @@ from stringart.utils.types import Point
 
 
 def compute_pegs(number_of_pegs: int, radius: int, center_point: Point = Point(0, 0)) -> List[Point]:
+    # restrict radius so pegs will not be generated outside the image due to rounding
+    radius -= 2
+
     return [
         Point(
             int(radius * np.cos(2 * np.pi * k / number_of_pegs) + center_point.x),

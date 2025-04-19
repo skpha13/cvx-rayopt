@@ -207,7 +207,7 @@ def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | N
             - radius (int): Half the smaller dimension of the image (height or width).
             - center_point (Point | None): A Point object representing the center, or None if mode is None.
     """
-    radius = min(shape[0], shape[1]) // 2 - 1
+    radius = min(shape[0], shape[1]) // 2
 
     if crop_mode is None:
         return radius, None
