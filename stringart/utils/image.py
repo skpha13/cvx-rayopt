@@ -215,15 +215,11 @@ def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | N
 
     center_point = None
     if crop_mode == "center":
-        center_point = Point(radius - 1, shape[0] // 2) if shape[0] > shape[1] else Point(shape[1] // 2 - 1, radius)
+        center_point = Point(radius, shape[0] // 2) if shape[0] > shape[1] else Point(shape[1] // 2, radius)
     elif crop_mode == "first-half":
-        center_point = Point(radius - 1, radius)
+        center_point = Point(radius, radius)
     elif crop_mode == "second-half":
-        center_point = (
-            Point(radius + 1, shape[0] - radius - 1)
-            if shape[0] > shape[1]
-            else Point(shape[1] - radius - 1, radius + 1)
-        )
+        center_point = Point(radius, shape[0] - radius) if shape[0] > shape[1] else Point(shape[1] - radius, radius)
 
     return radius, center_point
 
