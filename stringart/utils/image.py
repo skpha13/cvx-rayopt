@@ -229,6 +229,25 @@ def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | N
 
 
 def crop_image(image: np.ndarray, crop_mode: CropMode) -> np.ndarray:
+    """Crop an image to a square by its minimum length using the specified cropping mode.
+
+    Parameters
+    ----------
+    image : np.ndarray
+        The input image as a NumPy array of shape (H, W, C) or (H, W).
+    crop_mode : CropMode
+        The cropping mode to use. Must be one of:
+        - "center": crop the square from the center of the image.
+        - "first-half": crop the square from the top-left corner.
+        - "second-half": crop the square from the bottom-right corner.
+
+    Returns
+    -------
+    np.ndarray
+        The cropped square image as a NumPy array of shape (L, L) or (L, L, C),
+        where L is the minimum of the original height and width.
+    """
+
     height, width = image.shape[:2]
     min_length = min(height, width)
 
