@@ -15,12 +15,13 @@ class ImageWrapper:
         if image.shape[-1] == 4:
             image = image[..., :3]
 
-        grayscale_image = rgb2gray(image)
+        if len(image.shape) >= 3:
+            image = rgb2gray(image)
 
         if inverted:
-            return 1 - grayscale_image  # inverting black with white
+            return 1 - image  # inverting black with white
 
-        return grayscale_image
+        return image
 
     @staticmethod
     def flatten_image(image: np.ndarray) -> np.ndarray:
@@ -224,31 +225,36 @@ def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | N
 
 
 def crop_image(image: np.ndarray, crop_mode: CropMode) -> np.ndarray:
-    """Crops an input image according to a specified mode.
+    """Crop an image to a square by its minimum length using the specified cropping mode.
 
     Parameters
     ----------
-        image : np.ndarray
-            The input image array (height, width, channels).
-        crop_mode : CropMode
-            The cropping mode.
-            Options are:
-                - "center": Crop around the geometric center of the image.
-                - "first-half": Crop around the top-left region.
-                - "second-half": Crop around the bottom-right region.
+    image : np.ndarray
+        The input image as a NumPy array of shape (H, W, C) or (H, W).
+    crop_mode : CropMode
+        The cropping mode to use. Must be one of:
+        - "center": crop the square from the center of the image.
+        - "first-half": crop the square from the top-left corner.
+        - "second-half": crop the square from the bottom-right corner.
 
     Returns
     -------
-        cropped_image : np.ndarray
-            The cropped square region of the image.
+    np.ndarray
+        The cropped square image as a NumPy array of shape (L, L) or (L, L, C),
+        where L is the minimum of the original height and width.
     """
-    shape = np.shape(image)
-    radius, center_point = find_radius_and_center_point(shape, crop_mode)
 
-    top = center_point.y - radius
-    left = center_point.x - radius
-    bottom = center_point.y + radius
-    right = center_point.x + radius
+    height, width = image.shape[:2]
+    min_length = min(height, width)
 
-    cropped_image = image[top:bottom, left:right]
-    return cropped_image
+    if crop_mode == "center":
+        top = (height - min_length) // 2
+        left = (width - min_length) // 2
+    elif crop_mode == "first-half":
+        top = 0
+        left = 0
+    elif crop_mode == "second-half":
+        top = height - min_length
+        left = width - min_length
+
+    return image[top : top + min_length, left : left + min_length]

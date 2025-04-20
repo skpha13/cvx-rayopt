@@ -41,6 +41,8 @@ class Solver:
         number_of_pegs = number_of_pegs if number_of_pegs else 100
         rasterization: Rasterization = rasterization if rasterization else "bresenham"
 
+        image = crop_image(image, crop_mode=crop_mode)
+
         self.shape: tuple[int, ...] = image.shape
         self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
         self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
@@ -66,10 +68,9 @@ class Solver:
            according to the specified image mode.
         """
         solution = A @ x
-        solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
+        solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
-        solution = crop_image(solution, self.crop_mode)
 
         return solution
 
@@ -108,10 +109,9 @@ class Solver:
         xp = np.clip(xp, a_min=0, a_max=1)
 
         solution = A @ xp
-        solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
+        solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
         solution = 1 - solution
         solution = np.multiply(solution, 255).astype(np.uint8)
-        solution = crop_image(solution, self.crop_mode)
 
         return solution
 
