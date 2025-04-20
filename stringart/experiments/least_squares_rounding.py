@@ -21,13 +21,13 @@ def compute_solution(A: np.ndarray, x: np.ndarray, l: int = 1000) -> np.ndarray:
     solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
     solution = 1 - solution
     solution = np.multiply(solution, 255).astype(np.uint8)
-    solution = crop_image(solution, crop_mode)
 
     return solution
 
 
 def main():
-    solver = Solver(image, crop_mode, number_of_pegs=300)
+    image_cropped = crop_image(image, crop_mode)
+    solver = Solver(image_cropped, crop_mode, number_of_pegs=300)
     A, x = solver.least_squares("sparse")
     solution = compute_solution(A, x)
 

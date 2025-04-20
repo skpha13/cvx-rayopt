@@ -15,12 +15,13 @@ class ImageWrapper:
         if image.shape[-1] == 4:
             image = image[..., :3]
 
-        grayscale_image = rgb2gray(image)
+        if len(image.shape) >= 3:
+            image = rgb2gray(image)
 
         if inverted:
-            return 1 - grayscale_image  # inverting black with white
+            return 1 - image  # inverting black with white
 
-        return grayscale_image
+        return image
 
     @staticmethod
     def flatten_image(image: np.ndarray) -> np.ndarray:
@@ -207,48 +208,38 @@ def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | N
             - radius (int): Half the smaller dimension of the image (height or width).
             - center_point (Point | None): A Point object representing the center, or None if mode is None.
     """
-    radius = min(shape[0], shape[1]) // 2
+    radius = min(shape[0], shape[1]) // 2 - 1
 
     if crop_mode is None:
         return radius, None
 
     center_point = None
     if crop_mode == "center":
-        center_point = Point(radius, shape[0] // 2) if shape[0] > shape[1] else Point(shape[1] // 2, radius)
+        center_point = Point(radius - 1, shape[0] // 2) if shape[0] > shape[1] else Point(shape[1] // 2 - 1, radius)
     elif crop_mode == "first-half":
-        center_point = Point(radius, radius)
+        center_point = Point(radius - 1, radius)
     elif crop_mode == "second-half":
-        center_point = Point(radius, shape[0] - radius) if shape[0] > shape[1] else Point(shape[1] - radius, radius)
+        center_point = (
+            Point(radius + 1, shape[0] - radius - 1)
+            if shape[0] > shape[1]
+            else Point(shape[1] - radius - 1, radius + 1)
+        )
 
     return radius, center_point
 
 
 def crop_image(image: np.ndarray, crop_mode: CropMode) -> np.ndarray:
-    """Crops an input image according to a specified mode.
+    height, width = image.shape[:2]
+    min_length = min(height, width)
 
-    Parameters
-    ----------
-        image : np.ndarray
-            The input image array (height, width, channels).
-        crop_mode : CropMode
-            The cropping mode.
-            Options are:
-                - "center": Crop around the geometric center of the image.
-                - "first-half": Crop around the top-left region.
-                - "second-half": Crop around the bottom-right region.
+    if crop_mode == "center":
+        top = (height - min_length) // 2
+        left = (width - min_length) // 2
+    elif crop_mode == "first-half":
+        top = 0
+        left = 0
+    elif crop_mode == "second-half":
+        top = height - min_length
+        left = width - min_length
 
-    Returns
-    -------
-        cropped_image : np.ndarray
-            The cropped square region of the image.
-    """
-    shape = np.shape(image)
-    radius, center_point = find_radius_and_center_point(shape, crop_mode)
-
-    top = center_point.y - radius
-    left = center_point.x - radius
-    bottom = center_point.y + radius
-    right = center_point.x + radius
-
-    cropped_image = image[top:bottom, left:right]
-    return cropped_image
+    return image[top : top + min_length, left : left + min_length]

@@ -15,7 +15,6 @@ solution = A @ x
 solution = np.clip(np.reshape(solution, shape=self.shape), a_min=0, a_max=1)
 solution = 1 - solution
 solution = np.multiply(solution, 255).astype(np.uint8)
-solution = crop_image(solution, self.crop_mode)
 ```
 
 > This method allows edges to be selected even if they have negative values.
@@ -34,7 +33,6 @@ solution = A @ xp
 solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
 solution = 1 - solution
 solution = np.multiply(solution, 255).astype(np.uint8)
-solution = crop_image(solution, image_mode)
 ```
 
 > This approach pre-processes the edge factors before multiplication with matrix `A`.

@@ -7,8 +7,8 @@ from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.types import CropMode, MatrixRepresentation
 
-image = ImageWrapper.read_bw("../../imgs/lena.png")
 crop_mode: CropMode = "center"
+image = crop_image(ImageWrapper.read_bw("../../imgs/lena.png"), crop_mode)
 matrix_representation: MatrixRepresentation = "sparse"
 shape = image.shape
 b = ImageWrapper.flatten_image(image)
@@ -40,7 +40,6 @@ def matrix_solver() -> None:
     solution = A @ x
     solution = np.clip(np.reshape(solution, shape=shape), a_min=0, a_max=1)
     solution = np.multiply(solution, 255).astype(np.uint8)
-    solution = crop_image(solution, crop_mode)
 
     io.imsave("../../outputs/lena_stringart_sparse.png", solution)
     io.imshow(solution)
