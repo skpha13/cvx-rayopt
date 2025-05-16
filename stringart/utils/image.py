@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib.pyplot import imread
+from skimage import filters
 from skimage.color import rgb2gray
 from stringart.utils.types import CropMode, Point
 
@@ -186,6 +187,20 @@ class ImageWrapper:
         dst = dst.astype(np.float32) / 255.0
 
         return dst
+
+    @staticmethod
+    def sketch_effect(src: np.ndarray) -> np.ndarray:
+        # TODO: document
+        inverted_src = 1.0 - src
+        blurred_inverted = filters.gaussian(inverted_src, sigma=10)
+        inverted_blurred = 1.0 - blurred_inverted
+
+        epsilon = 1e-8
+        divided = src / (inverted_blurred + epsilon)
+
+        dst = np.clip(divided, 0, 1)
+
+        return ImageWrapper.histogram_equalization(dst)
 
 
 def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | None = None) -> tuple[int, Point | None]:
