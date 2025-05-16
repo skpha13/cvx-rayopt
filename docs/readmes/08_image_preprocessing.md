@@ -65,11 +65,11 @@ For more information, visit the [Wikipedia page](https://en.wikipedia.org/wiki/Q
 
 > Input Images
 
-<img src="../../outputs/preprocess/lena/grayscale_quantization_2_levels.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/airplane/grayscale_quantization_2_levels.png" alt="Airplane Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/tank/grayscale_quantization_2_levels.png" alt="Tank Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/teddybear/grayscale_quantization_2_levels.png" alt="Teddybear Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/grayscale_quantization_2_levels.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/lena/grayscale_quantization_2_levels.png" alt="Lena Grayscale Quantization 2 Levels Preprocess" width=256>
+<img src="../../outputs/preprocess/airplane/grayscale_quantization_2_levels.png" alt="Airplane Grayscale Quantization 2 Levels Preprocess" width=256>
+<img src="../../outputs/preprocess/tank/grayscale_quantization_2_levels.png" alt="Tank Grayscale Quantization 2 Levels Preprocess" width=256>
+<img src="../../outputs/preprocess/teddybear/grayscale_quantization_2_levels.png" alt="Teddybear Grayscale Quantization 2 Levels Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/grayscale_quantization_2_levels.png" alt="Butterfly Grayscale Quantization 2 Levels Preprocess" width=256>
 
 > Input Images after Grayscale Quantization
 
@@ -95,11 +95,11 @@ For more details, check this [Medium Article](https://medium.com/@Kavya2099/imag
 
 > Input Images
 
-<img src="../../outputs/preprocess/lena/sketch_effect.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/airplane/sketch_effect.png" alt="Airplane Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/tank/sketch_effect.png" alt="Tank Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/teddybear/sketch_effect.png" alt="Teddybear Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/sketch_effect.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/lena/sketch_effect.png" alt="Lena Sketch Effect Preprocess" width=256>
+<img src="../../outputs/preprocess/airplane/sketch_effect.png" alt="Airplane Sketch Effect Preprocess" width=256>
+<img src="../../outputs/preprocess/tank/sketch_effect.png" alt="Tank Sketch Effect Preprocess" width=256>
+<img src="../../outputs/preprocess/teddybear/sketch_effect.png" alt="Teddybear Sketch Effect Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/sketch_effect.png" alt="Butterfly Sketch Effect Preprocess" width=256>
 
 > Input Images after Sketch Effect
 
