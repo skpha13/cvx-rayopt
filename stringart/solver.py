@@ -2,6 +2,7 @@ from typing import List, cast
 
 import numpy as np
 import scipy
+from cvxopt import matrix, solvers
 from numpy.linalg import lstsq
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -11,7 +12,7 @@ from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, Rasterization
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers, Rasterization
 
 
 class Solver:
@@ -270,3 +271,84 @@ class Solver:
                 break
 
         return A, x
+
+    # TODO: document
+    @classmethod
+    def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray):
+        if hasattr(A, "toarray"):  # check if it's a sparse matrix
+            A = A.toarray()
+
+        m, n = A.shape
+        P = 2 * (A.T @ A)
+        q = -2 * (A.T @ b)
+
+        # convert to cvxopt matrices, ensure float64 type
+        P_cvx = matrix(P.astype(np.float64))
+        q_cvx = matrix(q.astype(np.float64))
+
+        # inequality Gx <= h for bounds 0 <= x <= 1
+        G_cvx = matrix(np.vstack((-np.eye(n), np.eye(n))))  # -I and I stacked vertically
+        h_cvx = matrix(np.hstack((np.zeros(n), np.ones(n))))
+
+        # no equality constraints
+        solvers.options["show_progress"] = False
+        solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
+
+        x = np.array(solution["x"]).flatten()
+        return x
+
+    # TODO: document
+    def binary_projection_ls(
+        self,
+        solver: QPSolvers | None = "cvxopt",
+        matrix_representation: MatrixRepresentation | None = "sparse",
+        k: int = 5,
+        max_iterations: int = 100,
+    ):
+        solver: QPSolvers = solver if solver else "cvxopt"
+        matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+
+        A, _ = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
+        )
+
+        n = A.shape[1]
+        x_fixed = np.full(n, np.nan)  # nan means unfixed
+        set1 = set()
+
+        for iteration in range(max_iterations):
+            print(f"Iteration: {iteration}")
+            free_indices = np.isnan(x_fixed)
+
+            # Step 1: solve least squares for current fixed values
+            A_free = A[:, free_indices]
+            b_adjusted = self.b.copy()
+
+            if set1:
+                A_fixed_1 = A[:, list(set1)]
+                b_adjusted -= A_fixed_1 @ np.ones(len(set1))  # sum them up, then subtract
+
+            bounds = (0, 1)
+            if solver == "cvxopt":
+                x_free = self._solve_qp_cvxopt(A_free, b_adjusted)
+            else:
+                result = scipy.optimize.lsq_linear(A_free, b_adjusted, bounds=bounds)
+                x_free = result.x
+
+            # Step 2: find top-k variables to fix to 1
+            free_idx_array = np.where(free_indices)[0]
+            top_k_indices = np.argsort(-x_free)[:k]  # descending order
+            chosen_indices = free_idx_array[top_k_indices]
+
+            for idx in chosen_indices:
+                x_fixed[idx] = 1
+                set1.add(idx)
+
+            # stop if all variables are fixed
+            if np.all(~np.isnan(x_fixed)):
+                break
+
+        # fill in the remaining values (if any) with 0
+        x_fixed[np.isnan(x_fixed)] = 0
+
+        return A, x_fixed

@@ -15,6 +15,8 @@ Rasterization = Literal["bresenham", "xiaolin-wu"]
 
 SolverType = Literal["least-squares", "linear-least-squares", "matching-pursuit"]
 
+QPSolvers = Literal["scipy", "cvxopt"]
+
 
 @dataclass
 class Metadata:
