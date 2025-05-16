@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import matplotlib.pyplot as plt
 import numpy as np
 from stringart.solver import Solver
@@ -10,7 +12,7 @@ shape = image.shape
 crop_mode: CropMode = "center"
 
 
-def compute_solution(A: np.ndarray, x: np.ndarray, l: int = 1000) -> np.ndarray:
+def compute_solution(A: np.ndarray, x: np.ndarray, l: int = 1000, shape: Tuple[int, ...] = (330, 330)) -> np.ndarray:
     value = x[np.argsort(x)[-l]]
 
     xp = x.copy()

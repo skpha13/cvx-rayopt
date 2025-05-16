@@ -1,4 +1,5 @@
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
 from typing import Callable
 
 import numpy as np
@@ -46,7 +47,7 @@ def process_image(
 ):
     processed_image = preprocess_func(image)
     A, x = linear_least_squares(processed_image, shape, number_of_pegs, crop_mode, matrix_representation)
-    return compute_solution(A, x)
+    return compute_solution(A, x, shape=shape, l=4950)
 
 
 def identity(src: np.ndarray) -> np.ndarray:
@@ -107,13 +108,18 @@ def compute_solution_parallel(src, shape, number_of_pegs, crop_mode, matrix_repr
 
 
 def plot_preprocessed(
-    raw: np.ndarray, histogram_equalization: np.ndarray, grayscale_quantization: np.ndarray, sketch_effect: np.ndarray
+    input_image: np.ndarray,
+    raw: np.ndarray,
+    histogram_equalization: np.ndarray,
+    grayscale_quantization: np.ndarray,
+    sketch_effect: np.ndarray,
+    output_path: str | Path | None = None,
 ) -> None:
     fig, axs = plt.subplots(1, 5, constrained_layout=True, figsize=(20, 4))
     fig.suptitle("Preprocess Effects using Linear Least Squares")
 
     axs[0].set_title("Input Image")
-    axs[0].imshow(image_noninverted, cmap=cmap)
+    axs[0].imshow(input_image, cmap=cmap)
     axs[0].axis("off")
 
     axs[1].set_title("Raw")
@@ -133,11 +139,17 @@ def plot_preprocessed(
     axs[4].axis("off")
 
     fig.show()
-    fig.savefig("../../outputs/preprocess/image_processing_stages.png")
+
+    path = output_path if output_path is not None else "../../outputs/preprocess/image_processing_stages.png"
+    fig.savefig(path)
 
 
 def plot_diff_preprocess_methods(
-    raw: np.ndarray, histogram_equalization: np.ndarray, grayscale_quantization: np.ndarray, sketch_effect: np.ndarray
+    raw: np.ndarray,
+    histogram_equalization: np.ndarray,
+    grayscale_quantization: np.ndarray,
+    sketch_effect: np.ndarray,
+    output_path: str | Path | None = None,
 ) -> None:
     raw_hist_diff = np.abs(histogram_equalization - raw)
     raw_gray_diff = np.abs(grayscale_quantization - raw)
@@ -163,11 +175,19 @@ def plot_diff_preprocess_methods(
     axs[2].axis("off")
 
     fig.show()
-    fig.savefig("../../outputs/preprocess/diff_analysis_on_preprocess_methods.png")
+
+    path = (
+        output_path if output_path is not None else "../../outputs/preprocess/diff_analysis_on_preprocess_methods.png"
+    )
+    fig.savefig(path)
 
 
 def plot_fft_preprocess_methods(
-    raw: np.ndarray, histogram_equalization: np.ndarray, grayscale_quantization: np.ndarray, sketch_effect: np.ndarray
+    raw: np.ndarray,
+    histogram_equalization: np.ndarray,
+    grayscale_quantization: np.ndarray,
+    sketch_effect: np.ndarray,
+    output_path: str | Path | None = None,
 ) -> None:
     raw_fft_spectrum = np.log(np.abs(np.fft.fftshift(np.fft.fft2(raw))) + 1)
     hist_fft_spectrum = np.log(np.abs(np.fft.fftshift(np.fft.fft2(histogram_equalization))) + 1)
@@ -195,11 +215,17 @@ def plot_fft_preprocess_methods(
     axs[3].axis("off")
 
     fig.show()
-    fig.savefig("../../outputs/preprocess/fft_analysis_on_preprocess_methods.png")
+
+    path = output_path if output_path is not None else "../../outputs/preprocess/fft_analysis_on_preprocess_methods.png"
+    fig.savefig(path)
 
 
 def plot_overlay_analysis(
-    raw: np.ndarray, histogram_equalization: np.ndarray, grayscale_quantization: np.ndarray, sketch_effect: np.ndarray
+    raw: np.ndarray,
+    histogram_equalization: np.ndarray,
+    grayscale_quantization: np.ndarray,
+    sketch_effect: np.ndarray,
+    output_path: str | Path | None = None,
 ) -> None:
     def overlay(img1: np.ndarray, img2: np.ndarray, amount: float = 0.5) -> np.ndarray:
         # the function x^2 compresses values closer to 0 more aggressive, while preserving 1 as it is
@@ -238,44 +264,91 @@ def plot_overlay_analysis(
     axs[2].axis("off")
 
     fig.show()
-    fig.savefig("../../outputs/preprocess/overlay_analysis_on_preprocess_methods.png")
+
+    path = (
+        output_path
+        if output_path is not None
+        else "../../outputs/preprocess/overlay_analysis_on_preprocess_methods.png"
+    )
+    fig.savefig(path)
 
 
 def main():
-    src = image_noninverted.copy()
+    image_paths = [
+        "../../imgs/lena.png",
+        "../../imgs/airplane.png",
+        "../../imgs/butterfly.png",
+        "../../imgs/tank.png",
+        "../../imgs/teddybear.png",
+    ]
 
-    dst = ImageWrapper.histogram_equalization(src)
-    plot_preprocess(src, dst, "Histogram Equalization", "../../outputs/misc/histogram_equalization_preprocess.png")
-    save_img(dst, "histogram_equalization_preprocess")
+    for image_path in image_paths:
+        # Prepare image
+        img_name = Path(image_path).stem
+        output_dir = Path(f"../../outputs/preprocess/{img_name}")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-    dst = ImageWrapper.grayscale_quantization(src)
-    # fmt: off
-    plot_preprocess(src, dst,"Grayscale Quantization 2 Levels","../../outputs/misc/grayscale_quantization_preprocess.png")
-    # fmt: on
-    save_img(dst, "grayscale_quantization_2_levels")
+        image_noninverted = ImageWrapper.read_bw(image_path, inverted=False)
+        image = ImageWrapper.read_bw(image_path)
+        shape = image.shape
 
-    dst = ImageWrapper.sketch_effect(src)
-    plot_preprocess(src, dst, "Sketch Effect", "../../outputs/misc/sketch_effect_preprocess.png")
-    save_img(dst, "sketch_effect")
+        # Preprocess preview and saving
+        src = image_noninverted.copy()
 
-    raw, histogram_equalization, grayscale_quantization, sketch_effect = compute_solution_parallel(
-        np.copy(image),
-        shape,
-        number_of_pegs,
-        crop_mode,
-        matrix_representation,
-    )
+        for name, func in [
+            ("histogram_equalization", ImageWrapper.histogram_equalization),
+            ("grayscale_quantization_2_levels", ImageWrapper.grayscale_quantization),
+            ("sketch_effect", ImageWrapper.sketch_effect),
+        ]:
+            dst = func(src)
+            plot_preprocess(src, dst, name.replace("_", " ").title(), str(output_dir / f"{name}_preview.png"))
+            save_img(dst, f"{img_name}/{name}")
 
-    # scaling back down to [0, 1]
-    raw = ImageWrapper.scale_image(raw)
-    histogram_equalization = ImageWrapper.scale_image(histogram_equalization)
-    grayscale_quantization = ImageWrapper.scale_image(grayscale_quantization)
-    sketch_effect = ImageWrapper.scale_image(sketch_effect)
+        # Compute least squares results in parallel
+        raw, histogram_equalization, grayscale_quantization, sketch_effect = compute_solution_parallel(
+            np.copy(image),
+            shape,
+            number_of_pegs,
+            crop_mode,
+            matrix_representation,
+        )
 
-    plot_preprocessed(raw, histogram_equalization, grayscale_quantization, sketch_effect)
-    plot_diff_preprocess_methods(raw, histogram_equalization, grayscale_quantization, sketch_effect)
-    plot_overlay_analysis(raw, histogram_equalization, grayscale_quantization, sketch_effect)
-    plot_fft_preprocess_methods(raw, histogram_equalization, grayscale_quantization, sketch_effect)
+        # Normalize
+        raw = ImageWrapper.scale_image(raw)
+        histogram_equalization = ImageWrapper.scale_image(histogram_equalization)
+        grayscale_quantization = ImageWrapper.scale_image(grayscale_quantization)
+        sketch_effect = ImageWrapper.scale_image(sketch_effect)
+
+        # Save/plot results
+        plot_preprocessed(
+            image_noninverted,
+            raw,
+            histogram_equalization,
+            grayscale_quantization,
+            sketch_effect,
+            output_dir / "preprocessed_results.png",
+        )
+        plot_diff_preprocess_methods(
+            raw,
+            histogram_equalization,
+            grayscale_quantization,
+            sketch_effect,
+            output_dir / "diff_analysis.png",
+        )
+        plot_overlay_analysis(
+            raw,
+            histogram_equalization,
+            grayscale_quantization,
+            sketch_effect,
+            output_dir / "overlay_analysis.png",
+        )
+        plot_fft_preprocess_methods(
+            raw,
+            histogram_equalization,
+            grayscale_quantization,
+            sketch_effect,
+            output_dir / "fft_analysis.png",
+        )
 
 
 if __name__ == "__main__":

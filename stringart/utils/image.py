@@ -190,7 +190,28 @@ class ImageWrapper:
 
     @staticmethod
     def sketch_effect(src: np.ndarray) -> np.ndarray:
-        # TODO: document
+        """Applies a pencil sketch-like effect to a grayscale image.
+
+        This effect is achieved by inverting the image, applying a Gaussian blur
+        to the inverted version, and then blending it with the original image
+        using color dodge (division). The result is then enhanced using histogram equalization.
+
+        Parameters
+        ----------
+        src : np.ndarray
+            Grayscale input image as a NumPy array with values in the range [0, 1].
+
+        Returns
+        -------
+        np.ndarray
+            Output image with a sketch effect applied, as a NumPy array with values in the range [0, 1].
+
+        Notes
+        -----
+        - This function assumes the input image is normalized (i.e., pixel values are between 0 and 1).
+        - A small epsilon is added to the denominator to avoid division by zero.
+        - Histogram equalization is applied at the end to improve contrast.
+        """
         inverted_src = 1.0 - src
         blurred_inverted = filters.gaussian(inverted_src, sigma=10)
         inverted_blurred = 1.0 - blurred_inverted
