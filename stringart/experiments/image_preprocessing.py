@@ -283,7 +283,6 @@ def main():
     ]
 
     for image_path in image_paths:
-        # Prepare image
         img_name = Path(image_path).stem
         output_dir = Path(f"../../outputs/preprocess/{img_name}")
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -292,7 +291,6 @@ def main():
         image = ImageWrapper.read_bw(image_path)
         shape = image.shape
 
-        # Preprocess preview and saving
         src = image_noninverted.copy()
 
         for name, func in [
@@ -304,7 +302,6 @@ def main():
             plot_preprocess(src, dst, name.replace("_", " ").title(), str(output_dir / f"{name}_preview.png"))
             save_img(dst, f"{img_name}/{name}")
 
-        # Compute least squares results in parallel
         raw, histogram_equalization, grayscale_quantization, sketch_effect = compute_solution_parallel(
             np.copy(image),
             shape,
@@ -313,13 +310,11 @@ def main():
             matrix_representation,
         )
 
-        # Normalize
         raw = ImageWrapper.scale_image(raw)
         histogram_equalization = ImageWrapper.scale_image(histogram_equalization)
         grayscale_quantization = ImageWrapper.scale_image(grayscale_quantization)
         sketch_effect = ImageWrapper.scale_image(sketch_effect)
 
-        # Save/plot results
         plot_preprocessed(
             image_noninverted,
             raw,

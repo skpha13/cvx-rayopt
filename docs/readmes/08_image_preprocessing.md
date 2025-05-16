@@ -30,10 +30,10 @@ For more details, check the official [OpenCV tutorial](https://docs.opencv.org/4
 > Input Images
 
 <img src="../../outputs/preprocess/lena/histogram_equalization.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/airplane/histogram_equalization.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/tank/histogram_equalization.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/teddybear/histogram_equalization.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/histogram_equalization.png" alt="Lena Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/airplane/histogram_equalization.png" alt="Airplane Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/tank/histogram_equalization.png" alt="Tank Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/teddybear/histogram_equalization.png" alt="Teddybear Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/histogram_equalization.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
 
 > Input Images after Histogram Equalization
 
@@ -66,10 +66,10 @@ For more information, visit the [Wikipedia page](https://en.wikipedia.org/wiki/Q
 > Input Images
 
 <img src="../../outputs/preprocess/lena/grayscale_quantization_2_levels.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/airplane/grayscale_quantization_2_levels.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/tank/grayscale_quantization_2_levels.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/teddybear/grayscale_quantization_2_levels.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/grayscale_quantization_2_levels.png" alt="Lena Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/airplane/grayscale_quantization_2_levels.png" alt="Airplane Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/tank/grayscale_quantization_2_levels.png" alt="Tank Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/teddybear/grayscale_quantization_2_levels.png" alt="Teddybear Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/grayscale_quantization_2_levels.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
 
 > Input Images after Grayscale Quantization
 
@@ -96,10 +96,10 @@ For more details, check this [Medium Article](https://medium.com/@Kavya2099/imag
 > Input Images
 
 <img src="../../outputs/preprocess/lena/sketch_effect.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/airplane/sketch_effect.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/tank/sketch_effect.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/teddybear/sketch_effect.png" alt="Lena Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/sketch_effect.png" alt="Lena Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/airplane/sketch_effect.png" alt="Airplane Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/tank/sketch_effect.png" alt="Tank Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/teddybear/sketch_effect.png" alt="Teddybear Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/sketch_effect.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
 
 > Input Images after Sketch Effect
 
@@ -119,13 +119,6 @@ For more details, check this [Medium Article](https://medium.com/@Kavya2099/imag
 <img src="../../outputs/preprocess/airplane/grayscale_quantization_2_levels.png" alt="Airplane Grayscale Quantization 2 Levels Preprocess" width=256>
 <img src="../../outputs/preprocess/airplane/sketch_effect.png" alt="Airplane Sketch Effect" width=256>
 
-### Butterfly
-
-<img src="../../imgs/butterfly_bw.png" alt="Butterfly input image" width=256>
-<img src="../../outputs/preprocess/butterfly/histogram_equalization.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/grayscale_quantization_2_levels.png" alt="Butterfly Grayscale Quantization 2 Levels Preprocess" width=256>
-<img src="../../outputs/preprocess/butterfly/sketch_effect.png" alt="Butterfly Sketch Effect" width=256>
-
 ### Tank
 
 <img src="../../imgs/tank.png" alt="Tank input image" width=256>
@@ -140,15 +133,23 @@ For more details, check this [Medium Article](https://medium.com/@Kavya2099/imag
 <img src="../../outputs/preprocess/teddybear/grayscale_quantization_2_levels.png" alt="Teddybear Grayscale Quantization 2 Levels Preprocess" width=256>
 <img src="../../outputs/preprocess/teddybear/sketch_effect.png" alt="Teddybear Sketch Effect" width=256>
 
+### Butterfly
+
+<img src="../../imgs/butterfly_bw.png" alt="Butterfly input image" width=256>
+<img src="../../outputs/preprocess/butterfly/histogram_equalization.png" alt="Butterfly Histogram Equalization Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/grayscale_quantization_2_levels.png" alt="Butterfly Grayscale Quantization 2 Levels Preprocess" width=256>
+<img src="../../outputs/preprocess/butterfly/sketch_effect.png" alt="Butterfly Sketch Effect" width=256>
+
+
 ## Analysis
 
 ### Result Impact
 
-<img src="../../outputs/preprocess/lena/preprocessed_results.png" alt="Image Processing Stages">
-<img src="../../outputs/preprocess/airplane/preprocessed_results.png" alt="Image Processing Stages">
-<img src="../../outputs/preprocess/butterfly/preprocessed_results.png" alt="Image Processing Stages">
-<img src="../../outputs/preprocess/tank/preprocessed_results.png" alt="Image Processing Stages">
-<img src="../../outputs/preprocess/teddybear/preprocessed_results.png" alt="Image Processing Stages">
+<img src="../../outputs/preprocess/lena/preprocessed_results.png" alt="Lena Image Processing Stages">
+<img src="../../outputs/preprocess/airplane/preprocessed_results.png" alt="Airplane Image Processing Stages">
+<img src="../../outputs/preprocess/tank/preprocessed_results.png" alt="Tank Image Processing Stages">
+<img src="../../outputs/preprocess/teddybear/preprocessed_results.png" alt="Teddybear Image Processing Stages">
+<img src="../../outputs/preprocess/butterfly/preprocessed_results.png" alt="Butterfly Image Processing Stages">
 
 **Grayscale Quantization**, being more aggressive, simplifies shape detection due to the binary nature of its output. In contrast, **Histogram Equalization** offers a subtler adjustment, retaining more image details.
 
@@ -158,11 +159,11 @@ However, this enhancement can also introduce **drawbacks**. In the airplane and 
 
 ### Difference Analysis
 
-<img src="../../outputs/preprocess/lena/diff_analysis.png" alt="Difference Analysis">
-<img src="../../outputs/preprocess/airplane/diff_analysis.png" alt="Difference Analysis">
-<img src="../../outputs/preprocess/butterfly/diff_analysis.png" alt="Difference Analysis">
-<img src="../../outputs/preprocess/tank/diff_analysis.png" alt="Difference Analysis">
-<img src="../../outputs/preprocess/teddybear/diff_analysis.png" alt="Difference Analysis">
+<img src="../../outputs/preprocess/lena/diff_analysis.png" alt="Lena Difference Analysis">
+<img src="../../outputs/preprocess/airplane/diff_analysis.png" alt="Airplane Difference Analysis">
+<img src="../../outputs/preprocess/tank/diff_analysis.png" alt="Tank Difference Analysis">
+<img src="../../outputs/preprocess/teddybear/diff_analysis.png" alt="Teddybear Difference Analysis">
+<img src="../../outputs/preprocess/butterfly/diff_analysis.png" alt="Butterfly Difference Analysis">
 
 **Grayscale Quantization** shows a more pronounced difference compared to the raw output, especially around the outer face areas, while **Histogram Equalization** maintains finer details.
 
@@ -170,11 +171,11 @@ The most aggressive transformation is introduced by the **Sketch Effect**. It si
 
 ### Overlay Analysis
 
-<img src="../../outputs/preprocess/lena/overlay_analysis.png" alt="Overlay Analysis">
-<img src="../../outputs/preprocess/airplane/overlay_analysis.png" alt="Overlay Analysis">
-<img src="../../outputs/preprocess/butterfly/overlay_analysis.png" alt="Overlay Analysis">
-<img src="../../outputs/preprocess/tank/overlay_analysis.png" alt="Overlay Analysis">
-<img src="../../outputs/preprocess/teddybear/overlay_analysis.png" alt="Overlay Analysis">
+<img src="../../outputs/preprocess/lena/overlay_analysis.png" alt="Lena Overlay Analysis">
+<img src="../../outputs/preprocess/airplane/overlay_analysis.png" alt="Airplane Overlay Analysis">
+<img src="../../outputs/preprocess/tank/overlay_analysis.png" alt="Tank Overlay Analysis">
+<img src="../../outputs/preprocess/teddybear/overlay_analysis.png" alt="Teddybear Overlay Analysis">
+<img src="../../outputs/preprocess/butterfly/overlay_analysis.png" alt="Butterfly Overlay Analysis">
 
 The raw output is marked in red, while the preprocessed results appear in blue. Areas where both overlap are shown in purple.
 
@@ -182,10 +183,10 @@ A notable observation is that the **Sketch Effect** produces significantly more 
 
 ### Fast Fourier Transform Analysis
 
-<img src="../../outputs/preprocess/lena/fft_analysis.png" alt="FFT Analysis">
-<img src="../../outputs/preprocess/airplane/fft_analysis.png" alt="FFT Analysis">
-<img src="../../outputs/preprocess/butterfly/fft_analysis.png" alt="FFT Analysis">
-<img src="../../outputs/preprocess/tank/fft_analysis.png" alt="FFT Analysis">
-<img src="../../outputs/preprocess/teddybear/fft_analysis.png" alt="FFT Analysis">
+<img src="../../outputs/preprocess/lena/fft_analysis.png" alt="Lena FFT Analysis">
+<img src="../../outputs/preprocess/airplane/fft_analysis.png" alt="Airplane FFT Analysis">
+<img src="../../outputs/preprocess/tank/fft_analysis.png" alt="Tank FFT Analysis">
+<img src="../../outputs/preprocess/teddybear/fft_analysis.png" alt="Teddybear FFT Analysis">
+<img src="../../outputs/preprocess/butterfly/fft_analysis.png" alt="Butterfly FFT Analysis">
 
 Despite the preprocessing differences, the frequency spectrum after FFT remains consistent across all methods, indicating that tone adjustments do not affect the frequency content.
