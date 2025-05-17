@@ -1,25 +1,48 @@
-import matplotlib.pyplot as plt
+import os
+from pathlib import Path
+
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.types import CropMode
+from stringart.utils.perf_analyzer import Benchmark
+from stringart.utils.types import CropMode, MatrixRepresentation
 
 image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
-
-# TODO: benchmark both of these + comparative analysis
+number_of_pegs = 100
+matrix_representation: MatrixRepresentation = "sparse"
+max_iterations = 1
 
 
 def main():
-    image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=100)
-    A, x = solver.binary_projection_ls("cvxopt", "sparse", max_iterations=3)
-    solution = solver.compute_solution(A, x)
+    stringart_directory: Path = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    directory: Path = stringart_directory.parent.resolve()
 
-    plt.imshow(solution, cmap="grey")
-    plt.show()
-    plt.imsave("../../outputs/misc/binary_projection_ls.png", solution, cmap="grey")
+    image_cropped = crop_image(image, crop_mode)
+    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs)
+
+    Benchmark.initialize_metadata(directory)
+    benchmark = Benchmark(image, crop_mode, number_of_pegs)
+    cvxopt_result = benchmark.run_benchmark(
+        solver.binary_projection_ls,
+        solver="cvxopt",
+        matrix_representation=matrix_representation,
+        max_iterations=max_iterations,
+    )
+
+    scipy_result = benchmark.run_benchmark(
+        solver.binary_projection_ls,
+        solver="scipy",
+        matrix_representation=matrix_representation,
+        max_iterations=max_iterations,
+    )
+
+    benchmark_results = [cvxopt_result, scipy_result]
+    benchmark.save_benchmarks(benchmark_results, "binary_projection")
+    benchmark.run_analysis(benchmark_results, image, "binary_projection")
+
+    # TODO: document results
 
 
 if __name__ == "__main__":

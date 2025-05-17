@@ -272,9 +272,31 @@ class Solver:
 
         return A, x
 
-    # TODO: document
     @classmethod
     def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray):
+        """Solves a constrained quadratic program using CVXOPT.
+
+        The optimization problem is formulated as:
+            minimize (1/2)x^T P x + q^T x
+            subject to 0 <= x <= 1
+
+        Where:
+            P = 2 * A^T A
+            q = -2 * A^T b
+
+        Parameters
+        ----------
+        A : np.ndarray
+            The input matrix of shape (m, n). Can be a sparse matrix.
+        b : np.ndarray
+            The target vector of shape (m,).
+
+        Returns
+        -------
+        x : np.ndarray
+            The solution vector of shape (n,), constrained to [0, 1].
+        """
+
         if hasattr(A, "toarray"):  # check if it's a sparse matrix
             A = A.toarray()
 
@@ -297,14 +319,38 @@ class Solver:
         x = np.array(solution["x"]).flatten()
         return x
 
-    # TODO: document
     def binary_projection_ls(
         self,
         solver: QPSolvers | None = "cvxopt",
         matrix_representation: MatrixRepresentation | None = "sparse",
-        k: int = 5,
+        k: int = 10,
         max_iterations: int = 100,
     ):
+        """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
+
+        This method iteratively fixes `k` variables with the highest values from a constrained least squares
+        solution to 1, while keeping others free, until all variables are fixed. The result is a binary vector
+        approximating the original least squares solution.
+
+        Parameters
+        ----------
+        solver : QPSolvers or None, default "cvxopt"
+            Solver to use for the constrained least squares problem. Supported: "cvxopt" or "scipy" for "scipy.optimize.lsq_linear".
+        matrix_representation : MatrixRepresentation or None, default="sparse"
+            Format for matrix construction, e.g., "sparse" or "dense".
+        k : int, default 10
+            Number of variables to fix to 1 in each iteration.
+        max_iterations : int, default 100
+            Maximum number of iterations for binary projection.
+
+        Returns
+        -------
+        A : np.ndarray
+            The matrix used in the least squares problem.
+        x_fixed : np.ndarray
+            A binary solution vector of shape (n,), where entries are either 0 or 1.
+        """
+
         solver: QPSolvers = solver if solver else "cvxopt"
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
 

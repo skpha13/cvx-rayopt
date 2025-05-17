@@ -1,0 +1,58 @@
+[
+    {
+        "solver": "binary_projection_ls",
+        "params": {
+            "solver": "cvxopt",
+            "matrix_representation": "sparse",
+            "max_iterations": 1
+        },
+        "number_of_pegs": 100,
+        "output_image_shape": [
+            330,
+            330
+        ],
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\binary_projection\\image_000.png",
+        "elapsed_monotonic_time": 61.26600000000326,
+        "peak_memory_usage": 5317046122,
+        "elapsed_time": {
+            "hours": 0,
+            "minutes": 1,
+            "seconds": 1,
+            "milliseconds": 266
+        },
+        "peak_memory_size": {
+            "gigabytes": 4,
+            "megabytes": 974,
+            "kilobytes": 747,
+            "bytes": 874
+        }
+    },
+    {
+        "solver": "binary_projection_ls",
+        "params": {
+            "solver": "scipy",
+            "matrix_representation": "sparse",
+            "max_iterations": 1
+        },
+        "number_of_pegs": 100,
+        "output_image_shape": [
+            330,
+            330
+        ],
+        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\binary_projection\\image_001.png",
+        "elapsed_monotonic_time": 25.28100000001723,
+        "peak_memory_usage": 218111233,
+        "elapsed_time": {
+            "hours": 0,
+            "minutes": 0,
+            "seconds": 25,
+            "milliseconds": 281
+        },
+        "peak_memory_size": {
+            "gigabytes": 0,
+            "megabytes": 208,
+            "kilobytes": 7,
+            "bytes": 257
+        }
+    }
+]
