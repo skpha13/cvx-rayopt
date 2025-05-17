@@ -267,8 +267,9 @@ class Solver:
 
             # if the error does not decrease
             residual = np.linalg.norm(self.b - A @ x)
-            if not residual <= past_residual:
+            if not residual < past_residual:
                 break
+            past_residual = residual
 
         return A, x
 
@@ -364,6 +365,7 @@ class Solver:
         x_fixed = np.full(n, np.nan)  # nan means unfixed
         set1 = set()
 
+        past_residual = np.inf
         for iteration in range(max_iterations):
             print(f"Iteration: {iteration}")
             free_indices = np.isnan(x_fixed)
@@ -395,6 +397,12 @@ class Solver:
             # stop if all variables are fixed
             if np.all(~np.isnan(x_fixed)):
                 break
+
+            # if the error does not decrease
+            residual = np.linalg.norm(self.b - A @ x_free)
+            if not residual < past_residual:
+                break
+            past_residual = residual
 
         # fill in the remaining values (if any) with 0
         x_fixed[np.isnan(x_fixed)] = 0
