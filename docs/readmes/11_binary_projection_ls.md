@@ -83,7 +83,7 @@ I
 ```
 
 ```math
-G = \begin{bmatrix}
+h = \begin{bmatrix}
 0\\
 1
 \end{bmatrix}

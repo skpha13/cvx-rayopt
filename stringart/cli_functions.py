@@ -52,8 +52,8 @@ class Configuration:
 
         # fmt: off
         solver_methods = {
-            "least-squares": solver.least_squares,
-            "linear-least-squares": solver.linear_least_squares,
+            "least-squares": lambda: solver.least_squares(self.matrix_representation),
+            "linear-least-squares": lambda: solver.linear_least_squares(self.matrix_representation),
             "matching-pursuit": lambda: solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
             "binary-projection-ls": lambda: solver.binary_projection_ls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
         }
@@ -62,16 +62,8 @@ class Configuration:
         if self.solver not in solver_methods:
             raise ValueError(f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}")
 
-        if self.solver == "matching-pursuit":
-            A, x = solver_methods[self.solver]()
-            return solver.compute_solution(A, x)
-
-        if self.solver == "binary-projection-ls":
-            A, x = solver_methods[self.solver]()
-            return solver.compute_solution(A, x)
-
-        A, x = solver_methods[self.solver](self.matrix_representation)
-        if self.number_of_lines is not None:
+        A, x = solver_methods[self.solver]()
+        if self.solver in ["least-squares", "linear-least-squares"] and self.number_of_lines is not None:
             return solver.compute_solution_top_k(A, x, k=self.number_of_lines, binary=binary)
 
         return solver.compute_solution(A, x)

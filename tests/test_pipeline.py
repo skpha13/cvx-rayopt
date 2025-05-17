@@ -29,6 +29,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -47,6 +50,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -65,6 +71,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -83,6 +92,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type="random",
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -101,6 +113,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type="dot-product",
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -119,6 +134,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -137,6 +155,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration_second_half = Configuration(
@@ -152,6 +173,9 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration_center = Configuration(
@@ -167,8 +191,70 @@ class TestPipeline:
             number_of_lines=10,
             selector_type=None,
             binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
         )
 
         configuration_first_half.run_configuration(running_tests=True)
         configuration_second_half.run_configuration(running_tests=True)
         configuration_center.run_configuration(running_tests=True)
+
+    def test_binary_projection_ls(self):
+        configuration_defaults = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="binary-projection-ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="xiaolin-wu",
+            matrix_representation=None,
+            mp_method=None,
+            number_of_lines=10,
+            selector_type=None,
+            binary=None,
+            qp_solver=None,
+            k=None,
+            max_iterations=None,
+        )
+
+        configuration_cvxopt = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="binary-projection-ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="xiaolin-wu",
+            matrix_representation="sparse",
+            mp_method=None,
+            number_of_lines=10,
+            selector_type=None,
+            binary=None,
+            qp_solver="cvxopt",
+            k=3,
+            max_iterations=1,
+        )
+
+        configuration_scipy = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="binary-projection-ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="xiaolin-wu",
+            matrix_representation="dense",
+            mp_method=None,
+            number_of_lines=10,
+            selector_type=None,
+            binary=None,
+            qp_solver="scipy",
+            k=10,
+            max_iterations=5,
+        )
+
+        configuration_defaults.run_configuration(running_tests=True)
+        configuration_cvxopt.run_configuration(running_tests=True)
+        configuration_scipy.run_configuration(running_tests=True)
