@@ -399,7 +399,11 @@ class Solver:
                 break
 
             # if the error does not decrease
-            residual = np.linalg.norm(self.b - A @ x_free)
+            x_residual = np.zeros(n)
+            x_residual[~np.isnan(x_fixed)] = x_fixed[~np.isnan(x_fixed)]
+            x_residual[np.isnan(x_fixed)] = x_free
+
+            residual = np.linalg.norm(self.b - A @ x_residual)
             if not residual < past_residual:
                 break
             past_residual = residual
