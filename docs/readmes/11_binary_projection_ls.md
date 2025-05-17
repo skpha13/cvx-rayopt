@@ -184,6 +184,27 @@ At the end of the iterative loop:
 
 - The result `x` is a **binary vector** that approximately minimizes the least squares error
 
+## Results
+
+![CVXOPT Result](../../benchmarks/img_outputs/binary_projection/image_000.png)
+![Scipy Result](../../benchmarks/img_outputs/binary_projection/image_001.png)
+
+> CVXOPT Result (left) and `scipy.optimize.lsq_linear` result (right)
+
+![Difference Images](../plots/binary_projection/Difference%20Images.png)
+
+> Difference Images
+
+![Time Usage](../plots/binary_projection/Time%20Usage.png)
+
+> Time Usage
+
+Although CVXOPT appears faster, this is misleading, its early stopping mechanism was triggered sooner, thus drawing less lines and reducing runtime but did not reflect actual computational efficiency.
+
+![Memory Usage](../plots/binary_projection/Memory%20Usage.png)
+
+> Memory Usage
+
 ## Bibliography
 
 - [Boyd & Vandenberghe — Convex Optimization, Chapter 4 (Free online)](https://web.stanford.edu/~boyd/cvxbook/)

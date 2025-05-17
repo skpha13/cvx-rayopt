@@ -46,8 +46,6 @@ def main():
     benchmark.save_benchmarks(benchmark_results, "binary_projection")
     benchmark.run_analysis(benchmark_results, image, "binary_projection")
 
-    # TODO: document results
-
 
 if __name__ == "__main__":
     main()

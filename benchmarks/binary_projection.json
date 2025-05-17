@@ -4,27 +4,28 @@
         "params": {
             "solver": "cvxopt",
             "matrix_representation": "sparse",
-            "max_iterations": 1
+            "k": 10,
+            "max_iterations": 100
         },
         "number_of_pegs": 100,
         "output_image_shape": [
             330,
             330
         ],
-        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\binary_projection\\image_000.png",
-        "elapsed_monotonic_time": 61.26600000000326,
-        "peak_memory_usage": 5317046122,
+        "output_image_path": "benchmarks/img_outputs/binary_projection/image_000.png",
+        "elapsed_monotonic_time": 1553.338947754,
+        "peak_memory_usage": 5339219941,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 1,
-            "seconds": 1,
-            "milliseconds": 266
+            "minutes": 25,
+            "seconds": 53,
+            "milliseconds": 338
         },
         "peak_memory_size": {
             "gigabytes": 4,
-            "megabytes": 974,
-            "kilobytes": 747,
-            "bytes": 874
+            "megabytes": 995,
+            "kilobytes": 897,
+            "bytes": 997
         }
     },
     {
@@ -32,27 +33,28 @@
         "params": {
             "solver": "scipy",
             "matrix_representation": "sparse",
-            "max_iterations": 1
+            "k": 10,
+            "max_iterations": 100
         },
         "number_of_pegs": 100,
         "output_image_shape": [
             330,
             330
         ],
-        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\binary_projection\\image_001.png",
-        "elapsed_monotonic_time": 25.28100000001723,
-        "peak_memory_usage": 218111233,
+        "output_image_path": "benchmarks/img_outputs/binary_projection/image_001.png",
+        "elapsed_monotonic_time": 1858.5014508860002,
+        "peak_memory_usage": 2881644908,
         "elapsed_time": {
             "hours": 0,
-            "minutes": 0,
-            "seconds": 25,
-            "milliseconds": 281
+            "minutes": 30,
+            "seconds": 58,
+            "milliseconds": 501
         },
         "peak_memory_size": {
-            "gigabytes": 0,
-            "megabytes": 208,
-            "kilobytes": 7,
-            "bytes": 257
+            "gigabytes": 2,
+            "megabytes": 700,
+            "kilobytes": 154,
+            "bytes": 364
         }
     }
 ]

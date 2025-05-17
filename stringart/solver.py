@@ -387,7 +387,8 @@ class Solver:
 
             # Step 2: find top-k variables to fix to 1
             free_idx_array = np.where(free_indices)[0]
-            top_k_indices = np.argsort(-x_free)[:k]  # descending order
+            top_k = min(k, len(x_free))
+            top_k_indices = np.argsort(-x_free)[:top_k]  # descending order
             chosen_indices = free_idx_array[top_k_indices]
 
             for idx in chosen_indices:
