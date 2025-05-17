@@ -16,6 +16,7 @@ from stringart.utils.types import (
     MatchingPursuitMethod,
     MatrixRepresentation,
     Metadata,
+    QPSolvers,
     Rasterization,
     SolverType,
 )
@@ -38,6 +39,9 @@ class Configuration:
     number_of_lines: int | None
     selector_type: GreedySelector | None
     binary: bool | None
+    qp_solver: QPSolvers | None
+    k: int | None
+    max_iterations: int | None
 
     def _get_solver_instance(self) -> Solver:
         image = ImageWrapper.read_bw(self.image_path)
@@ -46,18 +50,23 @@ class Configuration:
     def _solve(self, solver: Solver) -> np.ndarray:
         binary = self.binary if self.binary else False
 
+        # fmt: off
         solver_methods = {
             "least-squares": solver.least_squares,
             "linear-least-squares": solver.linear_least_squares,
-            "matching-pursuit": lambda: solver.matching_pursuit(
-                self.number_of_lines, self.mp_method, selector_type=self.selector_type
-            ),
+            "matching-pursuit": lambda: solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
+            "binary-projection-ls": lambda: solver.binary_projection_ls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
         }
+        # fmt: on
 
         if self.solver not in solver_methods:
             raise ValueError(f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}")
 
         if self.solver == "matching-pursuit":
+            A, x = solver_methods[self.solver]()
+            return solver.compute_solution(A, x)
+
+        if self.solver == "binary-projection-ls":
             A, x = solver_methods[self.solver]()
             return solver.compute_solution(A, x)
 
@@ -96,7 +105,9 @@ class Configuration:
             return
 
         Benchmark.initialize_metadata(self.metadata.path)
-        benchmark = Benchmark(image=image, crop_mode=self.crop_mode, number_of_pegs=self.number_of_pegs)
+        benchmark = Benchmark(
+            image=image, crop_mode=self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization
+        )
 
         if self.command == "run-benchmarks":
             results = benchmark.run_benchmarks()

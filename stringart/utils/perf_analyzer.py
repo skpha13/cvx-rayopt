@@ -20,7 +20,7 @@ from stringart.utils.time_memory_format import (
     format_memory_size,
     format_time,
 )
-from stringart.utils.types import CropMode, ElapsedTime, MemorySize
+from stringart.utils.types import CropMode, ElapsedTime, MemorySize, Rasterization
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +105,13 @@ class Benchmark:
         os.makedirs(Benchmark.BENCHMARKS_PATH, exist_ok=True)
         os.makedirs(Benchmark.BENCHMARKS_IMAGE_OUTPUT_PATH, exist_ok=True)
 
-    def __init__(self, image: np.ndarray, crop_mode: CropMode | None, number_of_pegs: int | None = 100):
+    def __init__(
+        self,
+        image: np.ndarray,
+        crop_mode: CropMode | None,
+        number_of_pegs: int | None = 100,
+        rasterization: Rasterization | None = "bresenham",
+    ):
         """A class to perform benchmarking on various stringart solving methods.
 
         Parameters
@@ -125,6 +131,9 @@ class Benchmark:
             The mode in which the image is being processed. This determines cropping behaviour.
         number_of_pegs : int, optional
             The number of pegs used in the solving process. Default is 100.
+        rasterization: Rasterization, optional
+            If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
+            If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
         solver : Solver
             The solver instance configured with the provided parameters.
         benchmarks_to_run : list
@@ -136,11 +145,11 @@ class Benchmark:
         self.image = image
         self.crop_mode = crop_mode
         self.number_of_pegs = number_of_pegs
+        self.rasterization = rasterization
 
-        self.solver = Solver(image, crop_mode, number_of_pegs=number_of_pegs)
-        self.benchmarks_to_run = [
+        self.solver = Solver(image, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
+        self.benchmarks_to_run = [  # TODO: add linear-least-squares, binary-projection-ls
             # fmt: off
-
             (self.solver.least_squares, {"matrix_representation": "dense"}),
             (self.solver.least_squares, {"matrix_representation": "sparse"}),
             (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "orthogonal"}),

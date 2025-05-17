@@ -323,8 +323,8 @@ class Solver:
         self,
         solver: QPSolvers | None = "cvxopt",
         matrix_representation: MatrixRepresentation | None = "sparse",
-        k: int = 10,
-        max_iterations: int = 100,
+        k: int | None = 10,
+        max_iterations: int | None = 100,
     ):
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
 
@@ -353,6 +353,8 @@ class Solver:
 
         solver: QPSolvers = solver if solver else "cvxopt"
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+        k = k if k else 10
+        max_iterations = max_iterations if max_iterations else 100
 
         A, _ = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization

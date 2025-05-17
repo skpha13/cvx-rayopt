@@ -23,7 +23,7 @@ pip install .
 
 This package provides a simple and intuitive CLI for computing string art images.
 
-#### Summary of Key Commands
+#### Summary of Key Commands 
 
 | **Command**         | **Description**                                                                                                                  |
 |---------------------|----------------------------------------------------------------------------------------------------------------------------------|
@@ -31,17 +31,24 @@ This package provides a simple and intuitive CLI for computing string art images
 | `run-analysis`      | Run analysis on StringArt benchmarks.                                                                                            |
 | `solve`             | Compute StringArt configurations using the specified solver and options.                                                         |
 | `--help`            | Displays help information.                                                                                                       |
-| `--image-path`      | File path to the image to process. Supported formats: PNG, JPEG. Required.                                                       |
-| `--number-of-pegs`  | Number of pegs to use in computation. Default: 100.                                                                              |
-| `--crop-mode`       | Specify the crop mode for the image. Choices: `first-half`, `center`, `second-half`. Default: `center`.                          |
-| `--rasterization`   | Specify the rasterization algorithm to use for drawing the StringArt. Choices: `bresenham` or `xiaolin-wu`. Default: `bresenham` |
-| `--number-of-lines` | Specify the number of lines to select for `matching-pursuit`.                                                                    |
 
-#### Solve Arguments
+#### Common Arguments
 
-| **Argument** | **Description**                                                                                                              |
-|--------------|------------------------------------------------------------------------------------------------------------------------------|
-| `--solver`   | Specify the solver to use for computation. Choices: `least-squares`, `linear-least-squares` or `matching-pursuit`. Required. |
+| **Argument**       | **Description**                                                                                                        |
+|--------------------|------------------------------------------------------------------------------------------------------------------------|
+| `--image-path`     | Path to the input image. Required.                                                                                     |
+| `--number-of-pegs` | Number of pegs to use. Optional. Defaults to 100 if not specified.                                                     |
+| `--crop-mode`      | Crop mode to apply to the input image. Choices: `first-half`, `center`, `second-half`. Optional. Defaults to `center`. |
+| `--rasterization`  | Line rasterization algorithm. Choices: `bresenham` (fast integer-based), `xiaolin-wu` (anti-aliased). Optional.        |
+
+#### Solves
+
+| **Solvers**            | **Description**                                                                                                                                    |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `least-squares`        | Solves the system using a standard least squares method. Suitable for dense or sparse matrix formulations.                                         |
+| `linear-least-squares` | Alias or variant of least-squares solver focusing on linear positive constraints.                                                                  |
+| `binary-projection-ls` | Solves a binary-constrained problem by iteratively projecting least squares solutions to binary values.                                            |
+| `matching-pursuit`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on correlation. Supports `greedy` and `orthogonal` variants. |
 
 
 #### Least Squares Solver Arguments
@@ -49,35 +56,53 @@ This package provides a simple and intuitive CLI for computing string art images
 | **Argument**              | **Description**                                                                                                         |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------|
 | `--matrix-representation` | Specify the matrix representation method for the `least-squares` solver. Choices: `dense`, `sparse`. Default: `sparse`. |
+| `--number-of-lines`       | Optional. Number of top lines to select.                                                                                |
+
+#### Binary Projection LS Solver Arguments
+
+| **Argument**              | **Description**                                                                                                      |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------|
+| `--qp-solver`             | Quadratic programming solver to use for least squares step. Choices: `cvxopt`, `scipy`. Optional. Default: `cvxopt`. |
+| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.                        |
+| `--k`                     | Number of variables to fix to 1 in each iteration. Optional.                                                         |
+| `--max-iterations`        | Maximum number of iterations to run before stopping. Optional.                                                       |
 
 #### Matching Pursuit Solver Arguments
 
-| **Argument**              | **Description**                                                                                                                         |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| `--method`                | Specify the algorithm selection for `matching-pursuit`. Choices: `greedy`, `orthogonal`.                                                |
-| `--selector`              | Specify the selector method for `matching-pursuit` with the `greedy` method. Choices: `random`, `dot-product`. Default: `dot-product`.  |
+| **Argument**        | **Description**                                                                                                  |
+|---------------------|------------------------------------------------------------------------------------------------------------------|
+| `--method`          | Algorithm selection for matching pursuit. Choices: `greedy`, `orthogonal`. Optional. Default: `orthogonal`.      |
+| `--selector`        | Selector method to use with `greedy` method. Choices: `random`, `dot-product`. Optional. Default: `dot-product`. |
+| `--number-of-lines` | Required. Number of top lines to select.                                                                         |
+
 
 #### Example Commands:
 
 ```bash
 # run all benchmarks and save output to the benchmarks folder
-python ./stringart/main.py --image-path ./imgs/lena.png run-benchmarks
+python ./stringart/main.py run-benchmarks --image-path ./imgs/lena.png 
 
 # run analysis on provided benchmarks
 # this should be run after the `run-benchmarks` command.
-python ./stringart/main.py --image-path ./imgs/lena.png run-analysis
+python ./stringart/main.py run-analysis --image-path ./imgs/lena.png 
 
 # runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 100, the crop mode for the image center and the rasterization algorithm xiaolin-wu.
-python ./stringart/main.py --image-path ./imgs/lena.png --rasterization xiaolin-wu solve --solver least-squares 
+python ./stringart/main.py solve least-squares --image-path ./imgs/lena.png --rasterization xiaolin-wu 
 
 # runs the matching pursuit solver with the orthogonal method (OMP) on the provided image, selecting 1000 lines.
-python ./stringart/main.py --image-path ./imgs/lena.png --number-of-lines 1000 solve --solver matching-pursuit --method orthogonal 
+python ./stringart/main.py solve matching-pursuit --image-path ./imgs/lena.png --number-of-lines 1000 --method orthogonal 
 
 # runs the matching pursuit solver with the greedy method on the provided image, using the dot-product heuristic, selecting 1000 lines.
-python ./stringart/main.py --image-path ./imgs/lena.png --number-of-lines 1000 solve --solver matching-pursuit --method greedy
+python ./stringart/main.py solve matching-pursuit --image-path ./imgs/lena.png --number-of-lines 1000 --method greedy
 
 # runs the least squares solver with the sparse matrix representation, a crop mode using the first half of the image and a number of pegs of 50
-python ./stringart/main.py --image-path ./imgs/lena.png --crop-mode first-half --number-of-pegs 50 solve --solver least-squares 
+python ./stringart/main.py solve least-squares  --image-path ./imgs/lena.png --crop-mode first-half --number-of-pegs 50 
+
+# runs the linear least squares solver with a selection of 1000 lines
+python ./stringart/main.py solve linear-least-squares --number-of-lines 1000 --image-path ./imgs/lena.png --rasterization xiaolin-wu
+
+# runs the binary projection least squares with the `scipy` solver
+ python .\stringart\main.py solve binary-projection-ls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
 ```
 
 ## Developer Documentation
