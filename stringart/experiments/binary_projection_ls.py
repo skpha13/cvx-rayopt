@@ -12,9 +12,9 @@ shape = image.shape
 crop_mode: CropMode = "center"
 number_of_pegs = 100
 matrix_representation: MatrixRepresentation = "sparse"
-rasterization: Rasterization = "bresenham"
+rasterization: Rasterization = "xiaolin-wu"
 k = 10
-max_iterations = 1
+max_iterations = 100
 
 
 def main():
