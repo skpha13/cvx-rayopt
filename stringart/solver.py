@@ -2,6 +2,7 @@ from typing import List, cast
 
 import numpy as np
 import scipy
+from cvxopt import matrix, solvers
 from numpy.linalg import lstsq
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -11,7 +12,7 @@ from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, Rasterization
+from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers, Rasterization
 
 
 class Solver:
@@ -266,7 +267,148 @@ class Solver:
 
             # if the error does not decrease
             residual = np.linalg.norm(self.b - A @ x)
-            if not residual <= past_residual:
+            if not residual < past_residual:
                 break
+            past_residual = residual
 
         return A, x
+
+    @classmethod
+    def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray):
+        """Solves a constrained quadratic program using CVXOPT.
+
+        The optimization problem is formulated as:
+            minimize (1/2)x^T P x + q^T x
+            subject to 0 <= x <= 1
+
+        Where:
+            P = 2 * A^T A
+            q = -2 * A^T b
+
+        Parameters
+        ----------
+        A : np.ndarray
+            The input matrix of shape (m, n). Can be a sparse matrix.
+        b : np.ndarray
+            The target vector of shape (m,).
+
+        Returns
+        -------
+        x : np.ndarray
+            The solution vector of shape (n,), constrained to [0, 1].
+        """
+
+        if hasattr(A, "toarray"):  # check if it's a sparse matrix
+            A = A.toarray()
+
+        m, n = A.shape
+        P = 2 * (A.T @ A)
+        q = -2 * (A.T @ b)
+
+        # convert to cvxopt matrices, ensure float64 type
+        P_cvx = matrix(P.astype(np.float64))
+        q_cvx = matrix(q.astype(np.float64))
+
+        # inequality Gx <= h for bounds 0 <= x <= 1
+        G_cvx = matrix(np.vstack((-np.eye(n), np.eye(n))))  # -I and I stacked vertically
+        h_cvx = matrix(np.hstack((np.zeros(n), np.ones(n))))
+
+        # no equality constraints
+        solvers.options["show_progress"] = False
+        solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
+
+        x = np.array(solution["x"]).flatten()
+        return x
+
+    def binary_projection_ls(
+        self,
+        solver: QPSolvers | None = "cvxopt",
+        matrix_representation: MatrixRepresentation | None = "sparse",
+        k: int | None = 10,
+        max_iterations: int | None = 100,
+    ):
+        """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
+
+        This method iteratively fixes `k` variables with the highest values from a constrained least squares
+        solution to 1, while keeping others free, until all variables are fixed. The result is a binary vector
+        approximating the original least squares solution.
+
+        Parameters
+        ----------
+        solver : QPSolvers or None, default "cvxopt"
+            Solver to use for the constrained least squares problem. Supported: "cvxopt" or "scipy" for "scipy.optimize.lsq_linear".
+        matrix_representation : MatrixRepresentation or None, default="sparse"
+            Format for matrix construction, e.g., "sparse" or "dense".
+        k : int, default 10
+            Number of variables to fix to 1 in each iteration.
+        max_iterations : int, default 100
+            Maximum number of iterations for binary projection.
+
+        Returns
+        -------
+        A : np.ndarray
+            The matrix used in the least squares problem.
+        x_fixed : np.ndarray
+            A binary solution vector of shape (n,), where entries are either 0 or 1.
+        """
+
+        solver: QPSolvers = solver if solver else "cvxopt"
+        matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+        k = k if k else 10
+        max_iterations = max_iterations if max_iterations else 100
+
+        A, _ = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
+        )
+
+        n = A.shape[1]
+        x_fixed = np.full(n, np.nan)  # nan means unfixed
+        set1 = set()
+
+        past_residual = np.inf
+        for iteration in range(max_iterations):
+            print(f"Iteration: {iteration}")
+            free_indices = np.isnan(x_fixed)
+
+            # Step 1: solve least squares for current fixed values
+            A_free = A[:, free_indices]
+            b_adjusted = self.b.copy()
+
+            if set1:
+                A_fixed_1 = A[:, list(set1)]
+                b_adjusted -= A_fixed_1 @ np.ones(len(set1))  # sum them up, then subtract
+
+            bounds = (0, 1)
+            if solver == "cvxopt":
+                x_free = self._solve_qp_cvxopt(A_free, b_adjusted)
+            else:
+                result = scipy.optimize.lsq_linear(A_free, b_adjusted, bounds=bounds)
+                x_free = result.x
+
+            # Step 2: find top-k variables to fix to 1
+            free_idx_array = np.where(free_indices)[0]
+            top_k = min(k, len(x_free))
+            top_k_indices = np.argsort(-x_free)[:top_k]  # descending order
+            chosen_indices = free_idx_array[top_k_indices]
+
+            for idx in chosen_indices:
+                x_fixed[idx] = 1
+                set1.add(idx)
+
+            # stop if all variables are fixed
+            if np.all(~np.isnan(x_fixed)):
+                break
+
+            # if the error does not decrease
+            x_residual = np.zeros(n)
+            x_residual[~np.isnan(x_fixed)] = x_fixed[~np.isnan(x_fixed)]
+
+            residual = np.linalg.norm(self.b - A @ x_residual)
+            if not residual < past_residual:
+                break
+            past_residual = residual
+
+        # fill in the remaining values (if any) with 0
+        x_fixed[np.isnan(x_fixed)] = 0
+
+        return A, x_fixed

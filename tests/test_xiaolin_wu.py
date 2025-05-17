@@ -30,7 +30,7 @@ class TestXiaolinWu:
         assert len(values) == 2
         assert indices[0] == Point(3, 4)
         assert values[0] == pytest.approx(0.5)  # x_gap value should be around 0.5
-        assert indices[1] == Point(3, 5)
+        assert indices[1] == Point(3, 4)
         assert values[1] == pytest.approx(0.0)  # x_gap value should be around 0.0
 
         # Test the second endpoint handling
@@ -39,7 +39,7 @@ class TestXiaolinWu:
         assert len(values) == 2
         assert indices[0] == Point(3, 4)
         assert values[0] == pytest.approx(0.5)
-        assert indices[1] == Point(3, 5)
+        assert indices[1] == Point(3, 4)
         assert values[1] == pytest.approx(0.0)
 
     def test_compute_line(self):

@@ -13,7 +13,9 @@ MatchingPursuitMethod = Literal["greedy", "orthogonal"]
 
 Rasterization = Literal["bresenham", "xiaolin-wu"]
 
-SolverType = Literal["least-squares", "linear-least-squares", "matching-pursuit"]
+SolverType = Literal["least-squares", "linear-least-squares", "matching-pursuit", "binary-projection-ls"]
+
+QPSolvers = Literal["scipy", "cvxopt"]
 
 
 @dataclass

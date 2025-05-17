@@ -12,8 +12,8 @@ from stringart.utils.types import (
     MatchingPursuitMethod,
     MatrixRepresentation,
     Metadata,
+    QPSolvers,
     Rasterization,
-    SolverType,
 )
 
 SOLVE_COMMAND_NAME = "solve"
@@ -23,80 +23,118 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     """Add arguments to the parser for different commands and options."""
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     # subcommand: run_benchmarks
-    subparsers.add_parser("run-benchmarks", help="Run all benchmarks for StringArt.")
+    benchmarks_parser = subparsers.add_parser("run-benchmarks", help="Run all benchmarks for StringArt.")
     # subcommand: run_analysis
-    subparsers.add_parser("run-analysis", help="Run analysis on StringArt benchmarks.")
+    analysis_parser = subparsers.add_parser("run-analysis", help="Run analysis on StringArt benchmarks.")
     # subcommand: compute
-    compute_parser = subparsers.add_parser(SOLVE_COMMAND_NAME, help="Compute StringArt configurations.")
 
-    compute_parser.add_argument(
-        "--solver",
-        choices=get_args(SolverType),
-        required=True,
-        help="Solver to use for computation.",
-    )
+    solve_parser = subparsers.add_parser(SOLVE_COMMAND_NAME, help="Compute StringArt configurations.")
+    solver_subparsers = solve_parser.add_subparsers(title="Solvers", dest="solver", required=True)
 
-    # Least Squares Group
-    least_squares_group = compute_parser.add_argument_group(
-        "least-squares arguments", "Options specific to the least-squares solver."
-    )
-    least_squares_group.add_argument(
+    # Least Squares Solver
+    ls_parser = solver_subparsers.add_parser("least-squares", help="Least Squares solver options.")
+    ls_parser.add_argument(
         "--matrix-representation",
         choices=get_args(MatrixRepresentation),
         required=False,
         help="Matrix representation method. Defaults to `sparse`.",
     )
-
-    # Matching Pursuit Group
-    matching_pursuit_group = compute_parser.add_argument_group(
-        "matching-pursuit arguments", "Options specific to the matching-pursuit solver."
-    )
-    matching_pursuit_group.add_argument(
-        "--method",
-        choices=get_args(MatchingPursuitMethod),
-        required=False,
-        help="Algorithm selection, either Greedy or Orthogonal Matching Pursuit. Defaults to `orthogonal`.",
-    )
-    matching_pursuit_group.add_argument(
-        "--selector",
-        choices=get_args(GreedySelector),
-        required=False,
-        help="Selector method to use (only applicable to matching-pursuit with greedy method). Defaults to `dot-product`.",
-    )
-
-    # Common Arguments
-    parser.add_argument(
-        "--image-path",
-        type=str,
-        required=True,
-        help="The file path to the image you want to process. The path can be absolute or relative, and the image should be in a supported format (e.g., PNG, JPEG).",
-    )
-    parser.add_argument(
-        "--number-of-pegs",
-        type=int,
-        required=False,
-        help="Number of pegs to use in the computation. Defaults to 100.",
-    )
-    parser.add_argument(
-        "--crop-mode",
-        choices=get_args(CropMode),
-        required=False,
-        help="Crop mode to use on the provided image. Default to `center`.",
-    )
-    parser.add_argument(
-        "--rasterization",
-        choices=get_args(Rasterization),
-        required=False,
-        help="Specifies the line rasterization algorithm to use. "
-        "'bresenham' is an efficient integer-based algorithm for drawing lines, "
-        "while 'xiaolin-wu' produces anti-aliased lines for smoother results.",
-    )
-    parser.add_argument(
+    ls_parser.add_argument(
         "--number-of-lines",
         type=int,
         required=False,
         help="Top K number of lines to select.",
     )
+
+    # Linear Least Squares Solver
+    lls_parser = solver_subparsers.add_parser("linear-least-squares", help="Linear Least Squares solver options.")
+    lls_parser.add_argument(
+        "--matrix-representation",
+        choices=get_args(MatrixRepresentation),
+        required=False,
+        help="Matrix representation method. Defaults to `sparse`.",
+    )
+    lls_parser.add_argument(
+        "--number-of-lines",
+        type=int,
+        required=False,
+        help="Top K number of lines to select.",
+    )
+
+    # Matching Pursuit Solver
+    mp_parser = solver_subparsers.add_parser("matching-pursuit", help="Matching Pursuit solver options.")
+    mp_parser.add_argument(
+        "--method",
+        choices=get_args(MatchingPursuitMethod),
+        required=False,
+        help="Algorithm selection, either Greedy or Orthogonal Matching Pursuit. Defaults to `orthogonal`.",
+    )
+    mp_parser.add_argument(
+        "--selector",
+        choices=get_args(GreedySelector),
+        required=False,
+        help="Selector method to use (only applicable to matching-pursuit with greedy method). Defaults to `dot-product`.",
+    )
+    mp_parser.add_argument(
+        "--number-of-lines",
+        type=int,
+        required=True,
+        help="Top K number of lines to select.",
+    )
+
+    # Binary Projection Solver
+    bpls_parser = solver_subparsers.add_parser("binary-projection-ls", help="Binary Projection Least Squares options.")
+    bpls_parser.add_argument(
+        "--qp-solver",
+        choices=get_args(QPSolvers),
+        required=False,
+        help="Quadratic programming solver to use for the least squares step. Defaults to 'cvxopt'.",
+    )
+    bpls_parser.add_argument(
+        "--matrix-representation",
+        choices=get_args(MatrixRepresentation),
+        required=False,
+        help="Matrix representation method. Defaults to `sparse`.",
+    )
+    bpls_parser.add_argument(
+        "--k",
+        type=int,
+        required=False,
+        help="Number of variables to fix to 1 in each iteration. Controls the granularity of the binary projection step.",
+    )
+    bpls_parser.add_argument(
+        "--max-iterations",
+        type=int,
+        required=False,
+        help="Maximum number of iterations to run the binary projection solver before stopping.",
+    )
+
+    # Common Arguments
+    for subparser in [ls_parser, lls_parser, mp_parser, bpls_parser, benchmarks_parser, analysis_parser]:
+        subparser.add_argument(
+            "--image-path",
+            type=str,
+            required=True,
+            help="Path to the input image. Supported formats: PNG, JPEG, etc.",
+        )
+        subparser.add_argument(
+            "--number-of-pegs",
+            type=int,
+            required=False,
+            help="Number of pegs to use. Defaults to 100.",
+        )
+        subparser.add_argument(
+            "--crop-mode",
+            choices=get_args(CropMode),
+            required=False,
+            help="Crop mode to use. Defaults to `center`.",
+        )
+        subparser.add_argument(
+            "--rasterization",
+            choices=get_args(Rasterization),
+            required=False,
+            help="Line rasterization algorithm. Use 'bresenham' for fast lines, or 'xiaolin-wu' for anti-aliased lines.",
+        )
 
     return parser
 
@@ -134,6 +172,9 @@ def main() -> None:
         number_of_lines=getattr(args, "number_of_lines", None),
         selector_type=getattr(args, "selector", None),
         binary=None,
+        qp_solver=getattr(args, "qp_solver", None),
+        k=getattr(args, "k", None),
+        max_iterations=getattr(args, "max_iterations", None),
     )
 
     configuration.run_configuration()

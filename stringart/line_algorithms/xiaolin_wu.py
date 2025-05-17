@@ -141,13 +141,13 @@ class XiaolinWu:
             indices.append(Point(y_px, x_px))
             values.append(XiaolinWu.rfpart(y_end) * x_gap)
 
-            indices.append(Point(y_px + 1, x_px))
+            indices.append(Point(y_px, x_px))
             values.append(XiaolinWu.fpart(y_end) * x_gap)
         else:
             indices.append(Point(x_px, y_px))
             values.append(XiaolinWu.rfpart(y_end) * x_gap)
 
-            indices.append(Point(x_px, y_px + 1))
+            indices.append(Point(x_px, y_px))
             values.append(XiaolinWu.fpart(y_end) * x_gap)
 
         return indices, values
