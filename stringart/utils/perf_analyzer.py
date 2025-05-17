@@ -320,10 +320,11 @@ class Benchmark:
         output_images = [ImageWrapper.scale_image(benchmark.output_image) for benchmark in benchmarks]
         ground_truth_image = crop_image(ground_truth_image, self.crop_mode)
 
-        labels = [
-            f"{benchmark.solver}\n{'\n'.join(f'{key}: {value}' for key, value in benchmark.params.items())}"
-            for benchmark in benchmarks
-        ]
+        labels = []
+        for benchmark in benchmarks:
+            params_str = "\n".join(f"{key}: {value}" for key, value in benchmark.params.items())
+            label = f"{benchmark.solver}\n{params_str}"
+            labels.append(label)
 
         # plot diff images and rmses
         rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
