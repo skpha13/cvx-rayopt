@@ -466,7 +466,7 @@ def prepare_diff_images(
     return diff_images
 
 
-def plot_residuals(y_data: List[np.array], labels: List[str], plot_name: str, directory: str | Path) -> None:
+def plot_residuals(y_data: List[np.ndarray], labels: List[str], plot_name: str, directory: str | Path) -> None:
     """Plot residuals over iterations for multiple benchmarks and save the resulting figure.
 
     Each series in `y_data` corresponds to a sequence of residuals for a specific benchmark.

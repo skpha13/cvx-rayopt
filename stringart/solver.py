@@ -1,11 +1,9 @@
 import logging
-from typing import Any, List, cast
+from typing import List, cast
 
 import numpy as np
 import scipy
 from cvxopt import matrix, solvers
-from numpy import floating
-from numpy.core.multiarray import ndarray
 from numpy.linalg import lstsq
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -124,7 +122,7 @@ class Solver:
 
     def least_squares(
         self, matrix_representation: MatrixRepresentation | None = "sparse"
-    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Solve the string art problem using the least squares method.
 
         Parameters
@@ -136,7 +134,7 @@ class Solver:
 
         Returns
         -------
-        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
             - The initial matrix of column vectors representing lines to be drawn.
             - The x solution of the system.
             - The residuals history.
@@ -162,7 +160,7 @@ class Solver:
 
     def linear_least_squares(
         self, matrix_representation: MatrixRepresentation | None = "sparse", bounds: scipy.optimize.Bounds = (0, np.inf)
-    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Solve the string art problem using the linear least squares method bounded to have positive x values.
 
         Parameters
@@ -177,7 +175,7 @@ class Solver:
 
         Returns
         -------
-        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
             - The initial matrix of column vectors representing lines to be drawn.
             - The x solution of the system.
             - The residuals history.
@@ -201,7 +199,7 @@ class Solver:
         number_of_lines: int,
         mp_method: MatchingPursuitMethod | None = "orthogonal",
         **kwargs,
-    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
@@ -219,7 +217,7 @@ class Solver:
 
         Returns
         -------
-        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
             - The initial matrix of column vectors representing lines to be drawn.
             - The x solution of the system.
             - The residuals history.
@@ -348,7 +346,7 @@ class Solver:
         matrix_representation: MatrixRepresentation | None = "sparse",
         k: int | None = 3,
         max_iterations: int | None = 100,
-    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
 
         This method iteratively fixes `k` variables with the highest values from a constrained least squares
@@ -368,7 +366,7 @@ class Solver:
 
         Returns
         -------
-        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
             - The initial matrix of column vectors representing lines to be drawn.
             - The binary x solution of the system, where entries are either 1 or 0.
             - The residuals history.
