@@ -7,28 +7,31 @@
                 330
             ],
             "number_of_pegs": 30,
-            "image_mode": "center",
-            "method": "sparse"
+            "crop_mode": "center",
+            "matrix_representation": "sparse"
         },
         "number_of_pegs": 30,
         "output_image_shape": [
-            328,
-            328
+            330,
+            330
         ],
-        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_programming\\image_000.png",
-        "elapsed_monotonic_time": 152.45300000000043,
-        "peak_memory_usage": 451851169,
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_programming\\image_000.png",
+        "elapsed_monotonic_time": 122.89993870000035,
+        "peak_memory_usage": 454452938,
         "elapsed_time": {
             "hours": 0,
             "minutes": 2,
-            "seconds": 32,
-            "milliseconds": 453
+            "seconds": 2,
+            "milliseconds": 899
         },
         "peak_memory_size": {
             "gigabytes": 0,
-            "megabytes": 430,
-            "kilobytes": 940,
-            "bytes": 929
-        }
+            "megabytes": 433,
+            "kilobytes": 409,
+            "bytes": 714
+        },
+        "residual_history": [
+            158.73055173467193
+        ]
     }
 ]

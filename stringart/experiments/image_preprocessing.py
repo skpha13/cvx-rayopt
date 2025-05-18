@@ -46,7 +46,7 @@ def process_image(
     image: np.ndarray, preprocess_func: Callable, shape, number_of_pegs, crop_mode, matrix_representation
 ):
     processed_image = preprocess_func(image)
-    A, x = linear_least_squares(processed_image, shape, number_of_pegs, crop_mode, matrix_representation)
+    A, x, _ = linear_least_squares(processed_image, shape, number_of_pegs, crop_mode, matrix_representation)
     return compute_solution(A, x, shape=shape, l=4950)
 
 

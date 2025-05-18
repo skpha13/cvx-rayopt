@@ -25,13 +25,16 @@ def linear_least_squares(
     crop_mode: CropMode = "center",
     matrix_representation: MatrixRepresentation = "sparse",
     rasterization: Rasterization = "bresenham",
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
     A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterization)
     b: np.ndarray = ImageWrapper.flatten_image(src)
 
     optimize_results = scipy.optimize.lsq_linear(A, b, bounds=(0, np.inf))
 
-    return A, optimize_results.x
+    x = optimize_results.x
+    residual = np.linalg.norm(b - A @ x)
+
+    return A, optimize_results.x, [residual]
 
 
 def main():
@@ -50,7 +53,7 @@ def main():
     )
 
     benchmark.save_benchmarks([benchmarks_result], "linear_least_squares")
-    A, x = linear_least_squares(image, shape, number_of_pegs, crop_mode, matrix_representation)
+    A, x, _ = linear_least_squares(image, shape, number_of_pegs, crop_mode, matrix_representation)
     solution = compute_solution(A, x)
 
     plt.imshow(solution, cmap="grey")

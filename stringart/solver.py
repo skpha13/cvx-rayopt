@@ -1,9 +1,11 @@
 import logging
-from typing import List, cast
+from typing import Any, List, cast
 
 import numpy as np
 import scipy
 from cvxopt import matrix, solvers
+from numpy import floating
+from numpy.core.multiarray import ndarray
 from numpy.linalg import lstsq
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -122,7 +124,7 @@ class Solver:
 
     def least_squares(
         self, matrix_representation: MatrixRepresentation | None = "sparse"
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
         """Solve the string art problem using the least squares method.
 
         Parameters
@@ -134,9 +136,10 @@ class Solver:
 
         Returns
         -------
-        tuple[numpy.ndarray, numpy.ndarray]
-            The initial matrix of column vectors representing lines to be drawn.
-            And the x solution of the system.
+        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The x solution of the system.
+            - The residuals history.
         """
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         logger.info(f"Least Squares: {matrix_representation}")
@@ -149,17 +152,17 @@ class Solver:
         if matrix_representation == "dense":
             x, _, _, _ = lstsq(A, self.b)
         elif matrix_representation == "sparse":
+            # noinspection PyTypeChecker
             x = lsqr(A, self.b)[0]
 
         residual = np.linalg.norm(self.b - A @ x)
         logger.info(f"Residual: {residual:.6f}")
 
-        return A, x
+        return A, x, [residual]
 
-    # TODO: think if we should let the user choose custom bounds
     def linear_least_squares(
         self, matrix_representation: MatrixRepresentation | None = "sparse", bounds: scipy.optimize.Bounds = (0, np.inf)
-    ):
+    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
         """Solve the string art problem using the linear least squares method bounded to have positive x values.
 
         Parameters
@@ -174,12 +177,10 @@ class Solver:
 
         Returns
         -------
-        A : ndarray
-            The initial matrix of column vectors representing lines to be drawn.
-
-        x : ndarray
-            The solution vector `x` that minimizes the least squares problem `||Ax - b||^2`
-            subject to the specified bounds.
+        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The x solution of the system.
+            - The residuals history.
         """
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         logger.info(f"Linear Least Squares: {matrix_representation}")
@@ -193,14 +194,14 @@ class Solver:
         residual = np.linalg.norm(self.b - A @ x)
         logger.info(f"Residual: {residual:.6f}")
 
-        return A, x
+        return A, x, [residual]
 
     def matching_pursuit(
         self,
         number_of_lines: int,
         mp_method: MatchingPursuitMethod | None = "orthogonal",
         **kwargs,
-    ) -> tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
@@ -218,9 +219,10 @@ class Solver:
 
         Returns
         -------
-        tuple[numpy.ndarray, numpy.ndarray]
-            The initial matrix of column vectors representing lines to be drawn.
-            And the x solution of the system.
+        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The x solution of the system.
+            - The residuals history.
 
         Notes
         -----
@@ -247,6 +249,7 @@ class Solver:
         selected_lines: set[int] = set()
         all_line_indices = set(range(cols))
         past_residual = np.inf
+        residual_history = []
 
         A = csr_matrix((rows, 0))
         x = None
@@ -259,7 +262,7 @@ class Solver:
             mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
 
         for step in tqdm(range(number_of_lines), desc="Selecting Lines"):
-            logger.info(f"Step {step}/{number_of_lines}")
+            logger.info(f"Step {step+1}/{number_of_lines}")
             logger.info("-" * 30)
 
             # exclude already selected lines
@@ -282,6 +285,7 @@ class Solver:
 
             # if the error does not decrease
             residual = np.linalg.norm(self.b - A @ x)
+            residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
             if not residual < past_residual:
@@ -289,7 +293,7 @@ class Solver:
                 break
             past_residual = residual
 
-        return A, x
+        return A, x, residual_history
 
     @classmethod
     def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray):
@@ -344,7 +348,7 @@ class Solver:
         matrix_representation: MatrixRepresentation | None = "sparse",
         k: int | None = 3,
         max_iterations: int | None = 100,
-    ):
+    ) -> tuple[np.ndarray, np.ndarray, list[floating[Any]]]:
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
 
         This method iteratively fixes `k` variables with the highest values from a constrained least squares
@@ -364,10 +368,10 @@ class Solver:
 
         Returns
         -------
-        A : np.ndarray
-            The matrix used in the least squares problem.
-        x_fixed : np.ndarray
-            A binary solution vector of shape (n,), where entries are either 0 or 1.
+        tuple[np.ndarray, np.ndarray, list[floating[Any]]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The binary x solution of the system, where entries are either 1 or 0.
+            - The residuals history.
         """
         solver: QPSolvers = solver if solver else "cvxopt"
         logger.info(f"Binary Projection Least Squares: {solver}")
@@ -385,8 +389,9 @@ class Solver:
         set1 = set()
 
         past_residual = np.inf
+        residual_history = []
         for iteration in tqdm(range(max_iterations), desc="Iterating"):
-            logger.info(f"Iteration {iteration}/{max_iterations}")
+            logger.info(f"Iteration {iteration+1}/{max_iterations}")
             logger.info("-" * 30)
 
             free_indices = np.isnan(x_fixed)
@@ -425,6 +430,7 @@ class Solver:
             x_residual[~np.isnan(x_fixed)] = x_fixed[~np.isnan(x_fixed)]
 
             residual = np.linalg.norm(self.b - A @ x_residual)
+            residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
             if not residual < past_residual:
@@ -435,4 +441,4 @@ class Solver:
         # fill in the remaining values (if any) with 0
         x_fixed[np.isnan(x_fixed)] = 0
 
-        return A, x_fixed
+        return A, x_fixed, residual_history

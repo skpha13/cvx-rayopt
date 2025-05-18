@@ -15,20 +15,23 @@
             330,
             330
         ],
-        "output_image_path": "C:\\Users\\User\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_least_squares\\image_000.png",
-        "elapsed_monotonic_time": 33.34399999999732,
-        "peak_memory_usage": 229402612,
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_least_squares\\image_000.png",
+        "elapsed_monotonic_time": 33.29974089999996,
+        "peak_memory_usage": 229394917,
         "elapsed_time": {
             "hours": 0,
             "minutes": 0,
             "seconds": 33,
-            "milliseconds": 343
+            "milliseconds": 299
         },
         "peak_memory_size": {
             "gigabytes": 0,
             "megabytes": 218,
-            "kilobytes": 793,
-            "bytes": 1012
-        }
+            "kilobytes": 786,
+            "bytes": 485
+        },
+        "residual_history": [
+            112.41421989477078
+        ]
     }
 ]
