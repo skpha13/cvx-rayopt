@@ -64,8 +64,8 @@ This package provides a simple and intuitive CLI for computing string art images
 |---------------------------|----------------------------------------------------------------------------------------------------------------------|
 | `--qp-solver`             | Quadratic programming solver to use for least squares step. Choices: `cvxopt`, `scipy`. Optional. Default: `cvxopt`. |
 | `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.                        |
-| `--k`                     | Number of variables to fix to 1 in each iteration. Optional.                                                         |
-| `--max-iterations`        | Maximum number of iterations to run before stopping. Optional.                                                       |
+| `--k`                     | Number of variables to fix to 1 in each iteration. Optional. Default: `3`                                            |
+| `--max-iterations`        | Maximum number of iterations to run before stopping. Optional. Default: `100`                                        |
 
 #### Matching Pursuit Solver Arguments
 
