@@ -19,10 +19,10 @@ number_of_pegs = 30
 def linear_programming(
     shape: tuple[int, ...],
     number_of_pegs: int = 100,
-    image_mode: CropMode = "center",
-    method: MatrixRepresentation = "sparse",
-) -> tuple[np.ndarray, np.ndarray]:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, image_mode, method)
+    crop_mode: CropMode = "center",
+    matrix_representation: MatrixRepresentation = "sparse",
+) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
     b: np.ndarray = ImageWrapper.flatten_image(image)
 
     model = pulp.LpProblem("Sparse_Regression_CSR_Positive_X", pulp.LpMinimize)
@@ -50,8 +50,9 @@ def linear_programming(
     model.solve(pulp.PULP_CBC_CMD(msg=True))
 
     result = np.array([pulp.value(x[j]) if pulp.value(x[j]) >= 1e-6 else 0.0 for j in range(A.shape[1])])
+    residual = np.linalg.norm(b - A @ result)
 
-    return A, result
+    return A, result, [residual]
 
 
 def main():

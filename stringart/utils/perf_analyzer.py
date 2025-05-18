@@ -58,6 +58,7 @@ class BenchmarkResult:
     output_image_path: str | None
     elapsed_monotonic_time: float
     peak_memory_usage: int
+    residual_history: list[np.floating]
 
     elapsed_time: ElapsedTime
     peak_memory_size: MemorySize
@@ -74,7 +75,8 @@ class BenchmarkResult:
             f"- Elapsed Time: {formatted_time}\n"
             f"- Peak Memory Usage: {formatted_memory}\n"
             f"- Output Image Shape: {self.output_image.shape}\n"
-            f"- Output Image Path: {self.output_image_path}"
+            f"- Output Image Path: {self.output_image_path}\n"
+            f"- Best Residual: {self.residual_history[-1]:.6f}"
         )
 
     def to_json(self) -> dict:
@@ -88,6 +90,7 @@ class BenchmarkResult:
             "peak_memory_usage": self.peak_memory_usage,
             "elapsed_time": self.elapsed_time,
             "peak_memory_size": self.peak_memory_size,
+            "residual_history": self.residual_history,
         }
 
 
@@ -149,13 +152,15 @@ class Benchmark:
         self.rasterization = rasterization
 
         self.solver = Solver(image, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
-        self.benchmarks_to_run = [  # TODO: add linear-least-squares, binary-projection-ls
+        self.benchmarks_to_run = [
             # fmt: off
             (self.solver.least_squares, {"matrix_representation": "dense"}),
             (self.solver.least_squares, {"matrix_representation": "sparse"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "orthogonal"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "random"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "dot-product"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "orthogonal"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "random"}),
+            (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "dot-product"}),
+            (self.solver.binary_projection_ls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}),
+            (self.solver.binary_projection_ls, {"solver": "scipy", "k": 3, "max_iterations": 1000}),
             # fmt: on
         ]
 
@@ -181,7 +186,7 @@ class Benchmark:
         time_start = time.monotonic()
         tracemalloc.start()
 
-        A, x = func(*args, **kwargs)
+        A, x, residuals = func(*args, **kwargs)
         output = self.solver.compute_solution(A, x)
 
         time_end = time.monotonic()
@@ -203,6 +208,7 @@ class Benchmark:
             peak_memory_usage=peak_memory_usage,
             elapsed_time=elapsed_time,
             peak_memory_size=peak_memory_size,
+            residual_history=residuals,
         )
 
     def run_benchmarks(self) -> List[BenchmarkResult]:
@@ -311,6 +317,7 @@ class Benchmark:
     ) -> None:
         """Perform an analysis of benchmarking results by generating and saving plots that show the differences
         between output images and the ground truth image, as well as RMSE and time and memory usage for each benchmark.
+        Additionally, it also computes the residual history and normalized residual history over iterations.
 
         Parameters
         ----------
@@ -368,6 +375,29 @@ class Benchmark:
         fig.tight_layout()
         fig.savefig(f"{directory / plot_name}.png", format="png")
         fig.show()
+
+        # plot residual over iterations
+        raw_residuals = [np.array(benchmark.residual_history) for benchmark in benchmarks]
+        plot_residuals(raw_residuals, labels, "Residual History", directory)
+
+        # flatten all residuals to find global min and max
+        all_residuals = [r for benchmark in benchmarks for r in benchmark.residual_history]
+        global_min = np.min(all_residuals)
+        global_max = np.max(all_residuals)
+        range_eps = global_max - global_min if global_max != global_min else 1e-8  # avoid division by zero
+
+        normalized_residuals = []
+        for residuals in raw_residuals:
+            if len(residuals) == 1:
+                # global normalization
+                normalized = (residuals - global_min) / range_eps
+            else:
+                # local normalization
+                normalized = (residuals - np.min(residuals)) / (np.max(residuals) - np.min(residuals) + 1e-8)
+
+            normalized_residuals.append(normalized)
+
+        plot_residuals(normalized_residuals, labels, "Normalized Residual History", directory)
 
         # plot time and memory
         monotonic_time = [benchmark.elapsed_monotonic_time for benchmark in benchmarks]
@@ -434,3 +464,40 @@ def prepare_diff_images(
     ]
 
     return diff_images
+
+
+def plot_residuals(y_data: List[np.ndarray], labels: List[str], plot_name: str, directory: str | Path) -> None:
+    """Plot residuals over iterations for multiple benchmarks and save the resulting figure.
+
+    Each series in `y_data` corresponds to a sequence of residuals for a specific benchmark.
+    If a residual sequence contains only one value, it will be plotted as a single point.
+
+    Parameters
+    ----------
+    y_data : List[np.array]
+        A list of 1D NumPy arrays where each array represents residuals for a benchmark over iterations.
+    labels : List[str]
+        A list of strings used as labels for each benchmark's residual plot. Must be the same length as `y_data`.
+    plot_name : str
+        Title of the plot and the filename used when saving the image (without file extension).
+    directory : str or Path
+        Directory where the resulting plot image will be saved. If it does not exist, it should be created beforehand.
+    """
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    for y, label in zip(y_data, labels):
+        if len(y) == 1:
+            ax.plot(0, y[0], "o", label=label)
+        else:
+            ax.plot(range(len(y)), y, label=label)
+
+    ax.set_title(plot_name)
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Residual")
+    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.0)
+    ax.grid(True)
+
+    fig.tight_layout()
+    fig.savefig(f"{directory / plot_name}.png", format="png")
+    fig.show()

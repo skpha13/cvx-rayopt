@@ -64,7 +64,7 @@ class Configuration:
         if self.solver not in solver_methods:
             raise ValueError(f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}")
 
-        A, x = solver_methods[self.solver]()
+        A, x, _ = solver_methods[self.solver]()
         if self.solver in ["least-squares", "linear-least-squares"] and self.number_of_lines is not None:
             return solver.compute_solution_top_k(A, x, k=self.number_of_lines, binary=binary)
 

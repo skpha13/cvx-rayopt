@@ -15,7 +15,7 @@ rasterization: Rasterization = "xiaolin-wu"
 
 def main():
     src = ImageWrapper.histogram_equalization(image)
-    A, x = linear_least_squares(
+    A, x, _ = linear_least_squares(
         src,
         shape,
         number_of_pegs,
