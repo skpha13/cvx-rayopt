@@ -317,7 +317,7 @@ class Benchmark:
     ) -> None:
         """Perform an analysis of benchmarking results by generating and saving plots that show the differences
         between output images and the ground truth image, as well as RMSE and time and memory usage for each benchmark.
-        Additionally, it also computes the residual history over iterations.
+        Additionally, it also computes the residual history and normalized residual history over iterations.
 
         Parameters
         ----------
@@ -377,8 +377,8 @@ class Benchmark:
         fig.show()
 
         # plot residual over iterations
-        fig, ax = plt.subplots()
-        plot_name = "Normalized Residual History"
+        raw_residuals = [np.array(benchmark.residual_history) for benchmark in benchmarks]
+        plot_residuals(raw_residuals, labels, "Residual History", directory)
 
         # flatten all residuals to find global min and max
         all_residuals = [r for benchmark in benchmarks for r in benchmark.residual_history]
@@ -386,27 +386,18 @@ class Benchmark:
         global_max = np.max(all_residuals)
         range_eps = global_max - global_min if global_max != global_min else 1e-8  # avoid division by zero
 
-        for benchmark, label in zip(benchmarks, labels):
-            residuals = np.array(benchmark.residual_history)
-
+        normalized_residuals = []
+        for residuals in raw_residuals:
             if len(residuals) == 1:
                 # global normalization
                 normalized = (residuals - global_min) / range_eps
-                ax.plot(0, normalized[0], "o", label=label)
             else:
                 # local normalization
                 normalized = (residuals - np.min(residuals)) / (np.max(residuals) - np.min(residuals) + 1e-8)
-                ax.plot(range(len(normalized)), normalized, label=label)
 
-        ax.set_title(plot_name)
-        ax.set_xlabel("Iteration")
-        ax.set_ylabel("Residual")
-        ax.legend(fontsize=8, loc="best")
-        ax.grid(True)
+            normalized_residuals.append(normalized)
 
-        fig.tight_layout()
-        fig.savefig(f"{directory / plot_name}.png", format="png")
-        fig.show()
+        plot_residuals(normalized_residuals, labels, "Normalized Residual History", directory)
 
         # plot time and memory
         monotonic_time = [benchmark.elapsed_monotonic_time for benchmark in benchmarks]
@@ -473,3 +464,40 @@ def prepare_diff_images(
     ]
 
     return diff_images
+
+
+def plot_residuals(y_data: List[np.array], labels: List[str], plot_name: str, directory: str | Path) -> None:
+    """Plot residuals over iterations for multiple benchmarks and save the resulting figure.
+
+    Each series in `y_data` corresponds to a sequence of residuals for a specific benchmark.
+    If a residual sequence contains only one value, it will be plotted as a single point.
+
+    Parameters
+    ----------
+    y_data : List[np.array]
+        A list of 1D NumPy arrays where each array represents residuals for a benchmark over iterations.
+    labels : List[str]
+        A list of strings used as labels for each benchmark's residual plot. Must be the same length as `y_data`.
+    plot_name : str
+        Title of the plot and the filename used when saving the image (without file extension).
+    directory : str or Path
+        Directory where the resulting plot image will be saved. If it does not exist, it should be created beforehand.
+    """
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    for y, label in zip(y_data, labels):
+        if len(y) == 1:
+            ax.plot(0, y[0], "o", label=label)
+        else:
+            ax.plot(range(len(y)), y, label=label)
+
+    ax.set_title(plot_name)
+    ax.set_xlabel("Iteration")
+    ax.set_ylabel("Residual")
+    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.0)
+    ax.grid(True)
+
+    fig.tight_layout()
+    fig.savefig(f"{directory / plot_name}.png", format="png")
+    fig.show()
