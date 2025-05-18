@@ -21,6 +21,7 @@ from stringart.utils.time_memory_format import (
     format_time,
 )
 from stringart.utils.types import CropMode, ElapsedTime, MemorySize, Rasterization
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -225,14 +226,21 @@ class Benchmark:
 
         results: List[BenchmarkResult] = []
 
-        for benchmark_to_run in self.benchmarks_to_run:
+        for benchmark_to_run in tqdm(self.benchmarks_to_run, desc="Running Benchmarks"):
             func, params = benchmark_to_run
-            logger.info(f" Started Function: {func.__name__}, Params: {params}")
 
-            result = self.run_benchmark(func, **params)
-            results.append(result)
+            logger.info(f"===== Starting Benchmark =====")
+            logger.info(f"Function: {func.__name__}")
+            logger.info(f"Parameters: {params}")
 
-            logger.info(f" Finished")
+            try:
+                result = self.run_benchmark(func, **params)
+                results.append(result)
+            except Exception as e:
+                logger.exception(f"Benchmark failed for {func.__name__} with params {params}. Exception: {e}")
+                continue
+
+            logger.info(f"Completed Function: {func.__name__}")
 
         return results
 
@@ -261,8 +269,11 @@ class Benchmark:
             benchmark_results[index].output_image_path = str(directory / image_name)
 
         json_results = [result.to_json() for result in benchmark_results]
-        with open(Benchmark.BENCHMARKS_PATH / f"{filename}.json", "w") as file:
+        filepath = Benchmark.BENCHMARKS_PATH / f"{filename}.json"
+        with open(filepath, "w") as file:
             json.dump(json_results, file, indent=4)
+
+        logger.info(f"Benchmarks saved to: {filepath}")
 
     @staticmethod
     def load_benchmarks(filename: str) -> List[BenchmarkResult]:
@@ -280,7 +291,8 @@ class Benchmark:
         List[BenchmarkResult]
             A list of `BenchmarkResult` objects created from the benchmark data in the JSON file.
         """
-        with open(Benchmark.BENCHMARKS_PATH / f"{filename}.json", "r") as file:
+        filepath = Benchmark.BENCHMARKS_PATH / f"{filename}.json"
+        with open(filepath, "r") as file:
             benchmarks = json.load(file)
 
         for benchmark in benchmarks:
@@ -291,6 +303,7 @@ class Benchmark:
             BenchmarkResult(**benchmark) for benchmark in benchmarks  # unpack dict values into constructor
         ]
 
+        logger.info(f"Loaded benchmarks: {filepath}")
         return benchmarks_class
 
     def run_analysis(
@@ -378,6 +391,8 @@ class Benchmark:
         plot_bar_graph("Time Usage", "Time (s)", monotonic_time, "skyblue")
         # memory plot
         plot_bar_graph("Memory Usage", "Memory (MB)", memory_size, "orange")
+
+        logger.info(f"Analysis saved to: {directory}")
 
 
 def prepare_diff_images(

@@ -1,3 +1,4 @@
+import logging
 from typing import List, cast
 
 import numpy as np
@@ -6,6 +7,7 @@ from cvxopt import matrix, solvers
 from numpy.linalg import lstsq
 from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
+from tqdm import tqdm
 
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.mp.greedy_selector import GreedySelector
@@ -13,6 +15,8 @@ from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers, Rasterization
+
+logger = logging.getLogger(__name__)
 
 
 class Solver:
@@ -135,6 +139,7 @@ class Solver:
             And the x solution of the system.
         """
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+        logger.info(f"Least Squares: {matrix_representation}")
 
         A, pegs = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
@@ -145,6 +150,9 @@ class Solver:
             x, _, _, _ = lstsq(A, self.b)
         elif matrix_representation == "sparse":
             x = lsqr(A, self.b)[0]
+
+        residual = np.linalg.norm(self.b - A @ x)
+        logger.info(f"Residual: {residual:.6f}")
 
         return A, x
 
@@ -173,15 +181,19 @@ class Solver:
             The solution vector `x` that minimizes the least squares problem `||Ax - b||^2`
             subject to the specified bounds.
         """
-
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+        logger.info(f"Linear Least Squares: {matrix_representation}")
 
         A, _ = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
         optimize_results: scipy.optimize.OptimizeResult = scipy.optimize.lsq_linear(A, self.b, bounds=bounds)
+        x = optimize_results.x
 
-        return A, optimize_results.x
+        residual = np.linalg.norm(self.b - A @ x)
+        logger.info(f"Residual: {residual:.6f}")
+
+        return A, x
 
     def matching_pursuit(
         self,
@@ -220,8 +232,8 @@ class Solver:
         based on their dot product with the target vector `b` (or randomly, depending on the
         selector type) and minimizes the residual error in the least squares problem.
         """
-
         mp_method = mp_method if mp_method else "orthogonal"
+        logger.info(f"Matching Pursuit: {mp_method}")
 
         radius, center_point = find_radius_and_center_point(self.shape, self.crop_mode)
         pegs: List[Point] = compute_pegs(
@@ -246,7 +258,10 @@ class Solver:
         elif mp_method == "orthogonal":
             mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
 
-        for step in range(number_of_lines):
+        for step in tqdm(range(number_of_lines), desc="Selecting Lines"):
+            logger.info(f"Step {step}/{number_of_lines}")
+            logger.info("-" * 30)
+
             # exclude already selected lines
             remaining_lines_indices = all_line_indices - selected_lines
             remaining_candidate_lines = candidate_lines[:, list(remaining_lines_indices)]
@@ -267,7 +282,10 @@ class Solver:
 
             # if the error does not decrease
             residual = np.linalg.norm(self.b - A @ x)
+            logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
+
             if not residual < past_residual:
+                logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
                 break
             past_residual = residual
 
@@ -324,7 +342,7 @@ class Solver:
         self,
         solver: QPSolvers | None = "cvxopt",
         matrix_representation: MatrixRepresentation | None = "sparse",
-        k: int | None = 10,
+        k: int | None = 3,
         max_iterations: int | None = 100,
     ):
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
@@ -351,10 +369,11 @@ class Solver:
         x_fixed : np.ndarray
             A binary solution vector of shape (n,), where entries are either 0 or 1.
         """
-
         solver: QPSolvers = solver if solver else "cvxopt"
+        logger.info(f"Binary Projection Least Squares: {solver}")
+
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
-        k = k if k else 10
+        k = k if k else 3
         max_iterations = max_iterations if max_iterations else 100
 
         A, _ = MatrixGenerator.compute_matrix(
@@ -366,8 +385,10 @@ class Solver:
         set1 = set()
 
         past_residual = np.inf
-        for iteration in range(max_iterations):
-            print(f"Iteration: {iteration}")
+        for iteration in tqdm(range(max_iterations), desc="Iterating"):
+            logger.info(f"Iteration {iteration}/{max_iterations}")
+            logger.info("-" * 30)
+
             free_indices = np.isnan(x_fixed)
 
             # Step 1: solve least squares for current fixed values
@@ -404,7 +425,10 @@ class Solver:
             x_residual[~np.isnan(x_fixed)] = x_fixed[~np.isnan(x_fixed)]
 
             residual = np.linalg.norm(self.b - A @ x_residual)
+            logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
+
             if not residual < past_residual:
+                logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
                 break
             past_residual = residual
 

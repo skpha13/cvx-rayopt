@@ -1,5 +1,6 @@
 import logging
 import os.path
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import get_args
@@ -11,8 +12,10 @@ from stringart.mp.greedy_selector import GreedySelector
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import Benchmark
+from stringart.utils.time_memory_format import convert_monotonic_time, format_time
 from stringart.utils.types import (
     CropMode,
+    ElapsedTime,
     MatchingPursuitMethod,
     MatrixRepresentation,
     Metadata,
@@ -22,7 +25,6 @@ from stringart.utils.types import (
 )
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
@@ -83,7 +85,12 @@ class Configuration:
             solver = self._get_solver_instance()
             save_path = self.metadata.path / "outputs" / f"{image_name}.png"
 
+            time_start = time.monotonic()
             solution = self._solve(solver)
+            time_end = time.monotonic()
+            elapsed_monotonic_time = time_end - time_start
+            elapsed_time: ElapsedTime = convert_monotonic_time(elapsed_monotonic_time)
+            logger.info(f"Elapsed Time: {format_time(elapsed_time)}")
 
             if not running_tests:
                 plt.axis("off")
@@ -110,7 +117,6 @@ class Configuration:
             # TODO: user should be able to change the filename
             if not running_tests:
                 Benchmark.save_benchmarks(results, "benchmarks_01")
-                logger.info(f"Benchmarks saved to: {Benchmark.BENCHMARKS_PATH}")
 
             return
 
@@ -124,5 +130,3 @@ class Configuration:
                 ground_truth_image=1 - image,
                 dirname="analysis_01",
             )
-
-            logger.info(f"Analysis saved to: {Benchmark.PLOTS_PATH}")
