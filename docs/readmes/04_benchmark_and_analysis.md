@@ -74,7 +74,7 @@ The **Dense** method requires significantly more memory because it needs to stor
 
 The two **Least Squares** methods appear as single dots, as they provide a complete solution in one step and do not involve iterative updates.
 
-We can observe that the **Binary Projection LS** methods stop early, around residual value **~168**, while the other methods continue to decrease their residuals, trending toward **120**.
+We can observe that the **Binary Projection LS** methods stop early, around residual value **~168**, while the other methods continue to decrease their residuals, trending toward **120**. However, it shows the steepest decline among all the methods.
 
 Interestingly, the greedy method with the **dot-product heuristic** for **Matching Pursuit** performs worse than the **random heuristic** and the **orthogonal** selection strategies.
 
