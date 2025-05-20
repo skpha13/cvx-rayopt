@@ -199,13 +199,17 @@ At the end of the iterative loop:
 
 > Time Usage
 
-Although CVXOPT appears faster, this is misleading, its early stopping mechanism was triggered sooner, thus drawing less lines and reducing runtime but did not reflect actual computational efficiency.
-
 ![Memory Usage](../plots/binary_projection/Memory%20Usage.png)
 
 > Memory Usage
 
+![Residual Over Iterations](../plots/binary_projection/Residual%20History.png)
+
+> Residual Over Iterations
+
+The SciPy solver achieves a more efficient reduction in the residual and converges to the same final residual as CVXOPT, but it requires more computation time to do so.
+
 ## Bibliography
 
-- [Boyd & Vandenberghe — Convex Optimization, Chapter 4 (Free online)](https://web.stanford.edu/~boyd/cvxbook/)
-- [CVXOPT User Guide](https://cvxopt.org/userguide/coneprog.html#quadratic-programming)
+- [**Boyd & Vandenberghe — Convex Optimization, Chapter 4 (Free online)**](https://web.stanford.edu/~boyd/cvxbook/)
+- [**CVXOPT User Guide**](https://cvxopt.org/userguide/coneprog.html#quadratic-programming)
