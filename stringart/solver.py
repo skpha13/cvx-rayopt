@@ -14,7 +14,22 @@ from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers, Rasterization
+from stringart.utils.regularization import (
+    AbsoluteValueRegularizer,
+    BinaryValueRegularizer,
+    NoRegularizer,
+    Regularizer,
+    SmoothRegularizer,
+)
+from stringart.utils.types import (
+    CropMode,
+    MatchingPursuitMethod,
+    MatrixRepresentation,
+    Point,
+    QPSolvers,
+    Rasterization,
+    RegularizationType,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -293,7 +308,7 @@ class Solver:
         return A, x, residual_history
 
     @classmethod
-    def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, lambd: float = 0.1, regularizer=None):
+    def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
         """Solves a constrained quadratic program using CVXOPT.
 
         The optimization problem is formulated as:
@@ -316,98 +331,32 @@ class Solver:
         x : np.ndarray
             The solution vector of shape (n,), constrained to [0, 1].
         """
-
+        # TODO: refactor these into classes
         if hasattr(A, "toarray"):
             A = A.toarray()
+
+        solvers.options["abstol"] = 1e-8
+        solvers.options["reltol"] = 1e-8
+        solvers.options["feastol"] = 1e-8
+        solvers.options["show_progress"] = False
 
         m, n = A.shape
         P = 2 * (A.T @ A)
         q = -2 * (A.T @ b)
 
         if regularizer is None:
-            # original problem: minimize (1/2)x^T P x + q^T x with bounds 0 <= x <= 1
-            P_cvx = matrix(P.astype(np.float64))
-            q_cvx = matrix(q.astype(np.float64))
-            G_cvx = matrix(np.vstack((-np.eye(n), np.eye(n))))
-            h_cvx = matrix(np.hstack((np.zeros(n), np.ones(n))))
+            regularizer = NoRegularizer()
 
-            solvers.options["show_progress"] = False
-            solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
-            x = np.array(solution["x"]).flatten()
-            return x
+        P_reg, q_reg, G, h = regularizer.prepare_matrices(P, q, n, lambd)
 
-        elif regularizer == "smooth":
-            # R(x) = 4x(1-x) = -4x^2 + 4x
-            # Add lambda*(-4x^2 + 4x) to objective, so:
-            # New P = P + lambda*(-8 * I)  because of 1/2 factor in cvxopt qp
-            # New q = q + lambda * 4 * 1
-            # Note: CVXOPT solves min (1/2) x^T P x + q^T x
-            # So quadratic term coefficient is halved, adjust accordingly
+        P_cvx = matrix(P_reg.astype(np.float64))
+        q_cvx = matrix(q_reg.astype(np.float64))
+        G_cvx = matrix(G.astype(np.float64))
+        h_cvx = matrix(h.astype(np.float64))
 
-            # Add -8*lambda to diagonal of P because P in qp is 2x of Hessian
-            min_eig = np.min(np.linalg.eigvalsh(P))
-            max_lambda = min_eig / 8
-            if lambd > max_lambda:
-                print(f"Warning: lambd too large for PSD: reducing lambd from {lambd} to {max_lambda * 0.9}")
-                lambd = max_lambda * 0.9
+        solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
 
-            P_reg = P + np.eye(n) - 8 * lambd * np.eye(n)
-
-            q_reg = q + 4 * lambd * np.ones(n)
-
-            P_cvx = matrix(P_reg.astype(np.float64))
-            q_cvx = matrix(q_reg.astype(np.float64))
-            G_cvx = matrix(np.vstack((-np.eye(n), np.eye(n))))
-            h_cvx = matrix(np.hstack((np.zeros(n), np.ones(n))))
-
-            solvers.options["show_progress"] = False
-            solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
-            x = np.array(solution["x"]).flatten()
-            return x
-
-        elif regularizer == "abs":
-            # Introduce auxiliary variables t >= |x-0.5|
-            # Variables: z = [x; t], length = 2n
-            # Objective: (1/2) x^T P x + q^T x + lambda * sum(2 t)
-            # Constraints:
-            #   0 <= x <= 1
-            #   t >= x - 0.5  --> x - t <= 0.5
-            #   t >= -x + 0.5 --> -x - t <= -0.5
-
-            P_block = np.block([[P, np.zeros((n, n))], [np.zeros((n, n)), np.zeros((n, n))]])
-
-            q_block = np.hstack([q, 2 * lambd * np.ones(n)])
-
-            # Inequality constraints Gz <= h:
-            # 1) -x <= 0
-            # 2) x <= 1
-            # 3) x - t <= 0.5
-            # 4) -x - t <= -0.5
-
-            G_upper = np.vstack(
-                [
-                    np.hstack([-np.eye(n), np.zeros((n, n))]),  # -x <= 0
-                    np.hstack([np.eye(n), np.zeros((n, n))]),  # x <= 1
-                    np.hstack([np.eye(n), -np.eye(n)]),  # x - t <= 0.5
-                    np.hstack([-np.eye(n), -np.eye(n)]),  # -x - t <= -0.5
-                ]
-            )
-
-            h_upper = np.hstack([np.zeros(n), np.ones(n), 0.5 * np.ones(n), -0.5 * np.ones(n)])  # 0  # 1
-
-            P_cvx = matrix(P_block.astype(np.float64))
-            q_cvx = matrix(q_block.astype(np.float64))
-            G_cvx = matrix(G_upper.astype(np.float64))
-            h_cvx = matrix(h_upper.astype(np.float64))
-
-            solvers.options["show_progress"] = False
-            solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
-
-            x = np.array(solution["x"][:n]).flatten()
-            return x
-
-        else:
-            raise ValueError("regularizer must be None, 'smooth', or 'abs'")
+        return regularizer.post_process(solution, n)
 
     def binary_projection_ls(
         self,
@@ -513,17 +462,27 @@ class Solver:
     def ls_regularized(
         self,
         matrix_representation: MatrixRepresentation | None = "sparse",
+        regularizer: RegularizationType | None = None,
         lambd: float = 0.1,
-        regularizer=None,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         logger.info(f"Regularized Least Squares: {regularizer}")
+
+        regularization_map = {
+            "smooth": SmoothRegularizer,
+            "abs": AbsoluteValueRegularizer,
+            "binary": BinaryValueRegularizer,
+            # any other value -> NoRegularizer
+        }
+
+        regularizer_class = regularization_map.get(regularizer, NoRegularizer)
+        regularizer_instance = regularizer_class()
 
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         A, _ = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
 
-        x = self._solve_qp_cvxopt(A, self.b, lambd, regularizer)
+        x = self._solve_qp_cvxopt(A, self.b, regularizer_instance, lambd)
 
         residual = np.linalg.norm(self.b - A @ x)
 
