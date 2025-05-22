@@ -15,7 +15,7 @@ crop_mode: CropMode = "center"
 number_of_pegs = 50
 matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
-lambd = 1
+lambd = 10
 
 
 def solve():
@@ -98,7 +98,7 @@ def analyze():
     x_reg_abs = benchmarks[2].x
     x_reg_binary = benchmarks[3].x
 
-    bin_and_plot([x_reg_none, x_reg_smooth, x_reg_abs, x_reg_binary], labels=["None", "Smooth", "abs", "binary"])
+    bin_and_plot([x_reg_none, x_reg_smooth, x_reg_abs, x_reg_binary], labels=["None", "smooth", "abs", "binary"])
 
     benchmark.run_analysis(benchmarks, image, dirname="least_squares_regularized")
 

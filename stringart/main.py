@@ -5,6 +5,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import get_args
 
+from joblib.externals.loky.backend.resource_tracker import register
+
 from stringart.cli_functions import Configuration
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.utils.types import (
@@ -14,6 +16,7 @@ from stringart.utils.types import (
     Metadata,
     QPSolvers,
     Rasterization,
+    RegularizationType,
 )
 
 SOLVE_COMMAND_NAME = "solve"
@@ -109,8 +112,28 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         help="Maximum number of iterations to run the binary projection solver before stopping.",
     )
 
+    ls_reg = solver_subparsers.add_parser("least-squares-regularized", help="Least Squares Regularized options.")
+    ls_reg.add_argument(
+        "--matrix-representation",
+        choices=get_args(MatrixRepresentation),
+        required=False,
+        help="Matrix representation method. Defaults to `sparse`.",
+    )
+    ls_reg.add_argument(
+        "--regularizer",
+        choices=get_args(RegularizationType),
+        required=False,
+        help="Regularization method. Defaults to None.",
+    )
+    ls_reg.add_argument(
+        "--lambda",
+        type=float,
+        required=False,
+        help="The regularization strength. Defaults to 0.1",
+    )
+
     # Common Arguments
-    for subparser in [ls_parser, lls_parser, mp_parser, bpls_parser, benchmarks_parser, analysis_parser]:
+    for subparser in [ls_parser, lls_parser, mp_parser, bpls_parser, benchmarks_parser, analysis_parser, ls_reg]:
         subparser.add_argument(
             "--image-path",
             type=str,
@@ -175,6 +198,8 @@ def main() -> None:
         qp_solver=getattr(args, "qp_solver", None),
         k=getattr(args, "k", None),
         max_iterations=getattr(args, "max_iterations", None),
+        regularizer=getattr(args, "regularizer", None),
+        lambd=getattr(args, "lambda", None),
     )
 
     configuration.run_configuration()

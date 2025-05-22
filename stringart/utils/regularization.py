@@ -1,6 +1,9 @@
+import logging
 from abc import ABC, abstractmethod
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 class Regularizer(ABC):
@@ -42,8 +45,7 @@ class SmoothRegularizer(Regularizer):
         min_eig = np.min(np.linalg.eigvalsh(P))
         max_lambda = min_eig / 8
         if lambd > max_lambda:
-            # TODO: use logger instead
-            print(f"Warning: lambd too large for PSD: reducing lambd from {lambd} to {max_lambda * 0.9}")
+            logger.warning(f"Warning: lambd too large for PSD: reducing lambd from {lambd} to {max_lambda * 0.9}")
             lambd = max_lambda * 0.9
 
         P_reg = P + np.eye(n) - 8 * lambd * np.eye(n)

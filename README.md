@@ -43,12 +43,13 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Solves
 
-| **Solvers**            | **Description**                                                                                                                                    |
-|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `least-squares`        | Solves the system using a standard least squares method. Suitable for dense or sparse matrix formulations.                                         |
-| `linear-least-squares` | Alias or variant of least-squares solver focusing on linear positive constraints.                                                                  |
-| `binary-projection-ls` | Solves a binary-constrained problem by iteratively projecting least squares solutions to binary values.                                            |
-| `matching-pursuit`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on correlation. Supports `greedy` and `orthogonal` variants. |
+| **Solvers**                 | **Description**                                                                                                                                    |
+|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `least-squares`             | Solves the system using a standard least squares method. Suitable for dense or sparse matrix formulations.                                         |
+| `linear-least-squares`      | Alias or variant of least-squares solver focusing on linear positive constraints.                                                                  |
+| `binary-projection-ls`      | Solves a binary-constrained problem by iteratively projecting least squares solutions to binary values.                                            |
+| `least-squares-regularized` | Solves a regularized least squares problem using quadratic programming.                                                                            |
+| `matching-pursuit`          | A greedy method that incrementally builds a solution by selecting atoms (lines) based on correlation. Supports `greedy` and `orthogonal` variants. |
 
 
 #### Least Squares Solver Arguments
@@ -66,6 +67,14 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.                        |
 | `--k`                     | Number of variables to fix to 1 in each iteration. Optional. Default: `3`                                            |
 | `--max-iterations`        | Maximum number of iterations to run before stopping. Optional. Default: `100`                                        |
+
+#### Least Squares Regularized Solver Arguments
+
+| **Argument**              | **Description**                                                                                     |
+|---------------------------|-----------------------------------------------------------------------------------------------------|
+| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.       |
+| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`, `binary`. Default is `None`. |
+| `--lambda`                | The regularization strength. Defaults to `0.1`.                                                     |
 
 #### Matching Pursuit Solver Arguments
 
@@ -102,7 +111,10 @@ python ./stringart/main.py solve least-squares  --image-path ./imgs/lena.png --c
 python ./stringart/main.py solve linear-least-squares --number-of-lines 1000 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 
 # runs the binary projection least squares with the `scipy` solver
- python .\stringart\main.py solve binary-projection-ls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
+ python ./stringart/main.py solve binary-projection-ls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
+ 
+# runs the regularized least squares with the `smooth` regularizer and a strenght of 10.
+ python ./stringart/main.py solve least-squares-regularized --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 ```
 
 ## Developer Documentation

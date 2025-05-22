@@ -325,13 +325,17 @@ class Solver:
             The input matrix of shape (m, n). Can be a sparse matrix.
         b : np.ndarray
             The target vector of shape (m,).
+        regularizer : Regularizer or None, optional
+            An object that defines regularization behavior. If None, no regularization is applied
+            (i.e., `NoRegularizer()` is used).
+        lambd : float, optional
+            Regularization strength. Only used if a `regularizer` is provided. Default is 0.1.
 
         Returns
         -------
         x : np.ndarray
             The solution vector of shape (n,), constrained to [0, 1].
         """
-        # TODO: refactor these into classes
         if hasattr(A, "toarray"):
             A = A.toarray()
 
@@ -463,8 +467,30 @@ class Solver:
         self,
         matrix_representation: MatrixRepresentation | None = "sparse",
         regularizer: RegularizationType | None = None,
-        lambd: float = 0.1,
+        lambd: float | None = 0.1,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+        """Solves a regularized least squares problem using quadratic programming.
+
+        Parameters
+        ----------
+        matrix_representation : MatrixRepresentation or None, default="sparse"
+            Format for matrix construction, e.g., "sparse" or "dense".
+        regularizer : {"smooth", "abs", "binary"} or None, optional
+            The type of regularization to apply. Supported values:
+                - "smooth" : Applies smoothness regularization.
+                - "abs" : Applies L1-norm (absolute value) regularization.
+                - "binary" : Encourages binary-like solutions.
+                - None or any other value : No regularization is applied.
+        lambd : float, optional
+            The regularization strength. Defaults to 0.1. Ignored if `regularizer` is None.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The binary x solution of the system, where entries are either 1 or 0.
+            - The residuals history.
+        """
         logger.info(f"Regularized Least Squares: {regularizer}")
 
         regularization_map = {
@@ -476,6 +502,7 @@ class Solver:
 
         regularizer_class = regularization_map.get(regularizer, NoRegularizer)
         regularizer_instance = regularizer_class()
+        lambd = lambd if lambd else 0.1
 
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         A, _ = MatrixGenerator.compute_matrix(
