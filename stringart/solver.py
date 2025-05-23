@@ -94,7 +94,6 @@ class Solver:
 
         return solution
 
-    # TODO: think if we should expose binary to CLI
     def compute_solution_top_k(self, A: np.ndarray, x: np.ndarray, k: int = 1000, binary: bool = False) -> np.ndarray:
         """Computes the solution image using only the top-k elements from the input vector.
 

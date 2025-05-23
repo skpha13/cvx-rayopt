@@ -27,10 +27,28 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     # subcommand: run_benchmarks
     benchmarks_parser = subparsers.add_parser("run-benchmarks", help="Run all benchmarks for StringArt.")
+    benchmarks_parser.add_argument(
+        "--output-dir",
+        type=str,
+        required=False,
+        help="Name of the directory where benchmark results will be saved. Default: benchmarks_01",
+    )
     # subcommand: run_analysis
     analysis_parser = subparsers.add_parser("run-analysis", help="Run analysis on StringArt benchmarks.")
-    # subcommand: compute
+    analysis_parser.add_argument(
+        "--input-benchmark-dir",
+        type=str,
+        required=True,
+        help="Directory name for the benchmark output to load benchmarks.",
+    )
+    analysis_parser.add_argument(
+        "--analysis-name",
+        type=str,
+        required=False,
+        help="Name of the directory containing the benchmark results to analyze. Default: analysis_01",
+    )
 
+    # subcommand: solve
     solve_parser = subparsers.add_parser(SOLVE_COMMAND_NAME, help="Compute StringArt configurations.")
     solver_subparsers = solve_parser.add_subparsers(title="Solvers", dest="solver", required=True)
 
@@ -200,6 +218,8 @@ def main() -> None:
         max_iterations=getattr(args, "max_iterations", None),
         regularizer=getattr(args, "regularizer", None),
         lambd=getattr(args, "lambda", None),
+        input_benchmark_dir=getattr(args, "input_benchmark_dir", None),
+        output_dir=getattr(args, "output_dir", None),
     )
 
     configuration.run_configuration()

@@ -34,19 +34,22 @@ class Configuration:
     command: str
     solver: SolverType
     image_path: str | Path
-    number_of_pegs: int | None
-    crop_mode: CropMode | None
-    rasterization: Rasterization | None
-    matrix_representation: MatrixRepresentation | None
-    mp_method: MatchingPursuitMethod | None
-    number_of_lines: int | None
-    selector_type: GreedySelector | None
-    binary: bool | None
-    qp_solver: QPSolvers | None
-    k: int | None
-    max_iterations: int | None
-    regularizer: RegularizationType | None
-    lambd: float | None
+    number_of_pegs: int | None = None
+    crop_mode: CropMode | None = None
+    rasterization: Rasterization | None = None
+    matrix_representation: MatrixRepresentation | None = None
+    mp_method: MatchingPursuitMethod | None = None
+    number_of_lines: int | None = None
+    selector_type: GreedySelector | None = None
+    binary: bool | None = None
+    qp_solver: QPSolvers | None = None
+    k: int | None = None
+    max_iterations: int | None = None
+    regularizer: RegularizationType | None = None
+    lambd: float | None = None
+
+    output_dir: str | None = None
+    input_benchmark_dir: str | None = None
 
     def _get_solver_instance(self) -> Solver:
         image = ImageWrapper.read_bw(self.image_path)
@@ -113,24 +116,25 @@ class Configuration:
         )
 
         if self.command == "run-benchmarks":
+            output_dir = self.output_dir if self.output_dir else "benchmarks_01"
             results = benchmark.run_benchmarks()
 
             formatted_results = "\n\n".join([str(result) for result in results])
             logger.info(formatted_results)
 
-            # TODO: user should be able to change the filename
             if not running_tests:
-                Benchmark.save_benchmarks(results, "benchmarks_01")
+                Benchmark.save_benchmarks(results, output_dir)
 
             return
 
         if self.command == "run-analysis":
-            # TODO: give name of benchmark output
-            benchmarks = Benchmark.load_benchmarks("benchmarks_01")
+            input_dir = self.input_benchmark_dir
+            output_dir = self.output_dir if self.output_dir else "analysis_01"
 
-            # TODO: configurable name for analysis
+            benchmarks = Benchmark.load_benchmarks(input_dir)
+
             benchmark.run_analysis(
                 benchmarks=benchmarks,
                 ground_truth_image=1 - image,
-                dirname="analysis_01",
+                dirname=output_dir,
             )

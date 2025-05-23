@@ -25,15 +25,7 @@ class TestPipeline:
             crop_mode="center",
             rasterization="bresenham",
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -48,15 +40,7 @@ class TestPipeline:
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="sparse",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -71,15 +55,7 @@ class TestPipeline:
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="sparse",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -92,17 +68,9 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
-            rasterization=None,
-            matrix_representation=None,
             mp_method="greedy",
             number_of_lines=10,
             selector_type="random",
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -116,16 +84,9 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="bresenham",
-            matrix_representation=None,
             mp_method="greedy",
             number_of_lines=10,
             selector_type="dot-product",
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -139,16 +100,8 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
             mp_method="orthogonal",
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -161,17 +114,8 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="first-half",
-            rasterization=None,
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_second_half = Configuration(
@@ -181,17 +125,8 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="second-half",
-            rasterization=None,
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_center = Configuration(
@@ -201,17 +136,8 @@ class TestPipeline:
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
-            rasterization=None,
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_first_half.run_configuration(running_tests=True)
@@ -227,16 +153,7 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_cvxopt = Configuration(
@@ -248,15 +165,10 @@ class TestPipeline:
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="sparse",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
             qp_solver="cvxopt",
             k=3,
             max_iterations=1,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_scipy = Configuration(
@@ -268,15 +180,10 @@ class TestPipeline:
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
             qp_solver="scipy",
             k=10,
             max_iterations=5,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_defaults.run_configuration(running_tests=True)
@@ -292,16 +199,6 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_smooth = Configuration(
@@ -312,14 +209,6 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
             regularizer="smooth",
             lambd=0.1,
         )
@@ -332,14 +221,6 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
             regularizer="abs",
             lambd=0.1,
         )
@@ -352,14 +233,6 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
             regularizer="binary",
             lambd=0.1,
         )

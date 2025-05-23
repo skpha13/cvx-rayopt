@@ -52,13 +52,8 @@ class ConfigurationFactory:
             crop_mode=self.crop_mode,
             rasterization=rasterization,
             matrix_representation=self.matrix_representation,
-            mp_method=None,
             number_of_lines=number_of_lines,
-            selector_type=None,
             binary=binary,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
         )
 
 

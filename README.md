@@ -41,7 +41,21 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--crop-mode`      | Crop mode to apply to the input image. Choices: `first-half`, `center`, `second-half`. Optional. Defaults to `center`. |
 | `--rasterization`  | Line rasterization algorithm. Choices: `bresenham` (fast integer-based), `xiaolin-wu` (anti-aliased). Optional.        |
 
-#### Solves
+#### Benchmark
+
+| **Argument**   | **Description**                                                                                  |
+|----------------|--------------------------------------------------------------------------------------------------|
+| `--output-dir` | Optional. Name of the directory where benchmark results will be saved. Default: `benchmarks_01`. |
+
+#### Analysis
+
+| **Argument**            | **Description**                                                                               |
+|-------------------------|-----------------------------------------------------------------------------------------------|
+| `--input-benchmark-dir` | **Required.** Directory name containing the benchmark results to be analyzed.                 |
+| `--analysis-name`       | Optional. Name of the directory where analysis results will be saved. Default: `analysis_01`. |
+
+
+#### Solvers
 
 | **Solvers**                 | **Description**                                                                                                                                    |
 |-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -93,7 +107,7 @@ python ./stringart/main.py run-benchmarks --image-path ./imgs/lena.png
 
 # run analysis on provided benchmarks
 # this should be run after the `run-benchmarks` command.
-python ./stringart/main.py run-analysis --image-path ./imgs/lena.png 
+python ./stringart/main.py run-analysis --input-benchmark-dir benchmarks_01 --image-path ./imgs/lena.png 
 
 # runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 100, the crop mode for the image center and the rasterization algorithm xiaolin-wu.
 python ./stringart/main.py solve least-squares --image-path ./imgs/lena.png --rasterization xiaolin-wu 
@@ -113,7 +127,7 @@ python ./stringart/main.py solve linear-least-squares --number-of-lines 1000 --i
 # runs the binary projection least squares with the `scipy` solver
  python ./stringart/main.py solve binary-projection-ls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
  
-# runs the regularized least squares with the `smooth` regularizer and a strenght of 10.
+# runs the regularized least squares with the `smooth` regularizer and a strength of 10.
  python ./stringart/main.py solve least-squares-regularized --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 ```
 
