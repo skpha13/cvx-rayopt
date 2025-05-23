@@ -39,7 +39,7 @@ def main():
     result = benchmark.load_benchmarks("benchmark_experiment")[0]
     print(result)
 
-    A, _ = MatrixGenerator.compute_matrix(
+    A = MatrixGenerator.compute_matrix(
         result.shape,
         result.number_of_pegs,
         result.crop_mode,

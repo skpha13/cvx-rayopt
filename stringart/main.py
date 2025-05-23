@@ -189,6 +189,7 @@ def validate_arguments(args):
 
 
 def main() -> None:
+    # TODO: change logging level from CLI
     logging.basicConfig(level=logging.INFO)
 
     stringart_directory: Path = Path(os.path.dirname(os.path.abspath(__file__)))

@@ -24,7 +24,7 @@ class TestMatrixOperations:
         image = np.zeros(shape, dtype=np.uint8)
 
         cropped = crop_image(image, crop_mode)
-        A, pegs = MatrixGenerator.compute_matrix(
+        A = MatrixGenerator.compute_matrix(
             shape=np.shape(cropped),
             number_of_pegs=20,
             crop_mode=crop_mode,

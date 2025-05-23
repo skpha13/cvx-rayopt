@@ -22,7 +22,7 @@ def linear_programming(
     crop_mode: CropMode = "center",
     matrix_representation: MatrixRepresentation = "sparse",
 ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
+    A = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation)
     b: np.ndarray = ImageWrapper.flatten_image(image)
 
     model = pulp.LpProblem("Sparse_Regression_CSR_Positive_X", pulp.LpMinimize)

@@ -45,10 +45,9 @@ class MatrixGenerator:
 
         Returns
         -------
-        tuple[np.ndarray, List[Point], List[Point]]
-            - A 2D numpy array (shape: number_of_lines x grid_size) where each row is a binary vector
-              representing a line drawn between two pegs.
-            - A list of Points representing the locations of the pegs.
+        A : np.ndarray
+            A 2D numpy array (shape: grid_size X number_of_lines) where each row is a binary vector
+            representing a line drawn between two pegs.
         """
         radius, center_point = find_radius_and_center_point(shape, crop_mode)
         pegs: List[Point] = compute_pegs(
@@ -65,7 +64,7 @@ class MatrixGenerator:
         A = MatrixGenerator.method_map[matrix_representation](shape, pegs, rasterization)
         A = A.astype(np.float64)
 
-        return A, pegs
+        return A
 
     @staticmethod
     def generate_dense_line(shape: tuple[int, ...], line: List[Point]) -> np.ndarray:

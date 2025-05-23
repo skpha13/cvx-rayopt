@@ -12,8 +12,6 @@ from tqdm import tqdm
 from stringart.line_algorithms.matrix import MatrixGenerator
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
-from stringart.utils.circle import compute_pegs
-from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.optimize.regularization import (
     AbsoluteValueRegularizer,
     BinaryValueRegularizer,
@@ -21,6 +19,8 @@ from stringart.optimize.regularization import (
     Regularizer,
     SmoothRegularizer,
 )
+from stringart.utils.circle import compute_pegs
+from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.types import (
     CropMode,
     MatchingPursuitMethod,
@@ -64,11 +64,12 @@ class Solver:
         image = crop_image(image, crop_mode=crop_mode)
 
         self.shape: tuple[int, ...] = image.shape
-        self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
-        self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
         self.crop_mode: CropMode = crop_mode
         self.number_of_pegs: int = number_of_pegs
         self.rasterization: Rasterization = rasterization
+
+        self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
+        self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
 
     def compute_solution(self, A: np.ndarray, x: np.ndarray) -> np.ndarray:
         """Computes the solution image for the string art procedure.
@@ -156,7 +157,7 @@ class Solver:
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         logger.info(f"Least Squares: {matrix_representation}")
 
-        A, pegs = MatrixGenerator.compute_matrix(
+        A = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
 
@@ -196,7 +197,7 @@ class Solver:
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         logger.info(f"Linear Least Squares: {matrix_representation}")
 
-        A, _ = MatrixGenerator.compute_matrix(
+        A = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
         optimize_results: scipy.optimize.OptimizeResult = scipy.optimize.lsq_linear(A, self.b, bounds=bounds)
@@ -399,7 +400,7 @@ class Solver:
         k = k if k else 3
         max_iterations = max_iterations if max_iterations else 100
 
-        A, _ = MatrixGenerator.compute_matrix(
+        A = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
 
@@ -504,7 +505,7 @@ class Solver:
         lambd = lambd if lambd else 0.1
 
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
-        A, _ = MatrixGenerator.compute_matrix(
+        A = MatrixGenerator.compute_matrix(
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
 
