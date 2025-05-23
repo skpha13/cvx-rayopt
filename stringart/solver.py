@@ -14,7 +14,7 @@ from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.regularization import (
+from stringart.optimize.regularization import (
     AbsoluteValueRegularizer,
     BinaryValueRegularizer,
     NoRegularizer,
