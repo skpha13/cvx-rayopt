@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import pulp
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, MatrixRepresentation

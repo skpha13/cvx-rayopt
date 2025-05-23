@@ -1,5 +1,5 @@
 import pytest
-from stringart.line_algorithms.xiaolin_wu import XiaolinWu
+from stringart.line.xiaolin_wu import XiaolinWu
 from stringart.utils.types import Point
 
 

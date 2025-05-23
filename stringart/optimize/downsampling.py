@@ -1,6 +1,6 @@
 import numpy as np
 from skimage.util import view_as_blocks
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
 from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization
 

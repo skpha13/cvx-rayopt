@@ -1,4 +1,4 @@
-from stringart.line_algorithms.bresenham import Bresenham, Point
+from stringart.line.bresenham import Bresenham, Point
 
 
 class TestBresenham:

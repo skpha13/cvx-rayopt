@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.perf_analyzer import Benchmark

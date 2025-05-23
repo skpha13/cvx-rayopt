@@ -2,8 +2,8 @@ from typing import Callable, List
 
 import numpy as np
 from scipy.sparse import csr_matrix
-from stringart.line_algorithms.bresenham import Bresenham
-from stringart.line_algorithms.xiaolin_wu import XiaolinWu
+from stringart.line.bresenham import Bresenham
+from stringart.line.xiaolin_wu import XiaolinWu
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import find_radius_and_center_point
 from stringart.utils.types import CropMode, MatrixRepresentation, Point, Rasterization

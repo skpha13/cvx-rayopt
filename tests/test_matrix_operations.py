@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import crop_image, find_radius_and_center_point
 from stringart.utils.types import Point

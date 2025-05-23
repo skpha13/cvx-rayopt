@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from scipy.linalg import lstsq
 from scipy.sparse.linalg import lsqr
 from skimage import io
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.types import CropMode, MatrixRepresentation
 

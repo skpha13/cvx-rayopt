@@ -9,7 +9,7 @@ from scipy.sparse import csr_matrix, hstack
 from scipy.sparse.linalg import lsqr
 from tqdm import tqdm
 
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.optimize.regularization import (

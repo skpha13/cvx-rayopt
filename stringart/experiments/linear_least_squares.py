@@ -5,7 +5,7 @@ import numpy as np
 import scipy
 from matplotlib import pyplot as plt
 from stringart.experiments.least_squares_rounding import compute_solution
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization
