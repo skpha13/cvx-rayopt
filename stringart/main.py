@@ -5,8 +5,6 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import get_args
 
-from joblib.externals.loky.backend.resource_tracker import register
-
 from stringart.cli_functions import Configuration
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.utils.types import (
@@ -24,6 +22,14 @@ SOLVE_COMMAND_NAME = "solve"
 
 def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     """Add arguments to the parser for different commands and options."""
+    parser.add_argument(
+        "--log-level",
+        choices=["INFO", "WARNING"],
+        default="INFO",
+        required=False,
+        help="Set the logging level (default: INFO).",
+    )
+
     subparsers = parser.add_subparsers(title="Commands", dest="command")
     # subcommand: run_benchmarks
     benchmarks_parser = subparsers.add_parser("run-benchmarks", help="Run all benchmarks for StringArt.")
@@ -189,9 +195,6 @@ def validate_arguments(args):
 
 
 def main() -> None:
-    # TODO: change logging level from CLI
-    logging.basicConfig(level=logging.INFO)
-
     stringart_directory: Path = Path(os.path.dirname(os.path.abspath(__file__)))
     directory: Path = stringart_directory.parent.resolve()
     metadata = Metadata(directory)
@@ -200,6 +203,8 @@ def main() -> None:
     add_arguments(parser)
     args = parser.parse_args()
     validate_arguments(args)
+
+    logging.basicConfig(level=getattr(logging, args.log_level))
 
     configuration = Configuration(
         metadata=metadata,

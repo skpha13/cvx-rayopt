@@ -25,34 +25,35 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Summary of Key Commands 
 
-| **Command**         | **Description**                                                                                                                  |
-|---------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| `run-benchmarks`    | Run all benchmarks for StringArt.                                                                                                |
-| `run-analysis`      | Run analysis on StringArt benchmarks.                                                                                            |
-| `solve`             | Compute StringArt configurations using the specified solver and options.                                                         |
-| `--help`            | Displays help information.                                                                                                       |
+| **Command**      | **Description**                                                          |
+|------------------|--------------------------------------------------------------------------|
+| `run-benchmarks` | Run all benchmarks for StringArt.                                        |
+| `run-analysis`   | Run analysis on StringArt benchmarks.                                    |
+| `solve`          | Compute StringArt configurations using the specified solver and options. |
+| `--log-level`    | Set the logging level. Defaults to `INFO`.                               |
+| `--help`         | Displays help information.                                               |
 
 #### Common Arguments
 
-| **Argument**       | **Description**                                                                                                        |
-|--------------------|------------------------------------------------------------------------------------------------------------------------|
-| `--image-path`     | Path to the input image. Required.                                                                                     |
-| `--number-of-pegs` | Number of pegs to use. Optional. Defaults to 100 if not specified.                                                     |
-| `--crop-mode`      | Crop mode to apply to the input image. Choices: `first-half`, `center`, `second-half`. Optional. Defaults to `center`. |
-| `--rasterization`  | Line rasterization algorithm. Choices: `bresenham` (fast integer-based), `xiaolin-wu` (anti-aliased). Optional.        |
+| **Argument**       | **Description**                                                                                                                |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| `--image-path`     | Path to the input image. Required.                                                                                             |
+| `--number-of-pegs` | Number of pegs to use. Default `100`.                                                                                          |
+| `--crop-mode`      | Crop mode to apply to the input image. Choices: `first-half`, `center`, `second-half`. Defaults to `center`.                   |
+| `--rasterization`  | Line rasterization algorithm. Choices: `bresenham` (fast integer-based), `xiaolin-wu` (anti-aliased). Defaults to `bresenham`. |
 
 #### Benchmark
 
-| **Argument**   | **Description**                                                                                  |
-|----------------|--------------------------------------------------------------------------------------------------|
-| `--output-dir` | Optional. Name of the directory where benchmark results will be saved. Default: `benchmarks_01`. |
+| **Argument**   | **Description**                                                                           |
+|----------------|-------------------------------------------------------------------------------------------|
+| `--output-dir` | Name of the directory where benchmark results will be saved. Defaults to `benchmarks_01`. |
 
 #### Analysis
 
-| **Argument**            | **Description**                                                                               |
-|-------------------------|-----------------------------------------------------------------------------------------------|
-| `--input-benchmark-dir` | **Required.** Directory name containing the benchmark results to be analyzed.                 |
-| `--analysis-name`       | Optional. Name of the directory where analysis results will be saved. Default: `analysis_01`. |
+| **Argument**            | **Description**                                                                        |
+|-------------------------|----------------------------------------------------------------------------------------|
+| `--input-benchmark-dir` | **Required.** Directory name containing the benchmark results to be analyzed.          |
+| `--analysis-name`       | Name of the directory where analysis results will be saved. Defaults to `analysis_01`. |
 
 
 #### Solvers
@@ -68,35 +69,35 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Least Squares Solver Arguments
 
-| **Argument**              | **Description**                                                                                                         |
-|---------------------------|-------------------------------------------------------------------------------------------------------------------------|
-| `--matrix-representation` | Specify the matrix representation method for the `least-squares` solver. Choices: `dense`, `sparse`. Default: `sparse`. |
-| `--number-of-lines`       | Optional. Number of top lines to select.                                                                                |
+| **Argument**              | **Description**                                                                                                            |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `--matrix-representation` | Specify the matrix representation method for the `least-squares` solver. Choices: `dense`, `sparse`. Defaults to `sparse`. |
+| `--number-of-lines`       | Optional. Number of top lines to select.                                                                                   |
 
 #### Binary Projection LS Solver Arguments
 
-| **Argument**              | **Description**                                                                                                      |
-|---------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `--qp-solver`             | Quadratic programming solver to use for least squares step. Choices: `cvxopt`, `scipy`. Optional. Default: `cvxopt`. |
-| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.                        |
-| `--k`                     | Number of variables to fix to 1 in each iteration. Optional. Default: `3`                                            |
-| `--max-iterations`        | Maximum number of iterations to run before stopping. Optional. Default: `100`                                        |
+| **Argument**              | **Description**                                                                                               |
+|---------------------------|---------------------------------------------------------------------------------------------------------------|
+| `--qp-solver`             | Quadratic programming solver to use for least squares step. Choices: `cvxopt`, `scipy`. Defaults to `cvxopt`. |
+| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Defaults to `sparse`.                        |
+| `--k`                     | Number of variables to fix to 1 in each iteration. Defaults to `3`                                            |
+| `--max-iterations`        | Maximum number of iterations to run before stopping. Defaults to `100`                                        |
 
 #### Least Squares Regularized Solver Arguments
 
-| **Argument**              | **Description**                                                                                     |
-|---------------------------|-----------------------------------------------------------------------------------------------------|
-| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.       |
-| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`, `binary`. Default is `None`. |
-| `--lambda`                | The regularization strength. Defaults to `0.1`.                                                     |
+| **Argument**              | **Description**                                                                                      |
+|---------------------------|------------------------------------------------------------------------------------------------------|
+| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Defaults to `sparse`.               |
+| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`, `binary`. Defaults to `None`. |
+| `--lambda`                | The regularization strength. Defaults to `0.1`.                                                      |
 
 #### Matching Pursuit Solver Arguments
 
-| **Argument**        | **Description**                                                                                                  |
-|---------------------|------------------------------------------------------------------------------------------------------------------|
-| `--method`          | Algorithm selection for matching pursuit. Choices: `greedy`, `orthogonal`. Optional. Default: `orthogonal`.      |
-| `--selector`        | Selector method to use with `greedy` method. Choices: `random`, `dot-product`. Optional. Default: `dot-product`. |
-| `--number-of-lines` | Required. Number of top lines to select.                                                                         |
+| **Argument**        | **Description**                                                                                           |
+|---------------------|-----------------------------------------------------------------------------------------------------------|
+| `--method`          | Algorithm selection for matching pursuit. Choices: `greedy`, `orthogonal`. Defaults to `orthogonal`.      |
+| `--selector`        | Selector method to use with `greedy` method. Choices: `random`, `dot-product`. Defaults to `dot-product`. |
+| `--number-of-lines` | Required. Number of top lines to select.                                                                  |
 
 
 #### Example Commands:
