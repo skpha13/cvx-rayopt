@@ -19,7 +19,7 @@ SolverType = Literal[
 
 QPSolvers = Literal["scipy", "cvxopt"]
 
-RegularizationType = Literal["smooth", "abs", "binary"]
+RegularizationType = Literal["smooth", "abs"]
 
 
 @dataclass

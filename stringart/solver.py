@@ -16,10 +16,10 @@ from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.regularization import (
     AbsoluteValueRegularizer,
-    BinaryValueRegularizer,
     NoRegularizer,
     Regularizer,
     SmoothRegularizer,
+    WeightedRegularizer,
 )
 from stringart.utils.types import (
     CropMode,
@@ -368,6 +368,7 @@ class Solver:
         matrix_representation: MatrixRepresentation | None = "sparse",
         k: int | None = 3,
         max_iterations: int | None = 100,
+        regularized: bool = False,  # TODO: add to docstring and CLI
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
 
@@ -408,6 +409,11 @@ class Solver:
         x_fixed = np.full(n, np.nan)  # nan means unfixed
         set1 = set()
 
+        if regularized:
+            regularizer = WeightedRegularizer(n)
+        else:
+            regularizer = None
+
         past_residual = np.inf
         residual_history = []
         for iteration in tqdm(range(max_iterations), desc="Iterating"):
@@ -426,7 +432,7 @@ class Solver:
 
             bounds = (0, 1)
             if solver == "cvxopt":
-                x_free = self._solve_qp_cvxopt(A_free, b_adjusted)
+                x_free = self._solve_qp_cvxopt(A_free, b_adjusted, regularizer)
             else:
                 result = scipy.optimize.lsq_linear(A_free, b_adjusted, bounds=bounds)
                 x_free = result.x
@@ -458,6 +464,11 @@ class Solver:
                 break
             past_residual = residual
 
+            # updating weights for regularization
+            if regularizer:
+                x_free_weights = np.delete(x_free, top_k_indices)
+                regularizer.update_weights(x_free_weights)
+
         # fill in the remaining values (if any) with 0
         x_fixed[np.isnan(x_fixed)] = 0
 
@@ -475,11 +486,10 @@ class Solver:
         ----------
         matrix_representation : MatrixRepresentation or None, default="sparse"
             Format for matrix construction, e.g., "sparse" or "dense".
-        regularizer : {"smooth", "abs", "binary"} or None, optional
+        regularizer : {"smooth", "abs"} or None, optional
             The type of regularization to apply. Supported values:
                 - "smooth" : Applies smoothness regularization.
                 - "abs" : Applies L1-norm (absolute value) regularization.
-                - "binary" : Encourages binary-like solutions.
                 - None or any other value : No regularization is applied.
         lambd : float, optional
             The regularization strength. Defaults to 0.1. Ignored if `regularizer` is None.
@@ -496,7 +506,6 @@ class Solver:
         regularization_map = {
             "smooth": SmoothRegularizer,
             "abs": AbsoluteValueRegularizer,
-            "binary": BinaryValueRegularizer,
             # any other value -> NoRegularizer
         }
 

@@ -70,11 +70,11 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Least Squares Regularized Solver Arguments
 
-| **Argument**              | **Description**                                                                                     |
-|---------------------------|-----------------------------------------------------------------------------------------------------|
-| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.       |
-| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`, `binary`. Default is `None`. |
-| `--lambda`                | The regularization strength. Defaults to `0.1`.                                                     |
+| **Argument**              | **Description**                                                                               |
+|---------------------------|-----------------------------------------------------------------------------------------------|
+| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`. |
+| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`. Default is `None`.     |
+| `--lambda`                | The regularization strength. Defaults to `0.1`.                                               |
 
 #### Matching Pursuit Solver Arguments
 
@@ -113,7 +113,7 @@ python ./stringart/main.py solve linear-least-squares --number-of-lines 1000 --i
 # runs the binary projection least squares with the `scipy` solver
  python ./stringart/main.py solve binary-projection-ls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
  
-# runs the regularized least squares with the `smooth` regularizer and a strenght of 10.
+# runs the regularized least squares with the `smooth` regularizer and a strength of 10.
  python ./stringart/main.py solve least-squares-regularized --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 ```
 

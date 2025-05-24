@@ -344,27 +344,6 @@ class TestPipeline:
             lambd=0.1,
         )
 
-        configuration_binary = Configuration(
-            metadata=self.metadata,
-            command="solve",
-            solver="least-squares-regularized",
-            image_path=self.img_path,
-            number_of_pegs=10,
-            crop_mode="center",
-            rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer="binary",
-            lambd=0.1,
-        )
-
         configuration_no_reg.run_configuration(running_tests=True)
         configuration_smooth.run_configuration(running_tests=True)
         configuration_abs.run_configuration(running_tests=True)
-        configuration_binary.run_configuration(running_tests=True)
