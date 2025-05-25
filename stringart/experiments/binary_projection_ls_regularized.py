@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-# TODO: add readme about this method
 def main():
     stringart_directory: Path = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     directory: Path = stringart_directory.parent.resolve()
