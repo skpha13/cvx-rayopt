@@ -61,13 +61,13 @@ class SmoothRegularizer(Regularizer):
 
 
 class AbsoluteValueRegularizer(Regularizer):
-    """Absolute value regularization that encourages values to be close to 0.5. -2|x-0.5|"""
+    """Absolute value regularization that encourages values to be close to 0.5. -|x-0.5|"""
 
     def prepare_matrices(
         self, P: np.ndarray, q: np.ndarray, n: int, lambd: float
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         P_block = np.block([[P, np.zeros((n, n))], [np.zeros((n, n)), np.zeros((n, n))]])
-        q_block = np.hstack([q, -2 * lambd * np.ones(n)])
+        q_block = np.hstack([q, -lambd * np.ones(n)])
 
         G_upper = np.vstack(
             [
@@ -86,27 +86,42 @@ class AbsoluteValueRegularizer(Regularizer):
         return x
 
 
-class BinaryValueRegularizer(Regularizer):
-    """Regularization that encourages values to be exactly 0 or 1."""
+class WeightedRegularizer(Regularizer):
+    """A regularizer that applies a weighted entropy-like penalty of the form x(1 - x)."""
 
-    def prepare_matrices(
-        self, P: np.ndarray, q: np.ndarray, n: int, lambd: float
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-        P_block = np.block([[P, np.zeros((n, n))], [np.zeros((n, n)), np.zeros((n, n))]])
-        q_block = np.hstack([q, lambd * np.ones(n)])
+    def __init__(self, n: int):
+        """Initialize the regularizer with an identity weight matrix.
 
-        G_upper = np.vstack(
-            [
-                np.hstack([-np.eye(n), np.zeros((n, n))]),  # -x <= 0
-                np.hstack([np.eye(n), np.zeros((n, n))]),  # x <= 1
-                np.hstack([np.eye(n), -np.eye(n)]),  # x - t <= 0
-                np.hstack([-np.eye(n), -np.eye(n)]),  # -x - t <= -1
-            ]
-        )
-        h_upper = np.hstack([np.zeros(n), np.ones(n), np.zeros(n), -np.ones(n)])
+        Parameters
+        ----------
+        n : int
+            Dimension of the initial decision variable.
+        """
+        self.w = np.diag(np.ones(n))
 
-        return P_block, q_block, G_upper, h_upper
+    def update_weights(self, x_free: np.ndarray):
+        """Update the diagonal weight matrix using the entropy-like formula x(1 - x).
+
+        Parameters
+        ----------
+        x_free : np.ndarray
+            Current estimate of the free variables (values between 0 and 1).
+        """
+
+        epsilon = 1e-6
+
+        w_vector = x_free * (1 - x_free) + epsilon
+
+        self.w = np.diag(w_vector)
+
+    def prepare_matrices(self, P: np.ndarray, q: np.ndarray, n: int, lambd: float):
+        P_reg = P + lambd * self.w
+        q_reg = q
+
+        G = np.vstack((-np.eye(n), np.eye(n)))
+        h = np.hstack((np.zeros(n), np.ones(n)))
+
+        return P_reg, q_reg, G, h
 
     def post_process(self, solution: dict, n: int) -> np.ndarray:
-        x = np.array(solution["x"][:n]).flatten()
-        return x
+        return np.array(solution["x"]).flatten()

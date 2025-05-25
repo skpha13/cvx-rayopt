@@ -82,14 +82,15 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Defaults to `sparse`.                        |
 | `--k`                     | Number of variables to fix to 1 in each iteration. Defaults to `3`                                            |
 | `--max-iterations`        | Maximum number of iterations to run before stopping. Defaults to `100`                                        |
+| `--lambda`                | The regularization strength. Defaults to `None`.                                                              |
 
 #### Least Squares Regularized Solver Arguments
 
-| **Argument**              | **Description**                                                                                      |
-|---------------------------|------------------------------------------------------------------------------------------------------|
-| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Defaults to `sparse`.               |
-| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`, `binary`. Defaults to `None`. |
-| `--lambda`                | The regularization strength. Defaults to `0.1`.                                                      |
+| **Argument**              | **Description**                                                                            |
+|---------------------------|--------------------------------------------------------------------------------------------|
+| `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Defaults to `sparse`.     |
+| `--regularizer`           | The type of regularization to apply. Choices: `None`, `smooth`, `abs`. Defaults to `None`. |
+| `--lambda`                | The regularization strength. Defaults to `0.1`.                                            |
 
 #### Matching Pursuit Solver Arguments
 

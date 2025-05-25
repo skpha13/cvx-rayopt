@@ -135,6 +135,12 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         required=False,
         help="Maximum number of iterations to run the binary projection solver before stopping.",
     )
+    bpls_parser.add_argument(
+        "--lambda",
+        type=float,
+        required=False,
+        help="The regularization strength. Defaults to None",
+    )
 
     ls_reg = solver_subparsers.add_parser("least-squares-regularized", help="Least Squares Regularized options.")
     ls_reg.add_argument(

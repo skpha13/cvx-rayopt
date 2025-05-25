@@ -181,10 +181,10 @@ class Benchmark:
             (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "dot-product"}),
             (self.solver.binary_projection_ls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}),
             (self.solver.binary_projection_ls, {"solver": "scipy", "k": 3, "max_iterations": 1000}),
+            (self.solver.binary_projection_ls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000, "lambd": 100}),
             (self.solver.ls_regularized, {"regularizer": None, "lambda": 100}),
             (self.solver.ls_regularized, {"regularizer": "smooth", "lambda": 100}),
-            (self.solver.ls_regularized, {"regularizer": "abs", "lambda": 100}),
-            (self.solver.ls_regularized, {"regularizer": "binary", "lambda": 100}),
+            (self.solver.ls_regularized, {"regularizer": "abs", "lambda": 5000}),
             # fmt: on
         ]
 

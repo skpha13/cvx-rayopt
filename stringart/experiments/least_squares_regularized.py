@@ -15,7 +15,7 @@ crop_mode: CropMode = "center"
 number_of_pegs = 50
 matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
-lambd = 10
+lambd = 5000
 
 
 def solve():
@@ -43,21 +43,13 @@ def solve():
         regularizer="abs",
     )
 
-    print("Regularizer: binary")
-    benchmark_reg_binary = benchmark.run_benchmark(
-        solver.ls_regularized,
-        matrix_representation=matrix_representation,
-        lambd=lambd,
-        regularizer="binary",
-    )
-
     benchmark.save_benchmarks(
-        [benchmarks_reg_none, benchmarks_reg_smooth, benchmarks_reg_abs, benchmark_reg_binary],
+        [benchmarks_reg_none, benchmarks_reg_smooth, benchmarks_reg_abs],
         "least_squares_regularized",
     )
 
 
-def bin_and_plot(arrays: list[np.ndarray], labels: list[str] = None):
+def bin_and_plot(arrays: list[np.ndarray], labels: list[str] = None, fname: str = "regularized_x_binned.png"):
     if labels is None:
         labels = [f"Array {i+1}" for i in range(len(arrays))]
 
@@ -86,7 +78,7 @@ def bin_and_plot(arrays: list[np.ndarray], labels: list[str] = None):
     plt.legend()
     plt.grid(axis="y", linestyle="--", alpha=0.7)
     plt.tight_layout()
-    plt.savefig("../../outputs/experiments/regularized_x_binned.png")
+    plt.savefig(f"../../outputs/experiments/{fname}")
     plt.show()
 
 
@@ -96,9 +88,8 @@ def analyze():
     x_reg_none = benchmarks[0].x
     x_reg_smooth = benchmarks[1].x
     x_reg_abs = benchmarks[2].x
-    x_reg_binary = benchmarks[3].x
 
-    bin_and_plot([x_reg_none, x_reg_smooth, x_reg_abs, x_reg_binary], labels=["None", "smooth", "abs", "binary"])
+    bin_and_plot([x_reg_none, x_reg_smooth, x_reg_abs], labels=["None", "smooth", "abs"])
 
     benchmark.run_analysis(benchmarks, image, dirname="least_squares_regularized")
 

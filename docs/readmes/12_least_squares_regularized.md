@@ -55,10 +55,16 @@ q = -2A^Tb
 ### Formula
 
 ```math
-\lambda 1 - 2 \left| x - 0.5 \right|
+1 - 2 \left| x - 0.5 \right|
 ```
 
-This regularizer penalizes values close to 0.5 and rewards values closer to 0 or 1, forming a piecewise linear "V" shape centered at 0.5.
+This simplifies to:
+
+```math
+- \left| x - 0.5 \right|
+```
+
+The term `|x−0.5|` is convex, but its negation is concave. Including it in the objective breaks the convexity of the quadratic program (QP), making the problem non-convex.
 
 <img src="../../docs/assets/abs_regularizer_graph.png" width=400 alt="ABS Regularizer Graph">
 
@@ -81,7 +87,7 @@ z = \left[ x; t \right] \in \mathbb{R}^{2n}
 ### Modified Objective
 
 ```math
-\min_{x, t} \frac{1}{2} x^TPx + q^Tx + 2\lambda \sum_i{t_i} \text{ subject to } x \in [0,1]^n
+\min_{x, t} \frac{1}{2} x^TPx + q^Tx - \lambda \sum_i{t_i} \text{ subject to } x \in [0,1]^n
 ```
 
 ### Constraints
@@ -106,65 +112,13 @@ t \geq -x + 0.5
 
 These are incorporated into the QP using inequality constraints on the concatenated variable `z = [x;t]`
 
-## Binary Regularization
-
-### Objective
-
-This regularizer encourages the solution to take values exactly at 0 or 1, penalizing ambiguity between the two extremes.
-
-To achieve this, it introduces an auxiliary variable `t` that penalizes deviations from binary values.
-
-### Reformulation
-
-I define:
-
-```math
-z = \left[ x; t \right] \in \mathbb{R}^{2n}
-```
-
-and use constraints to enforce binary-like behavior:
-
-```math
-t_i \geq x_i - 0t_i \geq 1-x_i
-```
-
-This enforces:
-
-```math
-t_i \geq \max{(x_i, 1-x_i)}
-```
-
-Minimizing `t` encourages `x` to be close to either 0 or 1.
-
-### Modified Objective
-
-```math
-\min_{x, t} \frac{1}{2} x^TPx + q^Tx + \lambda \sum_i{t_i} \text{ subject to } x \in [0,1]^n
-```
-
-### Constraints
-
-The problem includes the following constraints:
-
-```math
-0 \leq x \leq 1
-```
-
-```math
-t \geq x
-```
-
-```math
-t \geq 1 - x
-```
-
 ## X Coefficient Histogram
 
 ![X Coefficient Histogram](../../outputs/experiments/regularized_x_binned.png)
 
 The **Smooth** regularizer closely resembles the behavior of having no regularization, especially when the regularization strength λ is set very low. This is often necessary to preserve the **positive semi-definite (PSD)** property of the QP matrix, which can be violated by stronger smoothness penalties.
 
-In contrast, both the **Absolute (ABS)** and **Binary** regularizers currently appear to have the opposite of their intended effect: instead of pushing values toward the extremes (0 or 1), they are clustering the solution around 0.5. This behavior is counterproductive, especially given that the regularization strength `λ = 10` was expected to enforce more distinct (binary-like) values.
+In contrast, the **Absolute (ABS)** regularizer does succeed in pushing the `x` values toward 1, but it requires a very large regularization weight (λ=5000) to have this effect. However, this high value also causes violations of the imposed box constraints.
 
 ## Results
 
