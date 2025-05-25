@@ -67,6 +67,7 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--matrix-representation` | Matrix representation method to use. Choices: `dense`, `sparse`. Optional. Default: `sparse`.                        |
 | `--k`                     | Number of variables to fix to 1 in each iteration. Optional. Default: `3`                                            |
 | `--max-iterations`        | Maximum number of iterations to run before stopping. Optional. Default: `100`                                        |
+| `--lambda`                | The regularization strength. Defaults to `None`.                                                                     |
 
 #### Least Squares Regularized Solver Arguments
 

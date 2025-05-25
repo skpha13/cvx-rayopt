@@ -308,7 +308,7 @@ class Solver:
         return A, x, residual_history
 
     @classmethod
-    def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
+    def solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
         """Solves a constrained quadratic program using CVXOPT.
 
         The optimization problem is formulated as:
@@ -368,7 +368,7 @@ class Solver:
         matrix_representation: MatrixRepresentation | None = "sparse",
         k: int | None = 3,
         max_iterations: int | None = 100,
-        regularized: bool = False,  # TODO: add to docstring and CLI
+        lambd: float | None = None,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
 
@@ -386,6 +386,8 @@ class Solver:
             Number of variables to fix to 1 in each iteration.
         max_iterations : int, default 100
             Maximum number of iterations for binary projection.
+        lambd: float, default None
+             If provided it will apply a weighted entropy-like regularization using the formula x(1−x).
 
         Returns
         -------
@@ -395,7 +397,7 @@ class Solver:
             - The residuals history.
         """
         solver: QPSolvers = solver if solver else "cvxopt"
-        logger.info(f"Binary Projection Least Squares: {solver}")
+        logger.info(f"Binary Projection Least Squares: {solver}, lambda={lambd}")
 
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         k = k if k else 3
@@ -409,7 +411,7 @@ class Solver:
         x_fixed = np.full(n, np.nan)  # nan means unfixed
         set1 = set()
 
-        if regularized:
+        if lambd:
             regularizer = WeightedRegularizer(n)
         else:
             regularizer = None
@@ -432,7 +434,7 @@ class Solver:
 
             bounds = (0, 1)
             if solver == "cvxopt":
-                x_free = self._solve_qp_cvxopt(A_free, b_adjusted, regularizer)
+                x_free = self.solve_qp_cvxopt(A_free, b_adjusted, regularizer, lambd)
             else:
                 result = scipy.optimize.lsq_linear(A_free, b_adjusted, bounds=bounds)
                 x_free = result.x
@@ -518,7 +520,7 @@ class Solver:
             self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
         )
 
-        x = self._solve_qp_cvxopt(A, self.b, regularizer_instance, lambd)
+        x = self.solve_qp_cvxopt(A, self.b, regularizer_instance, lambd)
 
         residual = np.linalg.norm(self.b - A @ x)
 

@@ -49,7 +49,7 @@ def solve():
     )
 
 
-def bin_and_plot(arrays: list[np.ndarray], labels: list[str] = None):
+def bin_and_plot(arrays: list[np.ndarray], labels: list[str] = None, fname: str = "regularized_x_binned.png"):
     if labels is None:
         labels = [f"Array {i+1}" for i in range(len(arrays))]
 
@@ -78,7 +78,7 @@ def bin_and_plot(arrays: list[np.ndarray], labels: list[str] = None):
     plt.legend()
     plt.grid(axis="y", linestyle="--", alpha=0.7)
     plt.tight_layout()
-    plt.savefig("../../outputs/experiments/regularized_x_binned.png")
+    plt.savefig(f"../../outputs/experiments/{fname}")
     plt.show()
 
 

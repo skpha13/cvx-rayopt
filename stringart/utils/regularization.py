@@ -87,10 +87,27 @@ class AbsoluteValueRegularizer(Regularizer):
 
 
 class WeightedRegularizer(Regularizer):
+    """A regularizer that applies a weighted entropy-like penalty of the form x(1 - x)."""
+
     def __init__(self, n: int):
+        """Initialize the regularizer with an identity weight matrix.
+
+        Parameters
+        ----------
+        n : int
+            Dimension of the initial decision variable.
+        """
         self.w = np.diag(np.ones(n))
 
     def update_weights(self, x_free: np.ndarray):
+        """Update the diagonal weight matrix using the entropy-like formula x(1 - x).
+
+        Parameters
+        ----------
+        x_free : np.ndarray
+            Current estimate of the free variables (values between 0 and 1).
+        """
+
         epsilon = 1e-6
 
         w_vector = x_free * (1 - x_free) + epsilon

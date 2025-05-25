@@ -15,14 +15,15 @@ number_of_pegs = 50
 matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
 k = 10
-max_iterations = 50
-regularized: bool = True
+max_iterations = 100
+lambd = 0.1
 
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+# TODO: add readme about this method
 def main():
     stringart_directory: Path = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     directory: Path = stringart_directory.parent.resolve()
@@ -38,7 +39,7 @@ def main():
         matrix_representation=matrix_representation,
         k=k,
         max_iterations=max_iterations,
-        regularized=regularized,
+        lambd=lambd,
     )
 
     benchmark_results = [cvxopt_result]
