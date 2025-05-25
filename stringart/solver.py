@@ -14,7 +14,22 @@ from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers, Rasterization
+from stringart.utils.regularization import (
+    AbsoluteValueRegularizer,
+    NoRegularizer,
+    Regularizer,
+    SmoothRegularizer,
+    WeightedRegularizer,
+)
+from stringart.utils.types import (
+    CropMode,
+    MatchingPursuitMethod,
+    MatrixRepresentation,
+    Point,
+    QPSolvers,
+    Rasterization,
+    RegularizationType,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +165,6 @@ class Solver:
         if matrix_representation == "dense":
             x, _, _, _ = lstsq(A, self.b)
         elif matrix_representation == "sparse":
-            # noinspection PyTypeChecker
             x = lsqr(A, self.b)[0]
 
         residual = np.linalg.norm(self.b - A @ x)
@@ -294,7 +308,7 @@ class Solver:
         return A, x, residual_history
 
     @classmethod
-    def _solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray):
+    def solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
         """Solves a constrained quadratic program using CVXOPT.
 
         The optimization problem is formulated as:
@@ -311,34 +325,42 @@ class Solver:
             The input matrix of shape (m, n). Can be a sparse matrix.
         b : np.ndarray
             The target vector of shape (m,).
+        regularizer : Regularizer or None, optional
+            An object that defines regularization behavior. If None, no regularization is applied
+            (i.e., `NoRegularizer()` is used).
+        lambd : float, optional
+            Regularization strength. Only used if a `regularizer` is provided. Default is 0.1.
 
         Returns
         -------
         x : np.ndarray
             The solution vector of shape (n,), constrained to [0, 1].
         """
-
-        if hasattr(A, "toarray"):  # check if it's a sparse matrix
+        if hasattr(A, "toarray"):
             A = A.toarray()
+
+        solvers.options["abstol"] = 1e-8
+        solvers.options["reltol"] = 1e-8
+        solvers.options["feastol"] = 1e-8
+        solvers.options["show_progress"] = False
 
         m, n = A.shape
         P = 2 * (A.T @ A)
         q = -2 * (A.T @ b)
 
-        # convert to cvxopt matrices, ensure float64 type
-        P_cvx = matrix(P.astype(np.float64))
-        q_cvx = matrix(q.astype(np.float64))
+        if regularizer is None:
+            regularizer = NoRegularizer()
 
-        # inequality Gx <= h for bounds 0 <= x <= 1
-        G_cvx = matrix(np.vstack((-np.eye(n), np.eye(n))))  # -I and I stacked vertically
-        h_cvx = matrix(np.hstack((np.zeros(n), np.ones(n))))
+        P_reg, q_reg, G, h = regularizer.prepare_matrices(P, q, n, lambd)
 
-        # no equality constraints
-        solvers.options["show_progress"] = False
+        P_cvx = matrix(P_reg.astype(np.float64))
+        q_cvx = matrix(q_reg.astype(np.float64))
+        G_cvx = matrix(G.astype(np.float64))
+        h_cvx = matrix(h.astype(np.float64))
+
         solution = solvers.qp(P_cvx, q_cvx, G_cvx, h_cvx)
 
-        x = np.array(solution["x"]).flatten()
-        return x
+        return regularizer.post_process(solution, n)
 
     def binary_projection_ls(
         self,
@@ -346,6 +368,7 @@ class Solver:
         matrix_representation: MatrixRepresentation | None = "sparse",
         k: int | None = 3,
         max_iterations: int | None = 100,
+        lambd: float | None = None,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Projects the solution of a least squares problem to a binary space using iterative top-k selection.
 
@@ -363,6 +386,8 @@ class Solver:
             Number of variables to fix to 1 in each iteration.
         max_iterations : int, default 100
             Maximum number of iterations for binary projection.
+        lambd: float, default None
+             If provided it will apply a weighted entropy-like regularization using the formula x(1−x).
 
         Returns
         -------
@@ -372,7 +397,7 @@ class Solver:
             - The residuals history.
         """
         solver: QPSolvers = solver if solver else "cvxopt"
-        logger.info(f"Binary Projection Least Squares: {solver}")
+        logger.info(f"Binary Projection Least Squares: {solver}, lambda={lambd}")
 
         matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
         k = k if k else 3
@@ -385,6 +410,11 @@ class Solver:
         n = A.shape[1]
         x_fixed = np.full(n, np.nan)  # nan means unfixed
         set1 = set()
+
+        if lambd is not None:
+            regularizer = WeightedRegularizer(n)
+        else:
+            regularizer = None
 
         past_residual = np.inf
         residual_history = []
@@ -404,7 +434,7 @@ class Solver:
 
             bounds = (0, 1)
             if solver == "cvxopt":
-                x_free = self._solve_qp_cvxopt(A_free, b_adjusted)
+                x_free = self.solve_qp_cvxopt(A_free, b_adjusted, regularizer, lambd)
             else:
                 result = scipy.optimize.lsq_linear(A_free, b_adjusted, bounds=bounds)
                 x_free = result.x
@@ -436,7 +466,62 @@ class Solver:
                 break
             past_residual = residual
 
+            # updating weights for regularization
+            if regularizer:
+                x_free_weights = np.delete(x_free, top_k_indices)
+                regularizer.update_weights(x_free_weights)
+
         # fill in the remaining values (if any) with 0
         x_fixed[np.isnan(x_fixed)] = 0
 
         return A, x_fixed, residual_history
+
+    def ls_regularized(
+        self,
+        matrix_representation: MatrixRepresentation | None = "sparse",
+        regularizer: RegularizationType | None = None,
+        lambd: float | None = 0.1,
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+        """Solves a regularized least squares problem using quadratic programming.
+
+        Parameters
+        ----------
+        matrix_representation : MatrixRepresentation or None, default="sparse"
+            Format for matrix construction, e.g., "sparse" or "dense".
+        regularizer : {"smooth", "abs"} or None, optional
+            The type of regularization to apply. Supported values:
+                - "smooth" : Applies smoothness regularization.
+                - "abs" : Applies L1-norm (absolute value) regularization.
+                - None or any other value : No regularization is applied.
+        lambd : float, optional
+            The regularization strength. Defaults to 0.1. Ignored if `regularizer` is None.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The binary x solution of the system, where entries are either 1 or 0.
+            - The residuals history.
+        """
+        logger.info(f"Regularized Least Squares: {regularizer}")
+
+        regularization_map = {
+            "smooth": SmoothRegularizer,
+            "abs": AbsoluteValueRegularizer,
+            # any other value -> NoRegularizer
+        }
+
+        regularizer_class = regularization_map.get(regularizer, NoRegularizer)
+        regularizer_instance = regularizer_class()
+        lambd = lambd if lambd else 0.1
+
+        matrix_representation: MatrixRepresentation = matrix_representation if matrix_representation else "sparse"
+        A, _ = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.crop_mode, matrix_representation, self.rasterization
+        )
+
+        x = self.solve_qp_cvxopt(A, self.b, regularizer_instance, lambd)
+
+        residual = np.linalg.norm(self.b - A @ x)
+
+        return A, x, [residual]

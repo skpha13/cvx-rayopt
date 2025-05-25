@@ -21,6 +21,7 @@ from stringart.utils.types import (
     Metadata,
     QPSolvers,
     Rasterization,
+    RegularizationType,
     SolverType,
 )
 
@@ -44,6 +45,8 @@ class Configuration:
     qp_solver: QPSolvers | None
     k: int | None
     max_iterations: int | None
+    regularizer: RegularizationType | None
+    lambd: float | None
 
     def _get_solver_instance(self) -> Solver:
         image = ImageWrapper.read_bw(self.image_path)
@@ -58,6 +61,7 @@ class Configuration:
             "linear-least-squares": lambda: solver.linear_least_squares(self.matrix_representation),
             "matching-pursuit": lambda: solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
             "binary-projection-ls": lambda: solver.binary_projection_ls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
+            "least-squares-regularized": lambda: solver.ls_regularized(self.matrix_representation, self.regularizer, self.lambd),
         }
         # fmt: on
 
