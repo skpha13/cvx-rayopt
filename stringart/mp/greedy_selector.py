@@ -5,7 +5,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.preprocessing import normalize
 
-GreedySelector = Literal["random", "dot-product"]
+GreedySelector = Literal["random", "dot-product", "all"]
 
 
 class Selector(ABC):
@@ -30,12 +30,13 @@ class Selector(ABC):
         Abstract method for selecting the top-k candidate indices based on a certain heuristic.
     """
 
-    TOP_K: int = 10
+    TOP_K: int = 100
 
     def __init__(self, A: csr_matrix, b: np.ndarray):
         self.A = A
         self.b = b
         self.rows, self.cols = A.shape
+        Selector.TOP_K = min(Selector.TOP_K, self.cols)
 
     @abstractmethod
     def get_top_k_candidates(self):
@@ -49,6 +50,13 @@ class Selector(ABC):
             An array containing the indices of the top-k selected candidates.
         """
         pass
+
+
+class AllSelector(Selector):
+    """Selects all candidates from the matrix `A`."""
+
+    def get_top_k_candidates(self):
+        return np.arange(self.cols)
 
 
 class RandomSelector(Selector):

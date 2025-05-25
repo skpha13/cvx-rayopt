@@ -273,7 +273,7 @@ class Solver:
         mp_instance: MatchingPursuit | None = None
         if mp_method == "greedy":
             selector_type = cast(GreedySelector, kwargs.get("selector_type", "dot-product"))
-            mp_instance = Greedy(A, self.b, selector_type=selector_type)
+            mp_instance = Greedy(A, self.b, selector_type=selector_type, residual_fn=self.residual_fn)
         elif mp_method == "orthogonal":
             mp_instance = Orthogonal(A, self.b)  # Orthogonal doesn't use A matrix
 
@@ -287,10 +287,17 @@ class Solver:
 
             best_index = 0
             try:
-                best_index = mp_instance.compute_best_column(remaining_candidate_lines)
+                best_index = mp_instance.compute_best_column(
+                    remaining_candidate_lines,
+                    selected_lines=selected_lines,
+                    remaining_lines_indices=remaining_lines_indices,
+                )
                 best_index = list(remaining_lines_indices)[best_index]
             except ValueError:
                 # it means no line was found
+                logger.info(
+                    "No suitable line found by the matching pursuit method in the remaining candidates. Stopping selection early."
+                )
                 break
 
             selected_lines.add(best_index)

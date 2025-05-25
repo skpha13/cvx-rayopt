@@ -1,3 +1,4 @@
+import logging
 import time
 
 import matplotlib.pyplot as plt
@@ -18,6 +19,9 @@ rasterization: Rasterization = "xiaolin-wu"
 
 number_of_lines: int = 1000
 mp_method: MatchingPursuitMethod = "greedy"
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def plot_image(image: np.ndarray, fname: str):
@@ -47,7 +51,7 @@ def dls(solver: Solver, residual_fn: UDSLoss):
 
 def dmp(solver: Solver, residual_fn: UDSLoss):
     """Downsampled Matching Pursuit"""
-    A, x, residuals = solver.mp(number_of_lines, mp_method, selector_type="random")
+    A, x, residuals = solver.mp(number_of_lines, mp_method, selector_type="all")
 
     start = time.monotonic()
     residual, solution = residual_fn(x)
