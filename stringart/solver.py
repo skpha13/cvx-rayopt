@@ -12,6 +12,7 @@ from tqdm import tqdm
 from stringart.line.matrix import MatrixGenerator
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
+from stringart.optimize.downsampling import UDSLoss
 from stringart.optimize.regularization import (
     AbsoluteValueRegularizer,
     NoRegularizer,
@@ -70,6 +71,8 @@ class Solver:
 
         self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
         self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
+
+        # self.residual_fn = UDSLoss(image, crop_mode, number_of_pegs, rasterization)
 
     def compute_solution(self, A: np.ndarray, x: np.ndarray) -> np.ndarray:
         """Computes the solution image for the string art procedure.
