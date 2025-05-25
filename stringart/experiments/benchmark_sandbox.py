@@ -28,7 +28,7 @@ def main():
     Benchmark.initialize_metadata(directory)
     benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
     result = benchmark.run_benchmark(
-        solver.least_squares,
+        solver.ls,
         matrix_representation=matrix_representation,
     )
     gt = np.array(result.output_image)

@@ -10,18 +10,21 @@ The image below showcases each output image computed with different line renderi
 
 ## Rendering Configurations
 
-| Figure | Solver               | Line Algorithm | Top K number of lines | Coefficient Type |
-|--------|----------------------|----------------|-----------------------|------------------|
-| a      | least-squares        | Bresenham      | ∞                     | float            |
-| b      | least-squares        | Bresenham      | 500                   | float            |
-| c      | least-squares        | Bresenham      | 500                   | binary (0/1)     |
-| d      | linear-least-squares | Bresenham      | ∞                     | float            |
-| e      | linear-least-squares | Bresenham      | 500                   | float            |
-| f      | linear-least-squares | Bresenham      | 500                   | binary (0/1)     |
-| g      | least-squares        | Xiaolin-Wu     | ∞                     | float            |
-| h      | least-squares        | Xiaolin-Wu     | 500                   | float            |
-| i      | least-squares        | Xiaolin-Wu     | 500                   | binary (0/1)     |
-| j      | linear-least-squares | Xiaolin-Wu     | ∞                     | float            |
-| k      | linear-least-squares | Xiaolin-Wu     | 500                   | float            |
-| l      | linear-least-squares | Xiaolin-Wu     | 500                   | binary (0/1)     |
+| Figure | Solver | Line Algorithm | Top K number of lines | Coefficient Type |
+|--------|--------|----------------|-----------------------|------------------|
+| a      | ls     | Bresenham      | ∞                     | float            |
+| b      | ls     | Bresenham      | 500                   | float            |
+| c      | ls     | Bresenham      | 500                   | binary (0/1)     |
+| d      | lls    | Bresenham      | ∞                     | float            |
+| e      | lls    | Bresenham      | 500                   | float            |
+| f      | lls    | Bresenham      | 500                   | binary (0/1)     |
+| g      | ls     | Xiaolin-Wu     | ∞                     | float            |
+| h      | ls     | Xiaolin-Wu     | 500                   | float            |
+| i      | ls     | Xiaolin-Wu     | 500                   | binary (0/1)     |
+| j      | lls    | Xiaolin-Wu     | ∞                     | float            |
+| k      | lls    | Xiaolin-Wu     | 500                   | float            |
+| l      | lls    | Xiaolin-Wu     | 500                   | binary (0/1)     |
 
+Abbreviations:
+- **ls** – Least Squares
+- **lls** – Linear Least Squares

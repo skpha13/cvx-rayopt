@@ -19,7 +19,7 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -34,7 +34,7 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -49,7 +49,7 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="linear-least-squares",
+            solver="lls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -64,7 +64,7 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="matching-pursuit",
+            solver="mp",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -79,7 +79,7 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="matching-pursuit",
+            solver="mp",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -95,7 +95,7 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="matching-pursuit",
+            solver="mp",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -110,7 +110,7 @@ class TestPipeline:
         configuration_first_half = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="first-half",
@@ -121,7 +121,7 @@ class TestPipeline:
         configuration_second_half = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="second-half",
@@ -132,7 +132,7 @@ class TestPipeline:
         configuration_center = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -148,7 +148,7 @@ class TestPipeline:
         configuration_defaults = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="binary-projection-ls",
+            solver="bpls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -159,7 +159,7 @@ class TestPipeline:
         configuration_cvxopt = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="binary-projection-ls",
+            solver="bpls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -174,7 +174,7 @@ class TestPipeline:
         configuration_scipy = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="binary-projection-ls",
+            solver="bpls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -194,7 +194,7 @@ class TestPipeline:
         configuration_no_reg = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares-regularized",
+            solver="lsr",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -204,7 +204,7 @@ class TestPipeline:
         configuration_smooth = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares-regularized",
+            solver="lsr",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
@@ -216,7 +216,7 @@ class TestPipeline:
         configuration_abs = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares-regularized",
+            solver="lsr",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",

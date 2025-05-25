@@ -4,11 +4,11 @@ from pathlib import Path
 
 import numpy as np
 from stringart.experiments.least_squares_regularized import bin_and_plot
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
+from stringart.optimize.regularization import WeightedRegularizer
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.perf_analyzer import Benchmark, BenchmarkResult
-from stringart.utils.regularization import WeightedRegularizer
 from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization
 from tqdm import tqdm
 
@@ -32,7 +32,7 @@ def run_benchmarks(benchmark: Benchmark, solver: Solver):
     results: list[BenchmarkResult] = []
     for lambd in lambds:
         result = benchmark.run_benchmark(
-            solver.binary_projection_ls,
+            solver.bpls,
             solver="cvxopt",
             matrix_representation=matrix_representation,
             k=k,

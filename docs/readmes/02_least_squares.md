@@ -1,4 +1,4 @@
-# Least Squares
+# Least Squares (LS)
 
 ## Terminology
 

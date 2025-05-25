@@ -38,7 +38,7 @@ class ConfigurationFactory:
 
     def create(
         self,
-        solver: SolverType = "least-squares",
+        solver: SolverType = "ls",
         rasterization: Rasterization = "bresenham",
         number_of_lines: int | None = None,
         binary: bool = False,
@@ -173,19 +173,19 @@ def main():
 
     # fmt: off
     configs = [
-        config_factory.create("least-squares", "bresenham", None),
-        config_factory.create("least-squares", "bresenham", k),
-        config_factory.create("least-squares", "bresenham", k, binary=True),
-        config_factory.create("linear-least-squares", "bresenham", None),
-        config_factory.create("linear-least-squares", "bresenham", k),
-        config_factory.create("linear-least-squares", "bresenham", k, binary=True),
+        config_factory.create("ls", "bresenham", None),
+        config_factory.create("ls", "bresenham", k),
+        config_factory.create("ls", "bresenham", k, binary=True),
+        config_factory.create("lls", "bresenham", None),
+        config_factory.create("lls", "bresenham", k),
+        config_factory.create("lls", "bresenham", k, binary=True),
 
-        config_factory.create("least-squares", "xiaolin-wu", None),
-        config_factory.create("least-squares", "xiaolin-wu", k),
-        config_factory.create("least-squares", "xiaolin-wu", k, binary=True),
-        config_factory.create("linear-least-squares", "xiaolin-wu", None),
-        config_factory.create("linear-least-squares", "xiaolin-wu", k),
-        config_factory.create("linear-least-squares", "xiaolin-wu", k, binary=True),
+        config_factory.create("ls", "xiaolin-wu", None),
+        config_factory.create("ls", "xiaolin-wu", k),
+        config_factory.create("ls", "xiaolin-wu", k, binary=True),
+        config_factory.create("lls", "xiaolin-wu", None),
+        config_factory.create("lls", "xiaolin-wu", k),
+        config_factory.create("lls", "xiaolin-wu", k, binary=True),
     ]
     # fmt: on
 

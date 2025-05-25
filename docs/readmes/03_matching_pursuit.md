@@ -1,4 +1,4 @@
-# Matching Pursuit
+# Matching Pursuit (MP)
 
 ## Terminology
 

@@ -1,4 +1,4 @@
-# Binary Projection Least Squares
+# Binary Projection Least Squares (BPLS)
 
 This module solves binary-constrained least squares problems using a greedy projection approach with **quadratic programming (QP)** via `cvxopt`.
 

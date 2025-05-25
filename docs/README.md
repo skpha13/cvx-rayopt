@@ -10,6 +10,7 @@
    - [StringArt-AI](./readmes/10_stringart_ai.md)
    - [Binary Projection Least Squares](./readmes/11_binary_projection_ls.md)
    - [Regularized Least Squares](./readmes/12_least_squares_regularized.md)
+   - [Binary Projection Least Squares Regularized](./readmes/13_binary_projection_ls_reg.md)
 ## [Image Preprocessing](./readmes/08_image_preprocessing.md)
 ## [Benchmarks and Analysis](./readmes/04_benchmark_and_analysis.md)
 ## [Line Rendering Comparative Analysis](./readmes/09_line_rendering_analysis.md)

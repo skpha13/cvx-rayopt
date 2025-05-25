@@ -135,7 +135,7 @@ class Solver:
 
         return solution
 
-    def least_squares(
+    def ls(
         self, matrix_representation: MatrixRepresentation | None = "sparse"
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Solve the string art problem using the least squares method.
@@ -172,7 +172,7 @@ class Solver:
 
         return A, x, [residual]
 
-    def linear_least_squares(
+    def lls(
         self, matrix_representation: MatrixRepresentation | None = "sparse", bounds: scipy.optimize.Bounds = (0, np.inf)
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Solve the string art problem using the linear least squares method bounded to have positive x values.
@@ -208,7 +208,7 @@ class Solver:
 
         return A, x, [residual]
 
-    def matching_pursuit(
+    def mp(
         self,
         number_of_lines: int,
         mp_method: MatchingPursuitMethod | None = "orthogonal",
@@ -362,7 +362,7 @@ class Solver:
 
         return regularizer.post_process(solution, n)
 
-    def binary_projection_ls(
+    def bpls(
         self,
         solver: QPSolvers | None = "cvxopt",
         matrix_representation: MatrixRepresentation | None = "sparse",
@@ -476,7 +476,7 @@ class Solver:
 
         return A, x_fixed, residual_history
 
-    def ls_regularized(
+    def lsr(
         self,
         matrix_representation: MatrixRepresentation | None = "sparse",
         regularizer: RegularizationType | None = None,

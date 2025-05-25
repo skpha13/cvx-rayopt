@@ -27,7 +27,7 @@ def main():
     Benchmark.initialize_metadata(directory)
     benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
     cvxopt_result = benchmark.run_benchmark(
-        solver.binary_projection_ls,
+        solver.bpls,
         solver="cvxopt",
         matrix_representation=matrix_representation,
         k=k,
@@ -35,7 +35,7 @@ def main():
     )
 
     scipy_result = benchmark.run_benchmark(
-        solver.binary_projection_ls,
+        solver.bpls,
         solver="scipy",
         matrix_representation=matrix_representation,
         k=k,

@@ -174,17 +174,17 @@ class Benchmark:
         self.solver = Solver(image, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
         self.benchmarks_to_run = [
             # fmt: off
-            (self.solver.least_squares, {"matrix_representation": "dense"}),
-            (self.solver.least_squares, {"matrix_representation": "sparse"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "orthogonal"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "random"}),
-            (self.solver.matching_pursuit, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "dot-product"}),
-            (self.solver.binary_projection_ls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}),
-            (self.solver.binary_projection_ls, {"solver": "scipy", "k": 3, "max_iterations": 1000}),
-            (self.solver.binary_projection_ls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000, "lambd": 100}),
-            (self.solver.ls_regularized, {"regularizer": None, "lambda": 100}),
-            (self.solver.ls_regularized, {"regularizer": "smooth", "lambda": 100}),
-            (self.solver.ls_regularized, {"regularizer": "abs", "lambda": 5000}),
+            (self.solver.ls, {"matrix_representation": "dense"}),
+            (self.solver.ls, {"matrix_representation": "sparse"}),
+            (self.solver.mp, {"number_of_lines": 2000, "mp_method": "orthogonal"}),
+            (self.solver.mp, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "random"}),
+            (self.solver.mp, {"number_of_lines": 2000, "mp_method": "greedy", "selector_type": "dot-product"}),
+            (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}),
+            (self.solver.bpls, {"solver": "scipy", "k": 3, "max_iterations": 1000}),
+            (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000, "lambd": 100}),
+            (self.solver.lsr, {"regularizer": None, "lambda": 100}),
+            (self.solver.lsr, {"regularizer": "smooth", "lambda": 100}),
+            (self.solver.lsr, {"regularizer": "abs", "lambda": 5000}),
             # fmt: on
         ]
 

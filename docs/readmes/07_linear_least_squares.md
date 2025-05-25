@@ -1,4 +1,4 @@
-# Linear Least Squares
+# Linear Least Squares (LLS)
 
 ## Problem Formulation
 

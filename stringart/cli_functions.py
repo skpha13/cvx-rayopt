@@ -60,11 +60,11 @@ class Configuration:
 
         # fmt: off
         solver_methods = {
-            "least-squares": lambda: solver.least_squares(self.matrix_representation),
-            "linear-least-squares": lambda: solver.linear_least_squares(self.matrix_representation),
-            "matching-pursuit": lambda: solver.matching_pursuit(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
-            "binary-projection-ls": lambda: solver.binary_projection_ls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
-            "least-squares-regularized": lambda: solver.ls_regularized(self.matrix_representation, self.regularizer, self.lambd),
+            "ls": lambda: solver.ls(self.matrix_representation),
+            "lls": lambda: solver.lls(self.matrix_representation),
+            "mp": lambda: solver.mp(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
+            "bpls": lambda: solver.bpls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
+            "lsr": lambda: solver.lsr(self.matrix_representation, self.regularizer, self.lambd),
         }
         # fmt: on
 
@@ -72,7 +72,7 @@ class Configuration:
             raise ValueError(f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}")
 
         A, x, _ = solver_methods[self.solver]()
-        if self.solver in ["least-squares", "linear-least-squares"] and self.number_of_lines is not None:
+        if self.solver in ["ls", "lls"] and self.number_of_lines is not None:
             return solver.compute_solution_top_k(A, x, k=self.number_of_lines, binary=binary)
 
         return solver.compute_solution(A, x)

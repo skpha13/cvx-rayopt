@@ -59,7 +59,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     solver_subparsers = solve_parser.add_subparsers(title="Solvers", dest="solver", required=True)
 
     # Least Squares Solver
-    ls_parser = solver_subparsers.add_parser("least-squares", help="Least Squares solver options.")
+    ls_parser = solver_subparsers.add_parser("ls", help="Least Squares solver options.")
     ls_parser.add_argument(
         "--matrix-representation",
         choices=get_args(MatrixRepresentation),
@@ -74,7 +74,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
 
     # Linear Least Squares Solver
-    lls_parser = solver_subparsers.add_parser("linear-least-squares", help="Linear Least Squares solver options.")
+    lls_parser = solver_subparsers.add_parser("lls", help="Linear Least Squares solver options.")
     lls_parser.add_argument(
         "--matrix-representation",
         choices=get_args(MatrixRepresentation),
@@ -89,7 +89,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
 
     # Matching Pursuit Solver
-    mp_parser = solver_subparsers.add_parser("matching-pursuit", help="Matching Pursuit solver options.")
+    mp_parser = solver_subparsers.add_parser("mp", help="Matching Pursuit solver options.")
     mp_parser.add_argument(
         "--method",
         choices=get_args(MatchingPursuitMethod),
@@ -110,7 +110,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
     )
 
     # Binary Projection Solver
-    bpls_parser = solver_subparsers.add_parser("binary-projection-ls", help="Binary Projection Least Squares options.")
+    bpls_parser = solver_subparsers.add_parser("bpls", help="Binary Projection Least Squares options.")
     bpls_parser.add_argument(
         "--qp-solver",
         choices=get_args(QPSolvers),
@@ -142,7 +142,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         help="The regularization strength. Defaults to None",
     )
 
-    ls_reg = solver_subparsers.add_parser("least-squares-regularized", help="Least Squares Regularized options.")
+    ls_reg = solver_subparsers.add_parser("lsr", help="Least Squares Regularized options.")
     ls_reg.add_argument(
         "--matrix-representation",
         choices=get_args(MatrixRepresentation),
@@ -195,7 +195,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
 def validate_arguments(args):
     """Validate arguments for logical consistency."""
 
-    if args.command == SOLVE_COMMAND_NAME and args.solver == "matching-pursuit":
+    if args.command == SOLVE_COMMAND_NAME and args.solver == "mp":
         if args.number_of_lines is None:
             raise ValueError("The `number-of-lines` argument can not be None with the matching-pursuit solver.")
 

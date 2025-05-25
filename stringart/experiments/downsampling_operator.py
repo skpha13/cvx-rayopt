@@ -22,7 +22,7 @@ def main():
     image_cropped = crop_image(image, crop_mode)
 
     solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
-    A, x, _ = solver.least_squares(matrix_representation)
+    A, x, _ = solver.ls(matrix_representation)
     base_residual = np.linalg.norm(solver.b - A @ x)
     print(f"Base Residual: {base_residual:.6f}")
 
