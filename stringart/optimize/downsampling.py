@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.sparse import csr_matrix
 from skimage.util import view_as_blocks
 from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
@@ -55,7 +56,7 @@ class UDSLoss:
             self.upsample_shape, self.number_of_pegs, self.crop_mode, self.matrix_representation, self.rasterization
         )
 
-    def __call__(self, x: np.ndarray, *args, **kwargs):
+    def __call__(self, x: np.ndarray, *args, **kwargs) -> tuple[np.floating, np.ndarray]:
         """Apply the UDS transformation and compute residual error.
 
         Parameters
@@ -65,12 +66,21 @@ class UDSLoss:
 
         Returns
         -------
-        solution : np.ndarray
-            Downsampled grayscale image (after inversion and scaling to [0, 255]).
         residual : float
             L2 norm between the downsampled result and the target image.
+        solution : np.ndarray
+            Downsampled grayscale image (after inversion and scaling to [0, 255]).
         """
-        solution = self.A_upsampled @ x
+
+        x_indices_set = kwargs.get("x_indices", None)
+
+        if x_indices_set is not None:
+            x_indices = np.array(list(x_indices_set))
+            A = self.A_upsampled[:, x_indices]
+        else:
+            A = self.A_upsampled
+
+        solution = A @ x
         solution = np.clip(np.reshape(solution, self.upsample_shape), a_min=0, a_max=1)
 
         blocks = view_as_blocks(solution, (self.block_size, self.block_size))
@@ -81,4 +91,4 @@ class UDSLoss:
         solution = 1 - DSA
         solution = np.multiply(solution, 255).astype(np.uint8)
 
-        return solution, residual
+        return residual, solution

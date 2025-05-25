@@ -72,7 +72,9 @@ class Solver:
         self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
         self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
 
-        # self.residual_fn = UDSLoss(image, crop_mode, number_of_pegs, rasterization)
+        self.residual_fn = UDSLoss(
+            image, crop_mode, number_of_pegs, rasterization, block_size=2
+        )  # TODO: add block_size to init
 
     def compute_solution(self, A: np.ndarray, x: np.ndarray) -> np.ndarray:
         """Computes the solution image for the string art procedure.
@@ -216,7 +218,7 @@ class Solver:
         number_of_lines: int,
         mp_method: MatchingPursuitMethod | None = "orthogonal",
         **kwargs,
-    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+    ) -> tuple[np.ndarray | csr_matrix, np.ndarray, list[np.floating]]:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
@@ -267,7 +269,6 @@ class Solver:
         residual_history = []
 
         A = csr_matrix((rows, 0))
-        x = None
 
         mp_instance: MatchingPursuit | None = None
         if mp_method == "greedy":
@@ -299,7 +300,7 @@ class Solver:
             x = lsqr(A, self.b)[0]
 
             # if the error does not decrease
-            residual = np.linalg.norm(self.b - A @ x)
+            residual, _ = self.residual_fn(x, x_indices=selected_lines)
             residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
@@ -308,7 +309,10 @@ class Solver:
                 break
             past_residual = residual
 
-        return A, x, residual_history
+        x_new = np.zeros(candidate_lines.shape[1])
+        x_new[list(selected_lines)] = 1
+
+        return candidate_lines, x_new, residual_history
 
     @classmethod
     def solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
