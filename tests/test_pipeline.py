@@ -91,6 +91,22 @@ class TestPipeline:
 
         configuration.run_configuration(running_tests=True)
 
+    def test_gmp_all(self):
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="mp",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="bresenham",
+            mp_method="greedy",
+            number_of_lines=10,
+            selector_type="all",
+        )
+
+        configuration.run_configuration(running_tests=True)
+
     def test_omp(self):
         configuration = Configuration(
             metadata=self.metadata,
