@@ -411,7 +411,7 @@ class Solver:
         x_fixed = np.full(n, np.nan)  # nan means unfixed
         set1 = set()
 
-        if lambd:
+        if lambd is not None:
             regularizer = WeightedRegularizer(n)
         else:
             regularizer = None
