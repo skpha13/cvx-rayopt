@@ -25,10 +25,10 @@ def main():
     )
     solution = compute_solution(A, x)
 
-    plt.imshow(solution, cmap="grey")
+    plt.imshow(solution, cmap="gray")
     plt.axis("off")
     plt.show()
-    plt.imsave("../../outputs/misc/preprocess_xiaolin_wu_lena.png", solution, cmap="grey")
+    plt.imsave("../../outputs/misc/preprocess_xiaolin_wu_lena.png", solution, cmap="gray")
 
 
 if __name__ == "__main__":

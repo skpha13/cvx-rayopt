@@ -102,8 +102,8 @@ class Configuration:
             if not running_tests:
                 plt.axis("off")
                 plt.title("Computed Image")
-                plt.imshow(solution, cmap="grey")
-                plt.imsave(save_path, solution, cmap="grey")
+                plt.imshow(solution, cmap="gray")
+                plt.imsave(save_path, solution, cmap="gray")
                 plt.show()
 
                 logger.info(f"Image saved to: {save_path}")

@@ -33,9 +33,9 @@ def main():
     A, x, _ = solver.ls("sparse")
     solution = compute_solution(A, x)
 
-    plt.imshow(solution, cmap="grey")
+    plt.imshow(solution, cmap="gray")
     plt.show()
-    plt.imsave("../../outputs/misc/least_squares_lena_rounding.png", solution, cmap="grey")
+    plt.imsave("../../outputs/misc/least_squares_lena_rounding.png", solution, cmap="gray")
 
 
 if __name__ == "__main__":

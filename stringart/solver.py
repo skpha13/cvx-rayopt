@@ -263,6 +263,7 @@ class Solver:
 
         candidate_lines = MatrixGenerator.generate_sparse_matrix(self.shape, pegs)
         rows, cols = candidate_lines.shape
+        number_of_lines = min(cols, number_of_lines)
         selected_lines: set[int] = set()
         all_line_indices = set(range(cols))
         past_residual = np.inf

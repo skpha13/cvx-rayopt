@@ -12,7 +12,7 @@ from stringart.utils.types import CropMode, MatrixRepresentation
 
 image_path = "../../imgs/lena.png"
 image_noninverted = ImageWrapper.read_bw(image_path, inverted=False)
-cmap = "grey"
+cmap = "gray"
 
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
@@ -21,7 +21,7 @@ number_of_pegs = 100
 matrix_representation: MatrixRepresentation = "sparse"
 
 
-def save_img(img: np.ndarray, name: str, cmap: str = "grey") -> None:
+def save_img(img: np.ndarray, name: str, cmap: str = "gray") -> None:
     plt.imshow(img, cmap=cmap)
     plt.imsave(f"../../outputs/preprocess/{name}.png", img, cmap=cmap)
 

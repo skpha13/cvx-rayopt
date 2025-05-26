@@ -56,9 +56,9 @@ def main():
     A, x, _ = linear_least_squares(image, shape, number_of_pegs, crop_mode, matrix_representation)
     solution = compute_solution(A, x)
 
-    plt.imshow(solution, cmap="grey")
+    plt.imshow(solution, cmap="gray")
     plt.show()
-    plt.imsave("../../outputs/misc/linear_least_squares_lena.png", solution, cmap="grey")
+    plt.imsave("../../outputs/misc/linear_least_squares_lena.png", solution, cmap="gray")
 
 
 if __name__ == "__main__":

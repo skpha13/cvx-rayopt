@@ -54,11 +54,11 @@ def main():
     residual = np.linalg.norm(b - A @ x)
     print(f"\nResidual Ground Truth: {result.residual_history[-1]}\nResidual: {residual}")
 
-    plt.imshow(gt, cmap="grey")
+    plt.imshow(gt, cmap="gray")
     plt.axis("off")
     plt.show()
 
-    plt.imshow(reconstructed_image, cmap="grey")
+    plt.imshow(reconstructed_image, cmap="gray")
     plt.axis("off")
     plt.show()
 
