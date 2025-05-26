@@ -258,6 +258,8 @@ class Benchmark:
         5. **Matching Pursuit Solver** with greedy solver, 1000 lines and a dot-product selector type.
         """
 
+        # TODO: change docstring
+
         results: List[BenchmarkResult] = []
 
         for benchmark_to_run in tqdm(self.benchmarks_to_run, desc="Running Benchmarks"):
