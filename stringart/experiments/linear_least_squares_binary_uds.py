@@ -13,7 +13,7 @@ image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
-number_of_pegs = 100
+number_of_pegs = 128
 matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
 number_of_lines = 1000
@@ -25,7 +25,7 @@ def udps(x: np.ndarray, block_size: int = 2) -> tuple[np.floating, np.ndarray]:
 
 
 def lls_run(solver: Solver):
-    A, x, _ = solver.lls(matrix_representation, bounds=(0, 1))
+    A, x, _ = solver.lls(matrix_representation)
 
     k = number_of_lines
     value = x[np.argsort(x)[-k]]

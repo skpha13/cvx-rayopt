@@ -47,21 +47,26 @@ class Configuration:
     max_iterations: int | None = None
     regularizer: RegularizationType | None = None
     lambd: float | None = None
+    block_size: int | None = None
 
     output_dir: str | None = None
     input_benchmark_dir: str | None = None
 
     def _get_solver_instance(self) -> Solver:
         image = ImageWrapper.read_bw(self.image_path)
-        return Solver(image, self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization)
+        return Solver(
+            image,
+            self.crop_mode,
+            number_of_pegs=self.number_of_pegs,
+            rasterization=self.rasterization,
+            block_size=self.block_size,
+        )
 
     def _solve(self, solver: Solver) -> np.ndarray:
-        binary = self.binary if self.binary else False
-
         # fmt: off
         solver_methods = {
-            "ls": lambda: solver.ls(self.matrix_representation),
-            "lls": lambda: solver.lls(self.matrix_representation),
+            "ls": lambda: solver.ls(self.matrix_representation, self.number_of_lines, self.binary),
+            "lls": lambda: solver.lls(self.matrix_representation, self.number_of_lines, self.binary),
             "mp": lambda: solver.mp(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
             "bpls": lambda: solver.bpls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
             "lsr": lambda: solver.lsr(self.matrix_representation, self.regularizer, self.lambd),
@@ -72,10 +77,7 @@ class Configuration:
             raise ValueError(f"Unsupported solver type: {self.solver}. Supported solvers are: {get_args(SolverType)}")
 
         A, x, _ = solver_methods[self.solver]()
-        if self.solver in ["ls", "lls"] and self.number_of_lines is not None:
-            return solver.compute_solution_top_k(A, x, k=self.number_of_lines, binary=binary)
-
-        return solver.compute_solution(A, x)
+        return solver.compute_solution(A, x, uds=self.block_size is not None)
 
     def run_config_lite(self) -> np.ndarray:
         if self.command != "solve":
@@ -112,7 +114,11 @@ class Configuration:
 
         Benchmark.initialize_metadata(self.metadata.path)
         benchmark = Benchmark(
-            image=image, crop_mode=self.crop_mode, number_of_pegs=self.number_of_pegs, rasterization=self.rasterization
+            image=image,
+            crop_mode=self.crop_mode,
+            number_of_pegs=self.number_of_pegs,
+            rasterization=self.rasterization,
+            block_size=self.block_size,
         )
 
         if self.command == "run-benchmarks":

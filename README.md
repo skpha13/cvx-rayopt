@@ -35,12 +35,13 @@ This package provides a simple and intuitive CLI for computing string art images
 
 #### Common Arguments
 
-| **Argument**       | **Description**                                                                                                                |
-|--------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| `--image-path`     | Path to the input image. Required.                                                                                             |
-| `--number-of-pegs` | Number of pegs to use. Default `100`.                                                                                          |
-| `--crop-mode`      | Crop mode to apply to the input image. Choices: `first-half`, `center`, `second-half`. Defaults to `center`.                   |
-| `--rasterization`  | Line rasterization algorithm. Choices: `bresenham` (fast integer-based), `xiaolin-wu` (anti-aliased). Defaults to `bresenham`. |
+| **Argument**       | **Description**                                                                                                                 |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `--image-path`     | Path to the input image. Required.                                                                                              |
+| `--number-of-pegs` | Number of pegs to use. Default `128`.                                                                                           |
+| `--crop-mode`      | Crop mode to apply to the input image. Choices: `first-half`, `center`, `second-half`. Defaults to `center`.                    |
+| `--rasterization`  | Line rasterization algorithm. Choices: `bresenham` (fast integer-based), `xiaolin-wu` (anti-aliased). Defaults to `xiaolin-wu`. |
+| `--block-size`     | Enables residual computation using supersampling. Example values: 2, 4, 8, 16. Defaults to `None`.                              |
 
 #### Benchmark
 
@@ -73,6 +74,7 @@ This package provides a simple and intuitive CLI for computing string art images
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------|
 | `--matrix-representation` | Specify the matrix representation method for the `least-squares` solver. Choices: `dense`, `sparse`. Defaults to `sparse`. |
 | `--number-of-lines`       | Optional. Number of top lines to select.                                                                                   |
+| `--binary`                | Optional. If enabled, projects `x` coefficients to binary values.                                                          |
 
 #### Binary Projection LS Solver Arguments
 

@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.sparse import csr_matrix
 from skimage.util import view_as_blocks
 from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper

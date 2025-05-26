@@ -1,5 +1,5 @@
 import logging
-from typing import List, cast
+from typing import List, Tuple, cast
 
 import numpy as np
 import scipy
@@ -45,22 +45,25 @@ class Solver:
     crop_mode : CropMode
         The mode in which the image is being processed. This determines cropping behaviour.
     number_of_pegs : int, optional
-        The number of pegs to be used in the string art computation. Default is 100.
+        The number of pegs to be used in the string art computation. Default is 128.
     rasterization: Rasterization, optional
         If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
         If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
+    block_size : int
+        Size of the square block used in downsampling via averaging.
     """
 
     def __init__(
         self,
         image: np.ndarray,
         crop_mode: CropMode | None = "center",
-        number_of_pegs: int | None = 100,
-        rasterization: Rasterization | None = "bresenham",
+        number_of_pegs: int | None = 128,
+        rasterization: Rasterization | None = "xiaolin-wu",
+        block_size: int | None = None,
     ):
         crop_mode: CropMode = crop_mode if crop_mode else "center"
-        number_of_pegs = number_of_pegs if number_of_pegs else 100
-        rasterization: Rasterization = rasterization if rasterization else "bresenham"
+        number_of_pegs = number_of_pegs if number_of_pegs else 128
+        rasterization: Rasterization = rasterization if rasterization else "xiaolin-wu"
 
         image = crop_image(image, crop_mode=crop_mode)
 
@@ -68,23 +71,26 @@ class Solver:
         self.crop_mode: CropMode = crop_mode
         self.number_of_pegs: int = number_of_pegs
         self.rasterization: Rasterization = rasterization
+        self.block_size = block_size
 
         self.b: np.ndarray = ImageWrapper.histogram_equalization(image)  # preprocess image
         self.b = ImageWrapper.flatten_image(self.b).astype(np.float64)
 
-        self.residual_fn = UDSLoss(
-            image, crop_mode, number_of_pegs, rasterization, block_size=2
-        )  # TODO: add block_size to init
+        self.residual_fn: UDSLoss | None = None
+        if self.block_size is not None:
+            self.residual_fn = UDSLoss(image, crop_mode, number_of_pegs, rasterization, block_size=self.block_size)
 
-    def compute_solution(self, A: np.ndarray, x: np.ndarray) -> np.ndarray:
+    def compute_solution(self, A: np.ndarray, x: np.ndarray, uds: bool = False) -> np.ndarray:
         """Computes the solution image for the string art procedure.
 
         Parameters
         ----------
         A : np.ndarray
-           The transformation matrix used to generate the solution.
+            The transformation matrix used to generate the solution.
         x : np.ndarray
-           The input vector representing the parameters of the transformation.
+            The input vector representing the parameters of the transformation.
+        uds: bool
+            If set, it will run the UDS compute solution. Defaults to `False`.
 
         Returns
         -------
@@ -93,22 +99,25 @@ class Solver:
            0 and 1, scaled to 255, converted to an 8-bit format, and cropped
            according to the specified image mode.
         """
-        solution = A @ x
-        solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
-        solution = 1 - solution
-        solution = np.multiply(solution, 255).astype(np.uint8)
+
+        if self.residual_fn is not None and uds == True:
+            _, solution = self.residual_fn(x)
+        else:
+            solution = A @ x
+            solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
+            solution = 1 - solution
+            solution = np.multiply(solution, 255).astype(np.uint8)
 
         return solution
 
-    def compute_solution_top_k(self, A: np.ndarray, x: np.ndarray, k: int = 1000, binary: bool = False) -> np.ndarray:
-        """Computes the solution image using only the top-k elements from the input vector.
+    @classmethod
+    def post_process_x(cls, x: np.ndarray, k: int = 1000, binary: bool = False) -> np.ndarray:
+        """Post processes the `x` system solution vector using only the top-k elements from the input vector.
 
         Parameters
         ----------
-        A : np.ndarray
-            The transformation matrix used to generate the solution.
         x : np.ndarray
-            The input vector representing the parameters of the transformation.
+            The input vector representing the system coefficients.
         k : int, optional
             The number of top elements to retain from the input vector, by default 1000.
         binary : bool, optional
@@ -118,10 +127,9 @@ class Solver:
         Returns
         -------
         np.ndarray
-            The processed solution image. The image is clipped to values between
-            0 and 1, scaled to 255, converted to an 8-bit format, and cropped
-            according to the specified image mode.
+            The processed `x` coefficients. They are clipped to [0, 1].
         """
+
         k = min(k, len(x))
         value = x[np.argsort(x)[-k]]
 
@@ -133,15 +141,17 @@ class Solver:
             xp[xp >= value] = 1
         xp = np.clip(xp, a_min=0, a_max=1)
 
-        solution = A @ xp
-        solution = np.clip(np.reshape(solution, self.shape), a_min=0, a_max=1)
-        solution = 1 - solution
-        solution = np.multiply(solution, 255).astype(np.uint8)
+        return xp
 
-        return solution
+    @classmethod
+    def get_number_of_lines(cls, k: int, shape: Tuple[int, ...]) -> int:
+        return min(k, shape[1])
 
     def ls(
-        self, matrix_representation: MatrixRepresentation | None = "sparse"
+        self,
+        matrix_representation: MatrixRepresentation | None = "sparse",
+        number_of_lines: int | None = None,
+        binary: bool | None = None,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Solve the string art problem using the least squares method.
 
@@ -151,6 +161,11 @@ class Solver:
             The method to use for solving the least squares problem. Defaults to 'sparse'.
             - 'dense': Uses dense matrix operations via `numpy.linalg.lstsq`.
             - 'sparse': Uses sparse matrix operations via `scipy.sparse.linalg.lsqr`.
+        number_of_lines : int | None
+            The number of lines to select and add to the solution. Defaults to `None`.
+        binary : bool, optional
+            If True, converts the top-k vector to binary values (0 or 1). If False, retains original values
+            for the top-k elements and sets others to 0.
 
         Returns
         -------
@@ -172,13 +187,23 @@ class Solver:
         elif matrix_representation == "sparse":
             x = lsqr(A, self.b)[0]
 
-        residual = np.linalg.norm(self.b - A @ x)
+        if number_of_lines is not None:
+            x = self.post_process_x(x, self.get_number_of_lines(number_of_lines, A.shape), binary)
+
+        if self.residual_fn is not None:
+            residual, _ = self.residual_fn(x)
+        else:
+            residual = np.linalg.norm(self.b - A @ x)
         logger.info(f"Residual: {residual:.6f}")
 
         return A, x, [residual]
 
     def lls(
-        self, matrix_representation: MatrixRepresentation | None = "sparse", bounds: scipy.optimize.Bounds = (0, np.inf)
+        self,
+        matrix_representation: MatrixRepresentation | None = "sparse",
+        number_of_lines: int | None = None,
+        binary: bool | None = None,
+        bounds: scipy.optimize.Bounds = (0, 1),
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         """Solve the string art problem using the linear least squares method bounded to have positive x values.
 
@@ -188,9 +213,13 @@ class Solver:
             The method to use for solving the least squares problem. Defaults to 'sparse'.
             - 'dense': Uses dense matrix operations via `numpy.linalg.lstsq`.
             - 'sparse': Uses sparse matrix operations via `scipy.sparse.linalg.lsqr`.
-
+        number_of_lines : int | None
+            The number of lines to select and add to the solution. Defaults to `None`.
+        binary : bool, optional
+            If True, converts the top-k vector to binary values (0 or 1). If False, retains original values
+            for the top-k elements and sets others to 0.
         bounds : tuple or scipy.optimize.Bounds, optional
-            Lower and upper bounds on the solution. Defaults to non-negative values (0, np.inf).
+            Lower and upper bounds on the solution. Defaults to non-negative values (0, 1).
 
         Returns
         -------
@@ -208,7 +237,13 @@ class Solver:
         optimize_results: scipy.optimize.OptimizeResult = scipy.optimize.lsq_linear(A, self.b, bounds=bounds)
         x = optimize_results.x
 
-        residual = np.linalg.norm(self.b - A @ x)
+        if number_of_lines is not None:
+            x = self.post_process_x(x, self.get_number_of_lines(number_of_lines, A.shape), binary)
+
+        if self.residual_fn is not None:
+            residual, _ = self.residual_fn(x)
+        else:
+            residual = np.linalg.norm(self.b - A @ x)
         logger.info(f"Residual: {residual:.6f}")
 
         return A, x, [residual]
@@ -227,7 +262,6 @@ class Solver:
         ----------
         number_of_lines : int
            The number of lines to select and add to the solution.
-
         mp_method : MatchingPursuitMethod, optional
            The matching pursuit method, either "orthogonal" or "greedy". Default is "orthogonal".
 
@@ -251,6 +285,11 @@ class Solver:
         based on their dot product with the target vector `b` (or randomly, depending on the
         selector type) and minimizes the residual error in the least squares problem.
         """
+        if number_of_lines is None:
+            raise ValueError(
+                "The 'number_of_lines' attribute is required when using the 'mp' solver and cannot be None."
+            )
+
         mp_method = mp_method if mp_method else "orthogonal"
         logger.info(f"Matching Pursuit: {mp_method}")
 
@@ -270,6 +309,7 @@ class Solver:
         residual_history = []
 
         A = csr_matrix((rows, 0))
+        x = None
 
         mp_instance: MatchingPursuit | None = None
         if mp_method == "greedy":
@@ -317,10 +357,12 @@ class Solver:
                 break
             past_residual = residual
 
-        x_new = np.zeros(candidate_lines.shape[1])
-        x_new[list(selected_lines)] = 1
+        x_correct_shape = np.zeros(candidate_lines.shape[1])
+        x_correct_shape[list(selected_lines)] = x
 
-        return candidate_lines, x_new, residual_history
+        x = self.post_process_x(x_correct_shape, number_of_lines, binary=True)
+
+        return candidate_lines, x, residual_history
 
     @classmethod
     def solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
@@ -426,10 +468,7 @@ class Solver:
         x_fixed = np.full(n, np.nan)  # nan means unfixed
         set1 = set()
 
-        if lambd is not None:
-            regularizer = WeightedRegularizer(n)
-        else:
-            regularizer = None
+        regularizer = WeightedRegularizer(n) if lambd is not None else None
 
         past_residual = np.inf
         residual_history = []
@@ -538,5 +577,6 @@ class Solver:
         x = self.solve_qp_cvxopt(A, self.b, regularizer_instance, lambd)
 
         residual = np.linalg.norm(self.b - A @ x)
+        logger.info(f"Residual: {residual:.6f}")
 
         return A, x, [residual]

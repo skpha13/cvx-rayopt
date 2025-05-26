@@ -24,7 +24,7 @@ def udps(x: np.ndarray, number_of_pegs: int, block_size: int = 2) -> tuple[np.fl
 
 def solve_lls(number_of_pegs: int):
     image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs)
+    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
     A, x, residuals = solver.lls("sparse", bounds=(0, 1))
 
     k = min(number_of_lines, len(x))

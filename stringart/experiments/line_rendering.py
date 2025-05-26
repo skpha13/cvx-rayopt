@@ -65,16 +65,11 @@ def run_configs(configs: List[Configuration]) -> np.ndarray:
     nconf = len(configs) // 2
     results = [[None for _ in range(nconf)], [None for _ in range(nconf)]]
 
-    with ProcessPoolExecutor() as executor:
-        future_to_config = {executor.submit(run_config, config, index): config for index, config in enumerate(configs)}
+    for index, config in enumerate(configs):
+        index_result, result = run_config(config, index)
 
-        for future in as_completed(future_to_config):
-            config = future_to_config[future]
-
-            index, result = future.result()
-
-            row_index = 0 if config.rasterization == "bresenham" else 1
-            results[row_index][index % nconf] = result
+        row_index = 0 if config.rasterization == "bresenham" else 1
+        results[row_index][index % nconf] = result
 
     return np.array(results)
 

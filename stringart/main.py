@@ -7,15 +7,8 @@ from typing import get_args
 
 from stringart.cli_functions import Configuration
 from stringart.mp.greedy_selector import GreedySelector
-from stringart.utils.types import (
-    CropMode,
-    MatchingPursuitMethod,
-    MatrixRepresentation,
-    Metadata,
-    QPSolvers,
-    Rasterization,
-    RegularizationType,
-)
+from stringart.utils.types import (CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, QPSolvers,
+                                   Rasterization, RegularizationType)
 
 SOLVE_COMMAND_NAME = "solve"
 
@@ -72,6 +65,12 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         required=False,
         help="Top K number of lines to select.",
     )
+    ls_parser.add_argument(
+        "--binary",
+        type=bool,
+        required=False,
+        help="If set, projects the solution vector `x` to binary values (0 or 1).",
+    )
 
     # Linear Least Squares Solver
     lls_parser = solver_subparsers.add_parser("lls", help="Linear Least Squares solver options.")
@@ -86,6 +85,12 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         type=int,
         required=False,
         help="Top K number of lines to select.",
+    )
+    lls_parser.add_argument(
+        "--binary",
+        type=bool,
+        required=False,
+        help="If set, projects the solution vector `x` to binary values (0 or 1).",
     )
 
     # Matching Pursuit Solver
@@ -199,6 +204,9 @@ def validate_arguments(args):
         if args.number_of_lines is None:
             raise ValueError("The `number-of-lines` argument can not be None with the matching-pursuit solver.")
 
+        if args.block_size is None:
+            raise ValueError("The `block-size` argument can not be None with the matching-pursuit solver.")
+
 
 def main() -> None:
     stringart_directory: Path = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -219,12 +227,13 @@ def main() -> None:
         image_path=getattr(args, "image_path", None),
         number_of_pegs=getattr(args, "number_of_pegs", None),
         crop_mode=getattr(args, "crop_mode", None),
-        rasterization=getattr(args, "rasterization", "bresenham"),
+        rasterization=getattr(args, "rasterization", "xiaolin-wu"),
         matrix_representation=getattr(args, "matrix_representation", None),
         mp_method=getattr(args, "method", None),
         number_of_lines=getattr(args, "number_of_lines", None),
         selector_type=getattr(args, "selector", None),
-        binary=None,
+        binary=getattr(args, "binary", None),
+        block_size=getattr(args, "block-size", None),
         qp_solver=getattr(args, "qp_solver", None),
         k=getattr(args, "k", None),
         max_iterations=getattr(args, "max_iterations", None),

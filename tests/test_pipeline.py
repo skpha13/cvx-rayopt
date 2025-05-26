@@ -25,7 +25,35 @@ class TestPipeline:
             crop_mode="center",
             rasterization="bresenham",
             matrix_representation="dense",
+        )
+        configuration.run_configuration(running_tests=True)
+
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="bresenham",
+            matrix_representation="dense",
             number_of_lines=10,
+            binary=True,
+        )
+
+        configuration.run_configuration(running_tests=True)
+
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="bresenham",
+            matrix_representation="dense",
+            number_of_lines=10,
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -71,6 +99,7 @@ class TestPipeline:
             mp_method="greedy",
             number_of_lines=10,
             selector_type="random",
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -87,6 +116,7 @@ class TestPipeline:
             mp_method="greedy",
             number_of_lines=10,
             selector_type="dot-product",
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -103,6 +133,7 @@ class TestPipeline:
             mp_method="greedy",
             number_of_lines=10,
             selector_type="all",
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -118,6 +149,7 @@ class TestPipeline:
             rasterization="xiaolin-wu",
             mp_method="orthogonal",
             number_of_lines=10,
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -142,6 +174,7 @@ class TestPipeline:
             number_of_pegs=10,
             crop_mode="second-half",
             matrix_representation="dense",
+            rasterization="bresenham",
             number_of_lines=10,
         )
 
