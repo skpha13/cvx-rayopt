@@ -7,8 +7,15 @@ from typing import get_args
 
 from stringart.cli_functions import Configuration
 from stringart.mp.greedy_selector import GreedySelector
-from stringart.utils.types import (CropMode, MatchingPursuitMethod, MatrixRepresentation, Metadata, QPSolvers,
-                                   Rasterization, RegularizationType)
+from stringart.utils.types import (
+    CropMode,
+    MatchingPursuitMethod,
+    MatrixRepresentation,
+    Metadata,
+    QPSolvers,
+    Rasterization,
+    RegularizationType,
+)
 
 SOLVE_COMMAND_NAME = "solve"
 
@@ -193,6 +200,12 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
             required=False,
             help="Line rasterization algorithm. Use 'bresenham' for fast lines, or 'xiaolin-wu' for anti-aliased lines.",
         )
+        subparser.add_argument(
+            "--block-size",
+            type=int,
+            required=False,
+            help="Enables residual computation using supersampling. Example values: 2, 4, 8, 16. Defaults to `None`.",
+        )
 
     return parser
 
@@ -233,7 +246,7 @@ def main() -> None:
         number_of_lines=getattr(args, "number_of_lines", None),
         selector_type=getattr(args, "selector", None),
         binary=getattr(args, "binary", None),
-        block_size=getattr(args, "block-size", None),
+        block_size=getattr(args, "block_size", None),
         qp_solver=getattr(args, "qp_solver", None),
         k=getattr(args, "k", None),
         max_iterations=getattr(args, "max_iterations", None),

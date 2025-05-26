@@ -300,7 +300,7 @@ class Solver:
             center_point=center_point,
         )
 
-        candidate_lines = MatrixGenerator.generate_sparse_matrix(self.shape, pegs)
+        candidate_lines = MatrixGenerator.generate_sparse_matrix(self.shape, pegs, self.rasterization)
         rows, cols = candidate_lines.shape
         number_of_lines = min(cols, number_of_lines)
         selected_lines: set[int] = set()
@@ -358,11 +358,9 @@ class Solver:
             past_residual = residual
 
         x_correct_shape = np.zeros(candidate_lines.shape[1])
-        x_correct_shape[list(selected_lines)] = x
+        x_correct_shape[list(selected_lines)] = 1
 
-        x = self.post_process_x(x_correct_shape, number_of_lines, binary=True)
-
-        return candidate_lines, x, residual_history
+        return candidate_lines, x_correct_shape, residual_history
 
     @classmethod
     def solve_qp_cvxopt(cls, A: np.ndarray, b: np.ndarray, regularizer: Regularizer | None = None, lambd: float = 0.1):
