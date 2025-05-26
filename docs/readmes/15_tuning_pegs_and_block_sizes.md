@@ -136,4 +136,6 @@ for n in [32, 64, 128, 256, 512]:
         N = n
 ```
 
+> You can find the following code: [**peg_optimizer.py**](../../stringart/utils/peg_optimizer.py)
+
 The final value in `N` is the recommended number of pegs for optimal string art rendering under the given constraints.
