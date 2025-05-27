@@ -19,7 +19,7 @@ class MatrixGenerator:
         crop_mode: CropMode = "center",
         matrix_representation: MatrixRepresentation = "sparse",
         rasterization: Rasterization = "bresenham",
-    ) -> tuple[np.ndarray | csc_matrix, List[Point]]:
+    ) -> np.ndarray | csc_matrix:
         """Computes the matrix representation of lines drawn between pegs placed on a grid.
 
         Parameters
