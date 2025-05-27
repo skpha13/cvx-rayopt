@@ -8,18 +8,15 @@ from pathlib import Path
 from typing import Callable, List
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 from matplotlib.colors import Colormap
 from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.time_memory_format import (
-    convert_memory_size,
-    convert_monotonic_time,
-    format_memory_size,
-    format_time,
-)
+from stringart.utils.time_memory_format import (convert_memory_size, convert_monotonic_time, format_memory_size,
+                                                format_time)
 from stringart.utils.types import CropMode, ElapsedTime, MemorySize, Rasterization
 from tqdm import tqdm
 
@@ -475,13 +472,19 @@ class Benchmark:
         monotonic_time = [benchmark.elapsed_monotonic_time for benchmark in benchmarks]
         memory_size = [benchmark.peak_memory_usage / (1024**2) for benchmark in benchmarks]
 
-        def plot_bar_graph(name: str, ylabel: str, values: List | np.ndarray, color: str = "skyblue") -> None:
+        def plot_bar_graph(
+            name: str, ylabel: str, values: List | np.ndarray, color: str = "skyblue", log_scale: bool = False
+        ) -> None:
             plt.figure(figsize=(10, 6))
 
-            plt.bar(labels, values, color=color)
+            bar_width = 0.6
+            plt.bar(labels, values, color=color, width=bar_width)
 
             plt.xlabel("Solvers")
             plt.ylabel(ylabel)
+
+            if log_scale:
+                plt.yscale("log")
 
             plt.xticks(rotation=45)
             plt.tight_layout()
@@ -490,7 +493,7 @@ class Benchmark:
             plt.show()
 
         # time plot
-        plot_bar_graph("Time Usage", "Time (s)", monotonic_time, "skyblue")
+        plot_bar_graph("Time Usage", "Time (s)", monotonic_time, "skyblue", log_scale=True)
         # memory plot
         plot_bar_graph("Memory Usage", "Memory (MB)", memory_size, "orange")
 
@@ -558,9 +561,9 @@ def plot_residuals(y_data: List[np.ndarray], labels: List[str], plot_name: str, 
 
     fig, ax = plt.subplots(figsize=(12, 6))
 
-    for y, label in zip(y_data, labels):
+    for idx, (y, label) in enumerate(zip(y_data, labels)):
         if len(y) == 1:
-            ax.plot(0, y[0], "o", label=label)
+            ax.plot(2 * idx, y[0], "o", label=label)
         else:
             ax.plot(range(len(y)), y, label=label)
 

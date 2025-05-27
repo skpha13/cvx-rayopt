@@ -190,7 +190,7 @@ class Solver:
         if number_of_lines is not None:
             x = self.post_process_x(x, self.get_number_of_lines(number_of_lines, A.shape), binary)
 
-        if self.residual_fn is not None:
+        if self.residual_fn is not None and binary == True:
             residual, _ = self.residual_fn(x)
         else:
             residual = np.linalg.norm(self.b - A @ x)
@@ -240,7 +240,7 @@ class Solver:
         if number_of_lines is not None:
             x = self.post_process_x(x, self.get_number_of_lines(number_of_lines, A.shape), binary)
 
-        if self.residual_fn is not None:
+        if self.residual_fn is not None and binary == True:
             residual, _ = self.residual_fn(x)
         else:
             residual = np.linalg.norm(self.b - A @ x)
