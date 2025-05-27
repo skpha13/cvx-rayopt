@@ -208,7 +208,6 @@ class Benchmark:
             (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000, "lambd": 100}, True),
             (self.solver.lsr, {"regularizer": None, "lambd": 100}, False),
             (self.solver.lsr, {"regularizer": "smooth", "lambd": 100}, False),
-            (self.solver.lsr, {"regularizer": "abs", "lambd": 5000}, False),
             # fmt: on
         ]
 

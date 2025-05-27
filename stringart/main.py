@@ -48,7 +48,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         help="Directory name for the benchmark output to load benchmarks.",
     )
     analysis_parser.add_argument(
-        "--analysis-name",
+        "--output-dir",
         type=str,
         required=False,
         help="Name of the directory containing the benchmark results to analyze. Default: analysis_01",

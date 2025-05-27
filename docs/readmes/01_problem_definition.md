@@ -54,43 +54,40 @@ We can define the following:
 y = \text{The initial grayscale image}
 ```
 ```math
-m = \text{The Number of rows in our image}
+m = \text{The number of rows and columns in the image, the image is square (m, m)}
 ```
 ```math
-n = \text{The Number of columns in our image}
+b = \text{The flattened row-wise version of the image. } b \in \mathbb{R}^{m \times m}
 ```
 ```math
-Y = \text{The flattened row-wise version of the image. } Y \in \mathbb{R}^{m \cdot n}
+N = \text{The Number of pegs used}
 ```
 ```math
-p = \text{The Number of pegs used}
-```
-```math
-l = {p \choose 2} \text{, the number of lines}
+n = {N \choose 2} \text{, the number of lines}
 ```
 
 ```math
-M_i = \text{A matrix representing the } i \text{-th line drawn on the canvas}
+A_i = \text{A matrix representing the } i \text{-th line drawn on the canvas}
 ```
 ```math
-M = \text{For each } M_i \text{, the corresponding column is the flattened row-wise version of } M_i. \space M \in \mathbb{R}^{m \cdot n, \space l}
+A = \text{For each } A_i \text{, the corresponding column is the flattened row-wise version of } A_i. \space A \in \mathbb{R}^{m \times m, \space n}
 ```
 
 ```math
 x_i = \begin{cases}
     1 &\text{if line } i \text{ is drawn} \\
     0 &\text{otherwise}
-\end{cases}, \ X \in \mathbb{R}^l
+\end{cases}, \ x \in \mathbb{R}^n
 ```
 
 Thus, the goal of our process is to minimize:
 
 ```math
-\min{\| \sum{(M_i \cdot x_i)} - y \|}
+\min{\| \sum{(A_i \cdot x_i)} - b \|^2}
 ```
 ```math
 \text{or}
 ```
 ```math
-\min{\| M \cdot X - Y \|}
+\min{\| A \cdot x - b \|^2}
 ```

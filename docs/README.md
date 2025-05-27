@@ -14,3 +14,5 @@
 ## [Image Preprocessing](./readmes/08_image_preprocessing.md)
 ## [Benchmarks and Analysis](./readmes/04_benchmark_and_analysis.md)
 ## [Line Rendering Comparative Analysis](./readmes/09_line_rendering_analysis.md)
+## [Downsampling Operator](./readmes/14_downsampling_operator.md)
+## [Peg Optimizer](./readmes/15_tuning_pegs_and_block_sizes.md)

@@ -2,7 +2,7 @@
 
 ## Problem Formulation
 
-The linear least squares method follows the same principles as [standard least squares](./02_least_squares.md) but introduces an additional constraint that bounds the `x` variables within a specified interval. In this case, I impose the constraint: `(0, ∞)`.
+The linear least squares method follows the same principles as [standard least squares](./02_least_squares.md) but introduces an additional constraint that bounds the `x` variables within a specified interval. In this case, I impose the constraint: `(0, 1)`.
 
 ## Results
 

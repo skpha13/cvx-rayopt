@@ -54,7 +54,7 @@ This package provides a simple and intuitive CLI for computing string art images
 | **Argument**            | **Description**                                                                        |
 |-------------------------|----------------------------------------------------------------------------------------|
 | `--input-benchmark-dir` | **Required.** Directory name containing the benchmark results to be analyzed.          |
-| `--analysis-name`       | Name of the directory where analysis results will be saved. Defaults to `analysis_01`. |
+| `--output-dir`          | Name of the directory where analysis results will be saved. Defaults to `analysis_01`. |
 
 
 #### Solvers
