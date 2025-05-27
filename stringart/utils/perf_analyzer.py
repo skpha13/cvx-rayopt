@@ -14,7 +14,6 @@ import numpy as np
 from matplotlib import gridspec
 from matplotlib.colors import Colormap
 from skimage import io
-from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image, masked_rmse
 from stringart.utils.time_memory_format import (
@@ -666,7 +665,6 @@ def plot_residuals(y_data: List[np.ndarray], labels: List[str], plot_name: str, 
         else:
             ax.plot(range(len(y)), y, label=label)
 
-    ax.set_title(plot_name)
     ax.set_xlabel("Iteration")
     ax.set_ylabel("Residual")
     ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.05, 1), borderaxespad=0.0)

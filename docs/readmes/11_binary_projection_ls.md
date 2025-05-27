@@ -5,11 +5,11 @@ This module solves binary-constrained least squares problems using a greedy proj
 ## Terminology
 
 ```math
-\text{A matrix: } A \in \mathbb{R}^{m \times m, n}
+\text{A matrix: } A \in \mathbb{R}^{m^2, \space n}
 ```
 
 ```math
-\text{A target vector: } b \in \mathbb{R}^{m \times m}
+\text{A target vector: } b \in \mathbb{R}^{m^2}
 ```
 
 I aim to solve the constrained least squares problem:
@@ -92,7 +92,7 @@ h = \begin{bmatrix}
 Where:
 
 ```math
-I \in \mathbb{R}^{n \times n} \text{ is the identity matrix}
+I \in \mathbb{R}^{n, \space n} \text{ is the identity matrix}
 ```
 
 ```math

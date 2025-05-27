@@ -57,7 +57,7 @@ y = \text{The initial grayscale image}
 m = \text{The number of rows and columns in the image, the image is square (m, m)}
 ```
 ```math
-b = \text{The flattened row-wise version of the image. } b \in \mathbb{R}^{m \times m}
+b = \text{The flattened row-wise version of the image. } b \in \mathbb{R}^{m^2}
 ```
 ```math
 N = \text{The Number of pegs used}
@@ -70,7 +70,7 @@ n = {N \choose 2} \text{, the number of lines}
 A_i = \text{A matrix representing the } i \text{-th line drawn on the canvas}
 ```
 ```math
-A = \text{For each } A_i \text{, the corresponding column is the flattened row-wise version of } A_i. \space A \in \mathbb{R}^{m \times m, \space n}
+A = \text{For each } A_i \text{, the corresponding column is the flattened row-wise version of } A_i. \space A \in \mathbb{R}^{m^2, \space n}
 ```
 
 ```math
