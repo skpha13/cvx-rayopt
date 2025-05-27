@@ -220,6 +220,12 @@ def validate_arguments(args):
         if args.block_size is None:
             raise ValueError("The `block-size` argument can not be None with the matching-pursuit solver.")
 
+    if args.command == SOLVE_COMMAND_NAME and args.solver == "bpls":
+        if args.block_size is None:
+            raise ValueError(
+                "The `block-size` argument can not be None with the binary projection least squares solver."
+            )
+
 
 def main() -> None:
     stringart_directory: Path = Path(os.path.dirname(os.path.abspath(__file__)))

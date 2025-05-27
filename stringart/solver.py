@@ -13,24 +13,12 @@ from stringart.line.matrix import MatrixGenerator
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.optimize.downsampling import UDSLoss
-from stringart.optimize.regularization import (
-    AbsoluteValueRegularizer,
-    NoRegularizer,
-    Regularizer,
-    SmoothRegularizer,
-    WeightedRegularizer,
-)
+from stringart.optimize.regularization import (AbsoluteValueRegularizer, NoRegularizer, Regularizer, SmoothRegularizer,
+                                               WeightedRegularizer)
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import (
-    CropMode,
-    MatchingPursuitMethod,
-    MatrixRepresentation,
-    Point,
-    QPSolvers,
-    Rasterization,
-    RegularizationType,
-)
+from stringart.utils.types import (CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers,
+                                   Rasterization, RegularizationType)
 
 logger = logging.getLogger(__name__)
 
@@ -509,7 +497,7 @@ class Solver:
             x_residual = np.zeros(n)
             x_residual[~np.isnan(x_fixed)] = x_fixed[~np.isnan(x_fixed)]
 
-            residual = np.linalg.norm(self.b - A @ x_residual)
+            residual, _ = self.residual_fn(x_residual)
             residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
