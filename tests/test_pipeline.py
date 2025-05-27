@@ -203,6 +203,7 @@ class TestPipeline:
             crop_mode="center",
             rasterization="xiaolin-wu",
             number_of_lines=10,
+            block_size=2,
         )
 
         configuration_cvxopt = Configuration(
@@ -218,6 +219,7 @@ class TestPipeline:
             qp_solver="cvxopt",
             k=3,
             max_iterations=1,
+            block_size=2,
         )
 
         configuration_scipy = Configuration(
@@ -233,6 +235,7 @@ class TestPipeline:
             qp_solver="scipy",
             k=10,
             max_iterations=5,
+            block_size=2,
         )
 
         configuration_defaults.run_configuration(running_tests=True)

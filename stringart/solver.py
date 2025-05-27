@@ -5,7 +5,7 @@ import numpy as np
 import scipy
 from cvxopt import matrix, solvers
 from numpy.linalg import lstsq
-from scipy.sparse import csr_matrix, hstack
+from scipy.sparse import csc_matrix, hstack
 from scipy.sparse.linalg import lsqr
 from tqdm import tqdm
 
@@ -13,12 +13,24 @@ from stringart.line.matrix import MatrixGenerator
 from stringart.mp.greedy_selector import GreedySelector
 from stringart.mp.matching_pursuit import Greedy, MatchingPursuit, Orthogonal
 from stringart.optimize.downsampling import UDSLoss
-from stringart.optimize.regularization import (AbsoluteValueRegularizer, NoRegularizer, Regularizer, SmoothRegularizer,
-                                               WeightedRegularizer)
+from stringart.optimize.regularization import (
+    AbsoluteValueRegularizer,
+    NoRegularizer,
+    Regularizer,
+    SmoothRegularizer,
+    WeightedRegularizer,
+)
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
-from stringart.utils.types import (CropMode, MatchingPursuitMethod, MatrixRepresentation, Point, QPSolvers,
-                                   Rasterization, RegularizationType)
+from stringart.utils.types import (
+    CropMode,
+    MatchingPursuitMethod,
+    MatrixRepresentation,
+    Point,
+    QPSolvers,
+    Rasterization,
+    RegularizationType,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -241,7 +253,7 @@ class Solver:
         number_of_lines: int,
         mp_method: MatchingPursuitMethod | None = "orthogonal",
         **kwargs,
-    ) -> tuple[np.ndarray | csr_matrix, np.ndarray, list[np.floating]]:
+    ) -> tuple[np.ndarray | csc_matrix, np.ndarray, list[np.floating]]:
         """Performs a matching pursuit algorithm to select the best lines from the candidate lines matrix,
         iteratively adding the top-k candidates to minimize the residual error with respect to
         the target vector `b`.
@@ -296,7 +308,7 @@ class Solver:
         past_residual = np.inf
         residual_history = []
 
-        A = csr_matrix((rows, 0))
+        A = csc_matrix((rows, 0))
         x = None
 
         mp_instance: MatchingPursuit | None = None
