@@ -38,7 +38,7 @@ class ConfigurationFactory:
 
     def create(
         self,
-        solver: SolverType = "least-squares",
+        solver: SolverType = "ls",
         rasterization: Rasterization = "bresenham",
         number_of_lines: int | None = None,
         binary: bool = False,
@@ -52,13 +52,8 @@ class ConfigurationFactory:
             crop_mode=self.crop_mode,
             rasterization=rasterization,
             matrix_representation=self.matrix_representation,
-            mp_method=None,
             number_of_lines=number_of_lines,
-            selector_type=None,
             binary=binary,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
         )
 
 
@@ -70,16 +65,11 @@ def run_configs(configs: List[Configuration]) -> np.ndarray:
     nconf = len(configs) // 2
     results = [[None for _ in range(nconf)], [None for _ in range(nconf)]]
 
-    with ProcessPoolExecutor() as executor:
-        future_to_config = {executor.submit(run_config, config, index): config for index, config in enumerate(configs)}
+    for index, config in enumerate(configs):
+        index_result, result = run_config(config, index)
 
-        for future in as_completed(future_to_config):
-            config = future_to_config[future]
-
-            index, result = future.result()
-
-            row_index = 0 if config.rasterization == "bresenham" else 1
-            results[row_index][index % nconf] = result
+        row_index = 0 if config.rasterization == "bresenham" else 1
+        results[row_index][index % nconf] = result
 
     return np.array(results)
 
@@ -178,19 +168,19 @@ def main():
 
     # fmt: off
     configs = [
-        config_factory.create("least-squares", "bresenham", None),
-        config_factory.create("least-squares", "bresenham", k),
-        config_factory.create("least-squares", "bresenham", k, binary=True),
-        config_factory.create("linear-least-squares", "bresenham", None),
-        config_factory.create("linear-least-squares", "bresenham", k),
-        config_factory.create("linear-least-squares", "bresenham", k, binary=True),
+        config_factory.create("ls", "bresenham", None),
+        config_factory.create("ls", "bresenham", k),
+        config_factory.create("ls", "bresenham", k, binary=True),
+        config_factory.create("lls", "bresenham", None),
+        config_factory.create("lls", "bresenham", k),
+        config_factory.create("lls", "bresenham", k, binary=True),
 
-        config_factory.create("least-squares", "xiaolin-wu", None),
-        config_factory.create("least-squares", "xiaolin-wu", k),
-        config_factory.create("least-squares", "xiaolin-wu", k, binary=True),
-        config_factory.create("linear-least-squares", "xiaolin-wu", None),
-        config_factory.create("linear-least-squares", "xiaolin-wu", k),
-        config_factory.create("linear-least-squares", "xiaolin-wu", k, binary=True),
+        config_factory.create("ls", "xiaolin-wu", None),
+        config_factory.create("ls", "xiaolin-wu", k),
+        config_factory.create("ls", "xiaolin-wu", k, binary=True),
+        config_factory.create("lls", "xiaolin-wu", None),
+        config_factory.create("lls", "xiaolin-wu", k),
+        config_factory.create("lls", "xiaolin-wu", k, binary=True),
     ]
     # fmt: on
 

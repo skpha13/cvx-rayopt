@@ -2,10 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Literal
 
 import numpy as np
-from scipy.sparse import csr_matrix
+from scipy.sparse import csc_matrix
 from sklearn.preprocessing import normalize
 
-GreedySelector = Literal["random", "dot-product"]
+GreedySelector = Literal["random", "dot-product", "all"]
 
 
 class Selector(ABC):
@@ -13,7 +13,7 @@ class Selector(ABC):
 
     Attributes
     ----------
-    A : csr_matrix
+    A : csc_matrix
         A sparse matrix representing candidate lines.
     b : np.ndarray
         A vector representing the target values.
@@ -30,12 +30,13 @@ class Selector(ABC):
         Abstract method for selecting the top-k candidate indices based on a certain heuristic.
     """
 
-    TOP_K: int = 10
+    TOP_K: int = 100
 
-    def __init__(self, A: csr_matrix, b: np.ndarray):
+    def __init__(self, A: csc_matrix, b: np.ndarray):
         self.A = A
         self.b = b
         self.rows, self.cols = A.shape
+        Selector.TOP_K = min(Selector.TOP_K, self.cols)
 
     @abstractmethod
     def get_top_k_candidates(self):
@@ -49,6 +50,13 @@ class Selector(ABC):
             An array containing the indices of the top-k selected candidates.
         """
         pass
+
+
+class AllSelector(Selector):
+    """Selects all candidates from the matrix `A`."""
+
+    def get_top_k_candidates(self):
+        return np.arange(self.cols)
 
 
 class RandomSelector(Selector):
@@ -75,7 +83,7 @@ class DotProductSelector(Selector):
         An array containing the dot products between the columns of `A` and the vector `b`.
     """
 
-    def __init__(self, A: csr_matrix, b: np.ndarray):
+    def __init__(self, A: csc_matrix, b: np.ndarray):
         super().__init__(A, b)
 
         A_norm = normalize(A, norm="l2", axis=0, copy=True)

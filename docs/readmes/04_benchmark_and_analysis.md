@@ -28,9 +28,7 @@
 
 Right off the bat we can see that the best results to the human eye are clearly the ones using the **Least Squares** approach. That is because they utilize all possible lines and adjust their intensity between 0 (white) and 1 (black) (**NOTE**: values are inverted so we can draw black lines rather than white ones. In computer graphics 0 represents black and 1 white).
 
-On the other hand, the **Matching Pursuit Greedy** approaches, which select a limited number of lines (in this case, 1000), produce less smooth reconstructions. The random heuristic tends to be more chaotic, choosing lines from various regions of the image. In contrast, the dot product heuristic focuses on certain areas, leading to more localized but less varied results.
-
-Increasing the number of selected lines in the **Matching Pursuit Greedy** approaches could improve their results, but the trade-off lies in the **high computational cost**. 
+On the other hand, the **Matching Pursuit Greedy** approaches, which select a limited number of lines (in this case, 2000), produce less smooth reconstructions. The random heuristic tends to be more chaotic, choosing lines from various regions of the image. In contrast, the dot product heuristic focuses on certain areas, leading to more localized but less varied results.
 
 The **Orthogonal Matching Pursuit** method seems to strike a balance between the random heuristic and dot product heuristic of the greedy alternative.
 
@@ -62,7 +60,7 @@ The longest computation time goes to the **Binary Projection LS** method. This i
 
 Memory usage provides an interesting insight into the efficiency of the algorithms.
 
-The **Dense** method requires significantly more memory because it needs to store a large matrix of size: `m = 108.900, n = 4.950`. In contrast, the **Least Squares Sparse** method only needs to store non-zero elements, representing a more memory-efficient solution. And the **Matching Pursuit** approaches hold at maximum a matrix of size: `m = 108.900, n = 1000`.
+The **Dense** method requires significantly more memory because it needs to store a large matrix of size: `m * m = 108.900, n = 4.950`. In contrast, the **Least Squares Sparse** method only needs to store non-zero elements, representing a more memory-efficient solution. And the **Matching Pursuit** approaches hold at maximum a matrix of size: `m * m = 108.900, n = 1000`.
 
 ## Residual Over Iterations
 

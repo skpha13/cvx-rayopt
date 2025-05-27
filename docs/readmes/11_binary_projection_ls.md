@@ -1,22 +1,22 @@
-# Binary Projection Least Squares
+# Binary Projection Least Squares (BPLS)
 
 This module solves binary-constrained least squares problems using a greedy projection approach with **quadratic programming (QP)** via `cvxopt`.
 
 ## Terminology
 
 ```math
-\text{A matrix: } A \in \mathbb{R}^{m \times n}
+\text{A matrix: } A \in \mathbb{R}^{m^2, \space n}
 ```
 
 ```math
-\text{A target vector: } b \in \mathbb{R}^{m}
+\text{A target vector: } b \in \mathbb{R}^{m^2}
 ```
 
 I aim to solve the constrained least squares problem:
 
 Where:
 
-- x is constrained to lie in the unit hypercube `[0,1]^n`
+- `x` is constrained to lie in the unit hypercube `[0,1]^n`
 - I then greedily project top-`k` variables to binary values (fix to 1), iteratively improving the approximation
 
 ## Method Overview
@@ -31,9 +31,9 @@ The algorithm iteratively:
 
 using quadratic programming.
 
-2. Fixes the top-k variables with the highest values in x to 1.
+2. Fixes the top-k variables with the highest values in `x` to 1.
 
-3. Adjusts the problem by subtracting the effect of those fixed variables from b, then repeats.
+3. Adjusts the problem by subtracting the effect of those fixed variables from `b`, then repeats.
 
 4. At the end, all remaining variables are set to 0.
 
@@ -92,7 +92,7 @@ h = \begin{bmatrix}
 Where:
 
 ```math
-I \in \mathbb{R}^{n \times n} \text{ is the identity matrix}
+I \in \mathbb{R}^{n, \space n} \text{ is the identity matrix}
 ```
 
 ```math

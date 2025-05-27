@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import crop_image, find_radius_and_center_point
 from stringart.utils.types import Point
@@ -24,7 +24,7 @@ class TestMatrixOperations:
         image = np.zeros(shape, dtype=np.uint8)
 
         cropped = crop_image(image, crop_mode)
-        A, pegs = MatrixGenerator.compute_matrix(
+        A = MatrixGenerator.compute_matrix(
             shape=np.shape(cropped),
             number_of_pegs=20,
             crop_mode=crop_mode,

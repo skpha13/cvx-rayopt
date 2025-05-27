@@ -1,4 +1,4 @@
-# Least Squares Regularized
+# Least Squares Regularized (LSR)
 
 Considering our previous [Quadratic Problem Formulation](./11_binary_projection_ls.md#quadratic-programming-formulation), I can add regularization terms to the CVXOPT solver in order to push values toward 0 or 1. This is useful when I want to encourage binary-like solutions without explicitly constraining the problem to binary values.
 

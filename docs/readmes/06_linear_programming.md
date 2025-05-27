@@ -8,7 +8,7 @@ Linear programming (LP) aims to optimize an objective function subject to linear
 \text{Find a vector: } x
 ```
 ```math
-\text{That minimizes the objective function: } \sum_{i=1}^{m \cdot n} r_i
+\text{That minimizes the objective function: } \sum_{i=1}^{m \cdot m} r_i
 ```
 ```math
 \text{Where: } r = b - Ax
@@ -39,18 +39,18 @@ For `30` pegs, a computation time of 2 minutes and 32 seconds is manageable. How
 
 Given **n_pegs**, the number of **lines**:
 ```math
-l \text{ is determinde as} = \frac{n_{pegs} (n_{pegs} - 1)}{2}
+n \text{ is determinde as} = \frac{N (N - 1)}{2}
 ```
 
 For an image of size **330x330 pixels**, the matrix representation results in the following growth pattern:
 
-| n_pegs | Lines (l) | Size of A      | No. Elements |
+| n_pegs | Lines (n) | Size of A      | No. Elements |
 |--------|-----------|----------------|--------------|
 | 30     | 435       | 108.900 × 435  | 47.371.500   |
 | 40     | 780       | 108.900 × 780  | 84.942.000   |
 | 100    | 4.950     | 108.900 × 4950 | 539.055.000  |
 
-Although increasing from `30` to `100` pegs is only a **3.33×** increase, the number of elements grows **11.37×** due to the polynomial nature of `l`. Additionally, the simulation of the `Ax = b` constraint further increases complexity.
+Although increasing from `30` to `100` pegs is only a **3.33×** increase, the number of elements grows **11.37×** due to the polynomial nature of `n`. Additionally, the simulation of the `Ax = b` constraint further increases complexity.
 
 Using `PuLP`'s sparse matrix representation, we observe the following real model complexities:
 

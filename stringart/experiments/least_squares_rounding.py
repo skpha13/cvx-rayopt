@@ -30,12 +30,12 @@ def compute_solution(A: np.ndarray, x: np.ndarray, l: int = 1000, shape: Tuple[i
 def main():
     image_cropped = crop_image(image, crop_mode)
     solver = Solver(image_cropped, crop_mode, number_of_pegs=300)
-    A, x, _ = solver.least_squares("sparse")
+    A, x, _ = solver.ls("sparse")
     solution = compute_solution(A, x)
 
-    plt.imshow(solution, cmap="grey")
+    plt.imshow(solution, cmap="gray")
     plt.show()
-    plt.imsave("../../outputs/misc/least_squares_lena_rounding.png", solution, cmap="grey")
+    plt.imsave("../../outputs/misc/least_squares_lena_rounding.png", solution, cmap="gray")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-# Binary Projection Least Squares Regularized
+# Binary Projection Least Squares Regularized (BPLSR)
 
 In the [**Least Squares Regularized**](./12_least_squares_regularized.md) readme,it's noted that introducing a binary-enforcing regularization term can break the convexity of the optimization problem. To address this, a new approach was proposed: instead of adding the regularization term explicitly to the objective, I incorporate its effect directly into the cost matrix **before** solving the system. This preserves convexity while still encouraging binary-like solutions through adaptive weighting.
 

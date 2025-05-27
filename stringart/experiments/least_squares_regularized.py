@@ -21,7 +21,7 @@ lambd = 5000
 def solve():
     print("Regularizer: None")
     benchmarks_reg_none = benchmark.run_benchmark(
-        solver.ls_regularized,
+        solver.lsr,
         matrix_representation=matrix_representation,
         lambd=lambd,
         regularizer=None,
@@ -29,7 +29,7 @@ def solve():
 
     print("Regularizer: smooth")
     benchmarks_reg_smooth = benchmark.run_benchmark(
-        solver.ls_regularized,
+        solver.lsr,
         matrix_representation=matrix_representation,
         lambd=lambd,
         regularizer="smooth",
@@ -37,7 +37,7 @@ def solve():
 
     print("Regularizer: abs")
     benchmarks_reg_abs = benchmark.run_benchmark(
-        solver.ls_regularized,
+        solver.lsr,
         matrix_representation=matrix_representation,
         lambd=lambd,
         regularizer="abs",

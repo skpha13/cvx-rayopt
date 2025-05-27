@@ -1,9 +1,9 @@
 from typing import Callable, List
 
 import numpy as np
-from scipy.sparse import csr_matrix
-from stringart.line_algorithms.bresenham import Bresenham
-from stringart.line_algorithms.xiaolin_wu import XiaolinWu
+from scipy.sparse import csc_matrix
+from stringart.line.bresenham import Bresenham
+from stringart.line.xiaolin_wu import XiaolinWu
 from stringart.utils.circle import compute_pegs
 from stringart.utils.image import find_radius_and_center_point
 from stringart.utils.types import CropMode, MatrixRepresentation, Point, Rasterization
@@ -19,7 +19,7 @@ class MatrixGenerator:
         crop_mode: CropMode = "center",
         matrix_representation: MatrixRepresentation = "sparse",
         rasterization: Rasterization = "bresenham",
-    ) -> tuple[np.ndarray | csr_matrix, List[Point]]:
+    ) -> np.ndarray | csc_matrix:
         """Computes the matrix representation of lines drawn between pegs placed on a grid.
 
         Parameters
@@ -45,10 +45,9 @@ class MatrixGenerator:
 
         Returns
         -------
-        tuple[np.ndarray, List[Point], List[Point]]
-            - A 2D numpy array (shape: number_of_lines x grid_size) where each row is a binary vector
-              representing a line drawn between two pegs.
-            - A list of Points representing the locations of the pegs.
+        A : np.ndarray
+            A 2D numpy array (shape: grid_size X number_of_lines) where each row is a binary vector
+            representing a line drawn between two pegs.
         """
         radius, center_point = find_radius_and_center_point(shape, crop_mode)
         pegs: List[Point] = compute_pegs(
@@ -65,7 +64,7 @@ class MatrixGenerator:
         A = MatrixGenerator.method_map[matrix_representation](shape, pegs, rasterization)
         A = A.astype(np.float64)
 
-        return A, pegs
+        return A
 
     @staticmethod
     def generate_dense_line(shape: tuple[int, ...], line: List[Point]) -> np.ndarray:
@@ -187,7 +186,7 @@ class MatrixGenerator:
     @staticmethod
     def generate_sparse_matrix(
         shape: tuple[int, ...], pegs: List[Point], rasterization: Rasterization = "bresenham"
-    ) -> csr_matrix:
+    ) -> csc_matrix:
         """Generates a sparse matrix representation of lines drawn between all pairs of pegs.
 
         The sparse matrix is in CSR format, where each non-zero entry corresponds to a point in the grid
@@ -207,7 +206,7 @@ class MatrixGenerator:
 
         Returns
         -------
-        scipy.sparse.csr_matrix
+        scipy.sparse.csc_matrix
             A sparse matrix where each non-zero entry represents a point in the grid that is part of a line
             between two pegs.
         """
@@ -233,11 +232,11 @@ class MatrixGenerator:
 
                 column_index += 1
 
-        A = csr_matrix((data, (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index))
+        A = csc_matrix((data, (row_indices, column_indices)), shape=(shape[0] * shape[1], column_index))
 
         return A
 
-    method_map: dict[str, Callable[[tuple[int, ...], list[Point], Rasterization], np.ndarray | csr_matrix]] = {
+    method_map: dict[str, Callable[[tuple[int, ...], list[Point], Rasterization], np.ndarray | csc_matrix]] = {
         "dense": generate_dense_matrix,
         "sparse": generate_sparse_matrix,
     }

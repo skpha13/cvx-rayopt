@@ -5,7 +5,7 @@ import numpy as np
 import scipy
 from matplotlib import pyplot as plt
 from stringart.experiments.least_squares_rounding import compute_solution
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper
 from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, MatrixRepresentation, Rasterization
@@ -26,7 +26,7 @@ def linear_least_squares(
     matrix_representation: MatrixRepresentation = "sparse",
     rasterization: Rasterization = "bresenham",
 ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterization)
+    A = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterization)
     b: np.ndarray = ImageWrapper.flatten_image(src)
 
     optimize_results = scipy.optimize.lsq_linear(A, b, bounds=(0, np.inf))
@@ -56,9 +56,9 @@ def main():
     A, x, _ = linear_least_squares(image, shape, number_of_pegs, crop_mode, matrix_representation)
     solution = compute_solution(A, x)
 
-    plt.imshow(solution, cmap="grey")
+    plt.imshow(solution, cmap="gray")
     plt.show()
-    plt.imsave("../../outputs/misc/linear_least_squares_lena.png", solution, cmap="grey")
+    plt.imsave("../../outputs/misc/linear_least_squares_lena.png", solution, cmap="gray")
 
 
 if __name__ == "__main__":

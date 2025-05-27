@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.perf_analyzer import Benchmark
@@ -28,7 +28,7 @@ def main():
     Benchmark.initialize_metadata(directory)
     benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
     result = benchmark.run_benchmark(
-        solver.least_squares,
+        solver.ls,
         matrix_representation=matrix_representation,
     )
     gt = np.array(result.output_image)
@@ -39,7 +39,7 @@ def main():
     result = benchmark.load_benchmarks("benchmark_experiment")[0]
     print(result)
 
-    A, _ = MatrixGenerator.compute_matrix(
+    A = MatrixGenerator.compute_matrix(
         result.shape,
         result.number_of_pegs,
         result.crop_mode,
@@ -54,11 +54,11 @@ def main():
     residual = np.linalg.norm(b - A @ x)
     print(f"\nResidual Ground Truth: {result.residual_history[-1]}\nResidual: {residual}")
 
-    plt.imshow(gt, cmap="grey")
+    plt.imshow(gt, cmap="gray")
     plt.axis("off")
     plt.show()
 
-    plt.imshow(reconstructed_image, cmap="grey")
+    plt.imshow(reconstructed_image, cmap="gray")
     plt.axis("off")
     plt.show()
 

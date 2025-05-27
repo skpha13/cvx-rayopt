@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from scipy.linalg import lstsq
 from scipy.sparse.linalg import lsqr
 from skimage import io
-from stringart.line_algorithms.matrix import MatrixGenerator
+from stringart.line.matrix import MatrixGenerator
 from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.types import CropMode, MatrixRepresentation
 
@@ -29,7 +29,7 @@ def display_line_console(A: np.ndarray, pegs: np.ndarray) -> None:
 
 
 def matrix_solver() -> None:
-    A, pegs = MatrixGenerator.compute_matrix(shape, 100, crop_mode, matrix_representation)
+    A = MatrixGenerator.compute_matrix(shape, 100, crop_mode, matrix_representation)
 
     x = None
     if matrix_representation == "dense":

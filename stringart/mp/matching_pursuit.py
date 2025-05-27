@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from scipy.sparse import csr_matrix, hstack
+from scipy.sparse import csc_matrix, hstack
 from scipy.sparse.linalg import lsqr
 from sklearn.preprocessing import normalize
-from stringart.mp.greedy_selector import DotProductSelector, GreedySelector, RandomSelector, Selector
+from stringart.mp.greedy_selector import AllSelector, DotProductSelector, GreedySelector, RandomSelector, Selector
+from stringart.optimize.downsampling import UDSLoss
 
 
 class MatchingPursuit(ABC):
@@ -12,23 +13,23 @@ class MatchingPursuit(ABC):
 
     Parameters
     ----------
-    A : csr_matrix
+    A : csc_matrix
         The matrix representing the system of equations.
     b : np.ndarray
         The target vector in the system of equations.
     """
 
-    def __init__(self, A: csr_matrix, b: np.ndarray):
+    def __init__(self, A: csc_matrix, b: np.ndarray):
         self.A = A
         self.b = b.copy()
 
     @abstractmethod
-    def compute_best_column(self, remaining_candidate_lines: csr_matrix) -> int:
+    def compute_best_column(self, remaining_candidate_lines: csc_matrix, **kwargs) -> int:
         """Abstract method for computing the best column index from the remaining candidate lines.
 
         Parameters
         ----------
-        remaining_candidate_lines : csr_matrix
+        remaining_candidate_lines : csc_matrix
             The matrix containing the candidate columns to consider.
 
         Returns
@@ -44,12 +45,12 @@ class Greedy(MatchingPursuit):
 
     Parameters
     ----------
-    A : csr_matrix
+    A : csc_matrix
         The matrix representing the system of equations.
     b : np.ndarray
         The target vector in the system of equations.
     selector_type : GreedySelector, optional
-        The type of selector to use. It should be one of 'random' or 'dot-product'.
+        The type of selector to use. It should be one of 'random', 'dot-product', or 'all'.
         Defaults to 'random'.
 
     Attributes
@@ -58,13 +59,18 @@ class Greedy(MatchingPursuit):
         The type of selector used to select top k candidates.
     """
 
-    __greedy_map_selector: dict[str, type[Selector]] = {"random": RandomSelector, "dot-product": DotProductSelector}
+    __greedy_map_selector: dict[str, type[Selector]] = {
+        "random": RandomSelector,
+        "dot-product": DotProductSelector,
+        "all": AllSelector,
+    }
 
-    def __init__(self, A: csr_matrix, b: np.ndarray, selector_type: GreedySelector = "random"):
+    def __init__(self, A: csc_matrix, b: np.ndarray, residual_fn: UDSLoss, selector_type: GreedySelector = "random"):
         super().__init__(A, b)
         self.selector_type = selector_type
+        self.residual_fn = residual_fn
 
-    def compute_best_column(self, remaining_candidate_lines: csr_matrix) -> int:
+    def compute_best_column(self, remaining_candidate_lines: csc_matrix, **kwargs) -> int:
         """Computes the best column to add to the solution using a greedy approach.
 
         This method selects the best column from the remaining candidates based on a
@@ -72,8 +78,10 @@ class Greedy(MatchingPursuit):
 
         Parameters
         ----------
-        remaining_candidate_lines : csr_matrix
-           The matrix containing the remaining candidate columns.
+        remaining_candidate_lines : csc_matrix
+            The matrix containing the remaining candidate columns.
+        **kwargs
+            Additional parameters for the 'greedy' method: selected_lines: set containing the so far selected lines.
 
         Returns
         -------
@@ -85,6 +93,16 @@ class Greedy(MatchingPursuit):
         ValueError
            If no valid column is found.
         """
+        selected_lines: set | None = kwargs.get("selected_lines", None)
+        remaining_lines_indices: set | None = kwargs.get("remaining_lines_indices", None)
+
+        if selected_lines is None:
+            raise RuntimeError("Selected lines cannot be None.")
+
+        if remaining_lines_indices is None:
+            raise RuntimeError("Remaining lines indices cannot be None.")
+
+        remaining_lines_indices: list = list(remaining_lines_indices)
 
         # initialize selector
         selector: Selector = Greedy.__greedy_map_selector[self.selector_type](
@@ -101,7 +119,7 @@ class Greedy(MatchingPursuit):
             A_trial = hstack([self.A, trial_column])
             x_trial = lsqr(A_trial, self.b)[0]
 
-            residual = np.linalg.norm(self.b - A_trial @ x_trial)
+            residual, _ = self.residual_fn(x_trial, x_indices=selected_lines | {remaining_lines_indices[column_index]})
 
             if residual < best_residual:
                 best_index = column_index
@@ -122,13 +140,13 @@ class Orthogonal(MatchingPursuit):
 
     Attributes
     ----------
-    A : csr_matrix
+    A : csc_matrix
         The matrix representing the system of equations.
     b : np.ndarray
         The target vector.
     """
 
-    def compute_best_column(self, remaining_candidate_lines: csr_matrix) -> int:
+    def compute_best_column(self, remaining_candidate_lines: csc_matrix, **kwargs) -> int:
         """Computes the best column to add to the solution using an orthogonal matching pursuit strategy.
 
         This method finds the column that has the highest correlation with the residual
@@ -136,8 +154,10 @@ class Orthogonal(MatchingPursuit):
 
         Parameters
         ----------
-        remaining_candidate_lines : csr_matrix
+        remaining_candidate_lines : csc_matrix
             The matrix containing the remaining candidate columns.
+        **kwargs:
+            Not used in this case.
 
         Returns
         -------

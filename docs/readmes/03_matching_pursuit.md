@@ -1,4 +1,4 @@
-# Matching Pursuit
+# Matching Pursuit (MP)
 
 ## Terminology
 
@@ -46,10 +46,10 @@ The iteration continues until one of the following conditions is met:
 
 The current implementation, even when using **sparse matrices** is quite slow. To improve the time efficiency of the algorithm, I chose to integrate two heuristics.
 
-The role of these heuristics is to reduce the set of candidate lines available for selection. If we denote the number of pegs used as `p`, at the first step, we will need to evaluate `p * (p-1) / 2` *atoms*.
-This results in an `A` matrix with a shape of `m * n, 1`; at the second step, `m * n, 2`; and so on, until the final step, where the shape will be `m * n, p * (p-1) / 2`.
+The role of these heuristics is to reduce the set of candidate lines available for selection. If we denote the number of pegs used as `N`, at the first step, we will need to evaluate `N * (N-1) / 2` *atoms*.
+This results in an `A` matrix with a shape of `m * m, 1`; at the second step, `m * m, 2`; and so on, until the final step, where the shape will be `m * m, N * (N-1) / 2`.
 
-For example, with a number of pegs `p = 100`, we would have `4950` possible lines/*atoms* to choose from. After selecting the first one, we will need to evaluate the remaining `4949`, and so on.
+For example, with a number of pegs `N = 100`, we would have `4950` possible lines/*atoms* to choose from. After selecting the first one, we will need to evaluate the remaining `4949`, and so on.
 
 To address this problem, the following heuristics have been implemented:
 
@@ -66,7 +66,7 @@ Here, the dot product between each **candidate atom** and the target vector `b` 
 
 ### Observations
 
-- Even with the current optimizations, this approach is still quite slow. For example, using an image of shape `330 x 330` with `1000` lines to select takes approximately `5 minutes`. Compared to the **dense least squares approach**, that is **2.5 times higher**, while the **sparse least squares approach** only takes a few seconds. It's important to note that both least squares approaches select all `p * (p-1) / 2` possible lines.
+- Even with the current optimizations, this approach is still quite slow. For example, using an image of shape `330 x 330` with `1000` lines to select takes approximately `5 minutes`. Compared to the **dense least squares approach**, that is **2.5 times higher**, while the **sparse least squares approach** only takes a few seconds. It's important to note that both least squares approaches select all `N * (N-1) / 2` possible lines.
 
 ## Implementation Orthogonal Matching Pursuit (OMP)
 

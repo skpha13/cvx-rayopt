@@ -19,21 +19,41 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="bresenham",
             matrix_representation="dense",
-            mp_method=None,
+        )
+        configuration.run_configuration(running_tests=True)
+
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="bresenham",
+            matrix_representation="dense",
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
+            binary=True,
+        )
+
+        configuration.run_configuration(running_tests=True)
+
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="ls",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="bresenham",
+            matrix_representation="dense",
+            number_of_lines=10,
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -42,21 +62,13 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="sparse",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -65,21 +77,13 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="linear-least-squares",
+            solver="lls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="sparse",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -88,21 +92,14 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="matching-pursuit",
+            solver="mp",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
-            rasterization=None,
-            matrix_representation=None,
             mp_method="greedy",
             number_of_lines=10,
             selector_type="random",
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -111,21 +108,32 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="matching-pursuit",
+            solver="mp",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="bresenham",
-            matrix_representation=None,
             mp_method="greedy",
             number_of_lines=10,
             selector_type="dot-product",
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
+            block_size=2,
+        )
+
+        configuration.run_configuration(running_tests=True)
+
+    def test_gmp_all(self):
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="mp",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="bresenham",
+            mp_method="greedy",
+            number_of_lines=10,
+            selector_type="all",
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -134,21 +142,14 @@ class TestPipeline:
         configuration = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="matching-pursuit",
+            solver="mp",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
             mp_method="orthogonal",
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
+            block_size=2,
         )
 
         configuration.run_configuration(running_tests=True)
@@ -157,61 +158,35 @@ class TestPipeline:
         configuration_first_half = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="first-half",
-            rasterization=None,
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_second_half = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="second-half",
-            rasterization=None,
             matrix_representation="dense",
-            mp_method=None,
+            rasterization="bresenham",
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_center = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares",
+            solver="ls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
-            rasterization=None,
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_first_half.run_configuration(running_tests=True)
@@ -222,61 +197,45 @@ class TestPipeline:
         configuration_defaults = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="binary-projection-ls",
+            solver="bpls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
+            block_size=2,
         )
 
         configuration_cvxopt = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="binary-projection-ls",
+            solver="bpls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="sparse",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
             qp_solver="cvxopt",
             k=3,
             max_iterations=1,
-            regularizer=None,
-            lambd=None,
+            block_size=2,
         )
 
         configuration_scipy = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="binary-projection-ls",
+            solver="bpls",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
             matrix_representation="dense",
-            mp_method=None,
             number_of_lines=10,
-            selector_type=None,
-            binary=None,
             qp_solver="scipy",
             k=10,
             max_iterations=5,
-            regularizer=None,
-            lambd=None,
+            block_size=2,
         )
 
         configuration_defaults.run_configuration(running_tests=True)
@@ -287,39 +246,21 @@ class TestPipeline:
         configuration_no_reg = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares-regularized",
+            solver="lsr",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
-            regularizer=None,
-            lambd=None,
         )
 
         configuration_smooth = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares-regularized",
+            solver="lsr",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
             regularizer="smooth",
             lambd=0.1,
         )
@@ -327,19 +268,11 @@ class TestPipeline:
         configuration_abs = Configuration(
             metadata=self.metadata,
             command="solve",
-            solver="least-squares-regularized",
+            solver="lsr",
             image_path=self.img_path,
             number_of_pegs=10,
             crop_mode="center",
             rasterization="xiaolin-wu",
-            matrix_representation=None,
-            mp_method=None,
-            number_of_lines=None,
-            selector_type=None,
-            binary=None,
-            qp_solver=None,
-            k=None,
-            max_iterations=None,
             regularizer="abs",
             lambd=0.1,
         )
