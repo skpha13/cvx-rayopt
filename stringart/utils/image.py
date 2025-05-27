@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib.pyplot import imread
 from skimage import filters
 from skimage.color import rgb2gray
+from sklearn.metrics import mean_squared_error
 from stringart.utils.types import CropMode, Point
 
 
@@ -294,3 +295,32 @@ def crop_image(image: np.ndarray, crop_mode: CropMode) -> np.ndarray:
         left = width - min_length
 
     return image[top : top + min_length, left : left + min_length]
+
+
+def masked_rmse(y_true: np.ndarray, y_pred: np.ndarray) -> np.floating:
+    """Compute the Root Mean Squared Error (RMSE) between `y_true` and `y_pred`,
+    considering only the RGB values of pixels where the alpha channel in `y_true` is greater than 0.
+
+    The function assumes that the input arrays are in RGBA format, with the last dimension of size 4.
+
+    Parameters
+    ----------
+    y_true : np.ndarray
+        Ground truth image array of shape (..., 4), where the last channel is the alpha channel.
+    y_pred : np.ndarray
+        Predicted image array of shape (..., 4), matching the shape of `y_true`.
+
+    Returns
+    -------
+    np.floating
+        The RMSE computed over the RGB values of pixels where the alpha channel in `y_true` is greater than 0.
+    """
+
+    alpha_mask = y_true[..., 3] > 0
+    mask = np.repeat(alpha_mask[..., np.newaxis], 3, axis=2)
+
+    y_true_rgb = y_true[..., :3][mask]
+    y_pred_rgb = y_pred[..., :3][mask]
+
+    mse = mean_squared_error(y_true_rgb, y_pred_rgb)
+    return np.sqrt(mse)

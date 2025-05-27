@@ -1,22 +1,28 @@
 import json
 import logging
 import os
+import string
 import time
 import tracemalloc
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, List
 
+import matplotlib
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import numpy as np
+from matplotlib import gridspec
 from matplotlib.colors import Colormap
 from skimage import io
 from skimage.metrics import normalized_root_mse
 from stringart.solver import Solver
-from stringart.utils.image import ImageWrapper, crop_image
-from stringart.utils.time_memory_format import (convert_memory_size, convert_monotonic_time, format_memory_size,
-                                                format_time)
+from stringart.utils.image import ImageWrapper, crop_image, masked_rmse
+from stringart.utils.time_memory_format import (
+    convert_memory_size,
+    convert_monotonic_time,
+    format_memory_size,
+    format_time,
+)
 from stringart.utils.types import CropMode, ElapsedTime, MemorySize, Rasterization
 from tqdm import tqdm
 
@@ -197,14 +203,14 @@ class Benchmark:
             (self.solver.ls, {"matrix_representation": "sparse", "number_of_lines": 1000, "binary": True}, True),
             (self.solver.lls, {"matrix_representation": "sparse", "number_of_lines": 1000}, False),
             (self.solver.lls, {"matrix_representation": "sparse", "number_of_lines": 1000, "binary": True}, True),
-            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "orthogonal"}, True),
-            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "random"}, True),
-            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "dot-product"}, True),
-            (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}, True),
-            (self.solver.bpls, {"solver": "scipy", "k": 3, "max_iterations": 1000}, True),
-            (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000, "lambd": 100}, True),
             (self.solver.lsr, {"regularizer": None, "lambd": 100}, False),
             (self.solver.lsr, {"regularizer": "smooth", "lambd": 100}, False),
+            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "all"}, True),
+            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "dot-product"}, True),
+            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "greedy", "selector_type": "random"}, True),
+            (self.solver.mp, {"number_of_lines": 1000, "mp_method": "orthogonal"}, True),
+            (self.solver.bpls, {"solver": "scipy", "k": 3, "max_iterations": 1000}, True),
+            (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}, True),
             # fmt: on
         ]
 
@@ -405,49 +411,142 @@ class Benchmark:
         directory = self.PLOTS_PATH / dirname
         os.makedirs(directory, exist_ok=True)
 
+        # create subdirectory for diff images
+        diff_dir = directory / "diff_images"
+        os.makedirs(diff_dir, exist_ok=True)
+
         # images are scaled in [0, 1] range because the solvers return them in range [0, 255]
         output_images = [ImageWrapper.scale_image(benchmark.output_image) for benchmark in benchmarks]
         ground_truth_image = crop_image(ground_truth_image, self.crop_mode)
+        ground_truth_image_alpha = ImageWrapper.apply_alpha_map_bw_to_rgba(
+            ground_truth_image, ImageWrapper.alpha_map(ground_truth_image, self.crop_mode)
+        )
 
-        labels = []
-        for benchmark in benchmarks:
-            params_str = "\n".join(f"{key}: {value}" for key, value in benchmark.params.items())
-            label = f"{benchmark.solver}\n{params_str}"
-            labels.append(label)
+        base_labels = [benchmark.solver for benchmark in benchmarks]
+        letter_labels = list(string.ascii_lowercase[: len(base_labels)])
+        combined_labels = [f"({letter}) {solver}" for letter, solver in zip(letter_labels, base_labels)]
 
         # plot diff images and rmses
-        rmses = [normalized_root_mse(ground_truth_image, test_image) for test_image in output_images]
+        rmses = [
+            masked_rmse(
+                ground_truth_image_alpha,
+                ImageWrapper.apply_alpha_map_bw_to_rgba(test_image, ImageWrapper.alpha_map(test_image, self.crop_mode)),
+            )
+            for test_image in output_images
+        ]
         diff_images = [
             ImageWrapper.scale_image(np.abs(ground_truth_image - test_image)) for test_image in output_images
         ]
         diff_images = prepare_diff_images(diff_images, self.crop_mode)
 
-        fig, axs = plt.subplots(1, len(output_images), figsize=(16, 6))
+        # save diff images with heatmap
+        for idx, diff_image in enumerate(diff_images):
+            filename = f"diff_image_{idx:03}.png"
+            plt.figure(figsize=(8, 8))
+            plt.imshow(diff_image, cmap="plasma")
+            plt.axis("off")
+            plt.tight_layout()
+            plt.savefig(diff_dir / filename, format="png", bbox_inches="tight", pad_inches=0)
+            plt.close()
+
         plot_name = "Difference Images"
+        max_cols = 5
 
-        # plt.subplots behaves differently when the length of output_images is 1
-        if len(output_images) == 1:
-            axs = [axs]
+        num_images = len(output_images)
+        num_rows = (num_images + max_cols - 1) // max_cols
 
-        for index, diff_image in enumerate(diff_images):
-            axs[index].imshow(diff_image, cmap="plasma")
-            axs[index].axis("off")
-            axs[index].text(
+        image_width = 3
+        image_height = 3
+        text_height = 0.5
+
+        fig_width = max_cols * image_width
+        fig_height = num_rows * (2 * image_height + text_height)
+
+        fig = plt.figure(figsize=(fig_width, fig_height))
+        gs = gridspec.GridSpec(
+            num_rows * 3,
+            max_cols,
+            figure=fig,
+            height_ratios=[image_height, image_height, text_height] * num_rows,  # 1:1 for images, 0.5 for text
+            hspace=0,
+            wspace=0.05,
+        )
+        axs = np.empty((num_rows * 3, max_cols), dtype=object)
+
+        for row in range(num_rows * 3):
+            for col in range(max_cols):
+                axs[row, col] = fig.add_subplot(gs[row, col])
+                axs[row, col].set_axis_off()
+
+        # first image: ground truth
+        axs[0, 0].imshow(ground_truth_image_alpha, cmap="gray")
+        axs[0, 0].set_axis_off()
+
+        # create a gradient image for colorbar display (1x256 gradient)
+        ax_colorbar = axs[1, 0]
+        ax_colorbar.set_axis_off()
+        pos = ax_colorbar.get_position()
+        cbar_width = 0.02
+        cbar_x = pos.x0 + (pos.width - cbar_width) / 2
+        cbar_height = pos.height * 0.8
+        cbar_y = pos.y0 + (pos.height - cbar_height) / 2
+        cbar_ax = fig.add_axes([cbar_x, cbar_y, cbar_width, cbar_height])
+        norm = matplotlib.colors.Normalize(vmin=0, vmax=1)
+        cbar = matplotlib.colorbar.ColorbarBase(cbar_ax, cmap=matplotlib.cm.plasma, norm=norm, orientation="vertical")
+        cbar_ax.tick_params(labelsize=8)
+
+        # text label for ground truth
+        axs[2, 0].text(
+            0.5,
+            0.5,
+            f"({letter_labels[0]})\nTarget Image",
+            ha="center",
+            va="center",
+            transform=axs[2, 0].transAxes,
+            fontsize=12,
+            wrap=True,
+        )
+
+        # plot remaining output images and diff images starting from index 1
+        for idx in range(1, num_images + 1):
+            col = idx % max_cols
+            row_group = (idx // max_cols) * 3
+
+            # row 1: output image
+            axs[row_group, col].imshow(output_images[idx - 1], cmap="gray")
+            axs[row_group, col].set_axis_off()
+
+            # row 2: diff image + label
+            axs[row_group + 1, col].imshow(diff_images[idx - 1], cmap="plasma")
+            axs[row_group + 1, col].set_axis_off()
+
+            # row 3: text label with RMS
+            axs[row_group + 2, col].text(
                 0.5,
-                -0.2,
-                f"{labels[index]}\nRMS: {rmses[index]:.4f}",
+                0.5,
+                combined_labels[idx - 1] + f"\nRMS: {rmses[idx - 1]:.4f}",
                 ha="center",
                 va="center",
-                transform=axs[index].transAxes,
-                fontsize=10,
+                transform=axs[row_group + 2, col].transAxes,
+                fontsize=12,
+                wrap=True,
             )
-        fig.tight_layout()
-        fig.savefig(f"{directory / plot_name}.png", format="png")
-        fig.show()
+
+        # hide any unused axes
+        total_slots = num_rows * max_cols
+        for empty_idx in range(num_images, total_slots):
+            col = empty_idx % max_cols
+            row_group = (empty_idx // max_cols) * 3
+            for r in range(3):
+                axs[row_group + r, col].axis("off")
+
+        fig.subplots_adjust(wspace=0, hspace=0.01)
+        fig.savefig(f"{directory / f'{plot_name}.png'}", format="png", bbox_inches="tight", pad_inches=0)
+        plt.close(fig)
 
         # plot residual over iterations
         raw_residuals = [np.array(benchmark.residual_history) for benchmark in benchmarks]
-        plot_residuals(raw_residuals, labels, "Residual History", directory)
+        plot_residuals(raw_residuals, combined_labels, "Residual History", directory)
 
         # flatten all residuals to find global min and max
         all_residuals = [r for benchmark in benchmarks for r in benchmark.residual_history]
@@ -466,7 +565,7 @@ class Benchmark:
 
             normalized_residuals.append(normalized)
 
-        plot_residuals(normalized_residuals, labels, "Normalized Residual History", directory)
+        plot_residuals(normalized_residuals, combined_labels, "Normalized Residual History", directory)
 
         # plot time and memory
         monotonic_time = [benchmark.elapsed_monotonic_time for benchmark in benchmarks]
@@ -478,7 +577,7 @@ class Benchmark:
             plt.figure(figsize=(10, 6))
 
             bar_width = 0.6
-            plt.bar(labels, values, color=color, width=bar_width)
+            plt.bar(combined_labels, values, color=color, width=bar_width)
 
             plt.xlabel("Solvers")
             plt.ylabel(ylabel)
