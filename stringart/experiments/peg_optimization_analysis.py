@@ -86,7 +86,7 @@ def compare_varying_pegs_lls():
     plt.plot(manhattan_distances, best_residuals, marker="o")
 
     for i, n in enumerate(number_of_pegs):
-        plt.annotate(f"n: {n}", (manhattan_distances[i], best_residuals[i]), fontsize=8)
+        plt.annotate(f"N: {n}", (manhattan_distances[i], best_residuals[i]), fontsize=8)
 
     plt.xlabel("Manhattan Distance Between First Two Pegs")
     plt.ylabel("Best Residual")
@@ -100,18 +100,23 @@ def compare_varying_pegs_lls():
     num_rows = len(number_of_pegs)
     num_cols = len(block_sizes)
     fig, axs = plt.subplots(num_rows, num_cols, figsize=(4 * num_cols, 4 * num_rows))
+    axs = np.atleast_2d(axs)
     for i in range(num_rows):
         for j in range(num_cols):
-            ax = axs[i, j] if num_rows > 1 else axs[j]
+            ax = axs[i, j]
             ax.imshow(solutions[i][j], cmap="gray")
-            ax.axis("off")
+
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
 
             if i == 0:
-                ax.set_title(f"Block Size: {block_sizes[j]}")
+                ax.set_title(f"Block Size: {block_sizes[j]}", fontsize=12)
             if j == 0:
-                ax.set_ylabel(f"n: {number_of_pegs[i]}", rotation=90)
+                ax.set_ylabel(f"N: {number_of_pegs[i]}", rotation=0, ha="right", va="center", fontsize=12)
+                ax.yaxis.set_label_coords(-0.2, 0.5)
 
-    plt.suptitle("LLS Varying Pegs and Block Sizes", fontsize=16)
     plt.tight_layout()
     plt.savefig(f"../../outputs/experiments/varying_number_of_pegs/lls_images_by_pegs_and_block_size.png")
     plt.show()
@@ -119,7 +124,7 @@ def compare_varying_pegs_lls():
     # plot residuals
     plt.figure(figsize=(8, 5))
     for i, n in enumerate(number_of_pegs):
-        plt.plot(block_sizes, residuals[i], marker="o", label=f"n: {n}")
+        plt.plot(block_sizes, residuals[i], marker="o", label=f"N: {n}")
 
     plt.xlabel("Block Size")
     plt.xticks(block_sizes)
@@ -128,6 +133,21 @@ def compare_varying_pegs_lls():
     plt.legend()
     plt.grid(True)
     plt.savefig(f"../../outputs/experiments/varying_number_of_pegs/lls_residuals_by_pegs_and_block_size.png")
+    plt.show()
+
+    column_index = 2
+    num_images = len(number_of_pegs)
+    fig, axs = plt.subplots(1, num_images, figsize=(4 * num_images, 4))
+    axs = np.atleast_1d(axs)
+
+    for i in range(num_images):
+        ax = axs[i]
+        ax.imshow(solutions[i][column_index], cmap="gray")
+        ax.axis("off")
+        ax.set_title(f"N: {number_of_pegs[i]}")
+
+    plt.tight_layout()
+    plt.savefig(f"../../outputs/experiments/varying_number_of_pegs/lls_column_{column_index}_as_row.png")
     plt.show()
 
 
@@ -153,7 +173,7 @@ def compare_varying_pegs_ls():
     for i, img in enumerate(solutions):
         axs[i].imshow(img, cmap="gray")
         axs[i].axis("off")
-        axs[i].set_title(f"n: {number_of_pegs[i]}")
+        axs[i].set_title(f"N: {number_of_pegs[i]}")
 
     plt.suptitle("Least Squares for Varying Pegs")
     plt.tight_layout()
