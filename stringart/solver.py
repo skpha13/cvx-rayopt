@@ -352,9 +352,9 @@ class Solver:
             residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
-            if not residual < past_residual:
-                logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
-                break
+            # if not residual < past_residual:
+            #     logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
+            #     break
             past_residual = residual
 
         x_correct_shape = np.zeros(candidate_lines.shape[1])
@@ -513,9 +513,9 @@ class Solver:
             residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
-            if not residual < past_residual:
-                logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
-                break
+            # if not residual < past_residual:
+            #     logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
+            #     break
             past_residual = residual
 
             # updating weights for regularization
