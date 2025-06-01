@@ -452,7 +452,7 @@ class Benchmark:
         max_cols = 5
 
         num_images = len(output_images)
-        num_rows = (num_images + max_cols - 1) // max_cols
+        num_rows = (num_images + max_cols) // max_cols
 
         image_width = 3
         image_height = 3
