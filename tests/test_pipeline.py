@@ -280,3 +280,17 @@ class TestPipeline:
         configuration_no_reg.run_configuration(running_tests=True)
         configuration_smooth.run_configuration(running_tests=True)
         configuration_abs.run_configuration(running_tests=True)
+
+    def test_radon(self):
+        configuration = Configuration(
+            metadata=self.metadata,
+            command="solve",
+            solver="radon",
+            image_path=self.img_path,
+            number_of_pegs=10,
+            crop_mode="center",
+            rasterization="xiaolin-wu",
+            block_size=2,
+        )
+
+        configuration.run_configuration(running_tests=True)

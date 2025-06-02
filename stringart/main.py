@@ -154,28 +154,39 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         help="The regularization strength. Defaults to None",
     )
 
-    ls_reg = solver_subparsers.add_parser("lsr", help="Least Squares Regularized options.")
-    ls_reg.add_argument(
+    ls_reg_parser = solver_subparsers.add_parser("lsr", help="Least Squares Regularized options.")
+    ls_reg_parser.add_argument(
         "--matrix-representation",
         choices=get_args(MatrixRepresentation),
         required=False,
         help="Matrix representation method. Defaults to `sparse`.",
     )
-    ls_reg.add_argument(
+    ls_reg_parser.add_argument(
         "--regularizer",
         choices=get_args(RegularizationType),
         required=False,
         help="Regularization method. Defaults to None.",
     )
-    ls_reg.add_argument(
+    ls_reg_parser.add_argument(
         "--lambda",
         type=float,
         required=False,
         help="The regularization strength. Defaults to 0.1",
     )
 
+    radon_parser = solver_subparsers.add_parser("radon", help="Radon Transformation Solver options.")
+
     # Common Arguments
-    for subparser in [ls_parser, lls_parser, mp_parser, bpls_parser, benchmarks_parser, analysis_parser, ls_reg]:
+    for subparser in [
+        ls_parser,
+        lls_parser,
+        mp_parser,
+        bpls_parser,
+        benchmarks_parser,
+        analysis_parser,
+        ls_reg_parser,
+        radon_parser,
+    ]:
         subparser.add_argument(
             "--image-path",
             type=str,
@@ -225,6 +236,10 @@ def validate_arguments(args):
             raise ValueError(
                 "The `block-size` argument can not be None with the binary projection least squares solver."
             )
+
+    if args.command == SOLVE_COMMAND_NAME and args.solver == "radon":
+        if args.block_size is None:
+            raise ValueError("The `block-size` argument can not be None with the radon solver.")
 
 
 def main() -> None:

@@ -584,6 +584,25 @@ class Solver:
         patience: int | None = None,
         min_delta: float | None = None,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+        """Perform Radon transform line selection using a greedy algorithm.
+
+        Parameters
+        ----------
+        patience : int, optional
+            Number of steps to allow without significant improvement in residual
+            before stopping early. Defaults to 10 if not provided.
+        min_delta : float, optional
+            Minimum improvement in residual required to reset the early stopping
+            counter. Defaults to 1e-6 if not provided.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The binary x solution of the system, where entries are either 1 or 0.
+            - The residuals history.
+        """
+
         logger.info(f"Radon:")
 
         A_base = MatrixGenerator.compute_matrix(
@@ -592,7 +611,7 @@ class Solver:
         A = A_base.copy()
         x = np.zeros(A_base.shape[1])
         k = A.shape[1]
-        patience = patience if patience else 25
+        patience = patience if patience else 10
         min_delta = min_delta if min_delta else 1e-6
 
         radius, center_point = find_radius_and_center_point(self.shape, self.crop_mode)

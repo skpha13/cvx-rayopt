@@ -13,7 +13,7 @@ MatchingPursuitMethod = Literal["greedy", "orthogonal"]
 
 Rasterization = Literal["bresenham", "xiaolin-wu"]
 
-SolverType = Literal["ls", "lls", "mp", "bpls", "lsr"]
+SolverType = Literal["ls", "lls", "mp", "bpls", "lsr", "radon"]
 
 QPSolvers = Literal["scipy", "cvxopt"]
 

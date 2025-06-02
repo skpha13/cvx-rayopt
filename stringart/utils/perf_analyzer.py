@@ -210,6 +210,7 @@ class Benchmark:
             (self.solver.mp, {"number_of_lines": 1000, "mp_method": "orthogonal"}, True),
             (self.solver.bpls, {"solver": "scipy", "k": 3, "max_iterations": 1000}, True),
             (self.solver.bpls, {"solver": "cvxopt", "k": 3, "max_iterations": 1000}, True),
+            (self.solver.radon, {}, True),
             # fmt: on
         ]
 
@@ -275,34 +276,6 @@ class Benchmark:
         List[BenchmarkResult]
             A list of benchmark results, each containing the solver, parameters, and performance
             metrics (e.g., elapsed time, memory usage) for each benchmark run.
-
-        Notes
-        -----
-        This function runs the following benchmarks:
-        1. **Least Squares (ls)**:
-            - Dense matrix representation
-            - Sparse matrix representation
-            - Sparse matrix with 1000 lines
-            - Sparse matrix with 1000 lines (binary output)
-
-        2. **Linear Least Squares (lls)**:
-            - Sparse matrix with 1000 lines
-            - Sparse matrix with 1000 lines (binary output)
-
-        3. **Matching Pursuit (mp)**:
-            - Orthogonal method
-            - Greedy method with random selector
-            - Greedy method with dot-product selector
-
-        4. **Binary Projection Least Squares (bpls)**:
-            - Solver: cvxopt, k=3, max_iterations=1000
-            - Solver: scipy, k=3, max_iterations=1000
-            - Solver: cvxopt, k=3, max_iterations=1000, lambda=100
-
-        5. **Least Squares Regularized (lsr)**:
-            - No regularization, lambda=100
-            - Smooth regularization, lambda=100
-            - Absolute value regularization, lambda=5000
         """
 
         results: List[BenchmarkResult] = []
