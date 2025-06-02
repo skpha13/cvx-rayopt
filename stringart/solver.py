@@ -578,3 +578,73 @@ class Solver:
         logger.info(f"Residual: {residual:.6f}")
 
         return A, x, [residual]
+
+    def radon(self, k: int | None = None) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+        logger.info(f"Radon:")
+
+        A_base = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.crop_mode, "sparse", self.rasterization
+        )
+        A = A_base.copy()
+        b = self.b.copy()
+        x = np.zeros(A_base.shape[1])
+        k = self.get_number_of_lines(k, A.shape)
+
+        A_sum = A.sum(axis=1)
+        A_sum_clipped = np.clip(np.array(A_sum).flatten(), 0.0, 1.0)
+        sinogram = A_sum_clipped * b
+
+        selected_lines = []
+        past_residual = np.inf
+        residual_history = []
+        for step in tqdm(range(k), desc="Selecting Lines"):
+            logger.info(f"Step {step + 1}/{k}")
+            logger.info("-" * 30)
+
+            means = A.multiply(sinogram[:, None]).mean(axis=0).A1
+
+            best_idx = np.argmax(means)
+            best_line = A[:, best_idx].tocoo()
+
+            selected_lines.append(best_idx)
+            contribution = np.multiply(A[:, best_idx].toarray().flatten(), b)
+            sinogram -= contribution
+
+            for j in range(A.shape[1]):
+                if j == best_idx:
+                    continue
+
+                col_j = A[:, j].tocoo()
+                best_dict = dict(zip(best_line.row, best_line.data))
+                col_dict = dict(zip(col_j.row, col_j.data))
+                intersect = set(best_dict.keys()) & set(col_dict.keys())
+
+                # subtract best_lines from col_j
+                for i in intersect:
+                    new_val = col_dict[i] - best_dict[i]
+                    col_dict[i] = max(new_val, 0.0)
+
+                # remove zeros
+                filtered_items = [(idx, val) for idx, val in col_dict.items() if val > 1e-12]
+                if filtered_items:
+                    rows, data = zip(*filtered_items)
+                else:
+                    rows, data = [], []
+
+                # build new sparse column
+                new_col = csc_matrix((data, (rows, np.zeros_like(rows))), shape=(A.shape[0], 1))
+
+                A[:, j] = new_col
+
+            x[best_idx] = 1
+
+            residual, _ = self.residual_fn(x)
+            residual_history.append(residual)
+            logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
+
+            if not residual < past_residual:
+                logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
+                break
+            past_residual = residual
+
+        return A_base, x, residual_history
