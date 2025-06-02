@@ -4,7 +4,6 @@ from typing import List, Tuple, cast
 import numpy as np
 import scipy
 from cvxopt import matrix, solvers
-from matplotlib import pyplot as plt
 from numpy.linalg import lstsq
 from scipy.sparse import csc_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -21,7 +20,7 @@ from stringart.optimize.regularization import (
     SmoothRegularizer,
     WeightedRegularizer,
 )
-from stringart.utils.circle import compute_pegs
+from stringart.utils.circle import compute_line_lengths, compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.types import (
     CropMode,
@@ -580,7 +579,11 @@ class Solver:
 
         return A, x, [residual]
 
-    def radon(self, k: int | None = None) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+    def radon(
+        self,
+        patience: int | None = None,
+        min_delta: float | None = None,
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
         logger.info(f"Radon:")
 
         A_base = MatrixGenerator.compute_matrix(
@@ -588,13 +591,16 @@ class Solver:
         )
         A = A_base.copy()
         x = np.zeros(A_base.shape[1])
-        k = self.get_number_of_lines(k, A.shape)
-        patience = 25
+        k = A.shape[1]
+        patience = patience if patience else 25
+        min_delta = min_delta if min_delta else 1e-6
+
+        radius, center_point = find_radius_and_center_point(self.shape, self.crop_mode)
+        line_sizes = compute_line_lengths(self.number_of_pegs, radius, center_point)
 
         A_sum = A.sum(axis=1)
         A_sum_clipped = np.clip(np.array(A_sum).flatten(), 0.0, 1.0)
         sinogram = A_sum_clipped * self.b
-        line_sizes = np.diff(A.indptr)
 
         selected_lines = []
         past_residual = np.inf
@@ -636,7 +642,7 @@ class Solver:
             residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
-            if residual < past_residual:
+            if past_residual - residual > min_delta:
                 no_improvement_count = 0
                 past_residual = residual
             else:

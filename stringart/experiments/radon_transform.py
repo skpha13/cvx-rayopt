@@ -7,13 +7,12 @@ from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, Rasterization
 
-image_path = "../../imgs/mary.png"
+image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
-number_of_pegs = 128
+number_of_pegs = 256
 rasterization: Rasterization = "xiaolin-wu"
-k = 8000
 block_size: int = 8
 
 
@@ -32,12 +31,12 @@ def main():
     radon_results = benchmark.run_benchmark(
         solver.radon,
         uds=True,
-        k=k,
+        patience=10,
     )
 
     benchmark_results = [radon_results]
-    benchmark.save_benchmarks(benchmark_results, "radon")
-    benchmark.run_analysis(benchmark_results, 1 - image, "radon")
+    benchmark.save_benchmarks(benchmark_results, "lena")
+    benchmark.run_analysis(benchmark_results, 1 - image, "lena")
 
 
 if __name__ == "__main__":
