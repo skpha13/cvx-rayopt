@@ -7,14 +7,14 @@ from stringart.utils.image import ImageWrapper, crop_image
 from stringart.utils.perf_analyzer import Benchmark
 from stringart.utils.types import CropMode, Rasterization
 
-image_path = "../../imgs/lena.png"
+image_path = "../../imgs/mary.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
-number_of_pegs = 50
+number_of_pegs = 128
 rasterization: Rasterization = "xiaolin-wu"
-k = 10
-block_size: int = 4
+k = 8000
+block_size: int = 8
 
 
 def main():

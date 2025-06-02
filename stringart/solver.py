@@ -4,6 +4,7 @@ from typing import List, Tuple, cast
 import numpy as np
 import scipy
 from cvxopt import matrix, solvers
+from matplotlib import pyplot as plt
 from numpy.linalg import lstsq
 from scipy.sparse import csc_matrix, hstack
 from scipy.sparse.linalg import lsqr
@@ -586,65 +587,62 @@ class Solver:
             self.shape, self.number_of_pegs, self.crop_mode, "sparse", self.rasterization
         )
         A = A_base.copy()
-        b = self.b.copy()
         x = np.zeros(A_base.shape[1])
         k = self.get_number_of_lines(k, A.shape)
+        patience = 25
 
         A_sum = A.sum(axis=1)
         A_sum_clipped = np.clip(np.array(A_sum).flatten(), 0.0, 1.0)
-        sinogram = A_sum_clipped * b
+        sinogram = A_sum_clipped * self.b
+        line_sizes = np.diff(A.indptr)
 
         selected_lines = []
         past_residual = np.inf
         residual_history = []
+        no_improvement_count = 0
         for step in tqdm(range(k), desc="Selecting Lines"):
             logger.info(f"Step {step + 1}/{k}")
             logger.info("-" * 30)
 
-            means = A.multiply(sinogram[:, None]).mean(axis=0).A1
+            A = A.tocsc()
+            A_weighted = A.multiply(sinogram[:, None])
+            col_sums = A_weighted.sum(axis=0).A1
+            means = col_sums / line_sizes
 
             best_idx = np.argmax(means)
             best_line = A[:, best_idx].tocoo()
 
             selected_lines.append(best_idx)
-            contribution = np.multiply(A[:, best_idx].toarray().flatten(), b)
-            sinogram -= contribution
+            # divided by block_size from supersampling
+            contribution = (A[:, best_idx].toarray().flatten() / self.block_size) * sinogram
+            sinogram = np.clip(sinogram - contribution, 0, 1)
 
-            for j in range(A.shape[1]):
-                if j == best_idx:
-                    continue
+            A = A.tocsr()
+            best_line_csr = best_line.tocsr()
+            for i, val in zip(best_line_csr.indices, best_line_csr.data):
+                row_start = A.indptr[i]
+                row_end = A.indptr[i + 1]
 
-                col_j = A[:, j].tocoo()
-                best_dict = dict(zip(best_line.row, best_line.data))
-                col_dict = dict(zip(col_j.row, col_j.data))
-                intersect = set(best_dict.keys()) & set(col_dict.keys())
+                row_data = A.data[row_start:row_end]
+                row_data -= val  # subtract val from all non-zero elements in row i
 
-                # subtract best_lines from col_j
-                for i in intersect:
-                    new_val = col_dict[i] - best_dict[i]
-                    col_dict[i] = max(new_val, 0.0)
+                # clip negatives to zero
+                np.maximum(row_data, 0, out=row_data)
 
-                # remove zeros
-                filtered_items = [(idx, val) for idx, val in col_dict.items() if val > 1e-12]
-                if filtered_items:
-                    rows, data = zip(*filtered_items)
-                else:
-                    rows, data = [], []
-
-                # build new sparse column
-                new_col = csc_matrix((data, (rows, np.zeros_like(rows))), shape=(A.shape[0], 1))
-
-                A[:, j] = new_col
-
+            A.eliminate_zeros()
             x[best_idx] = 1
 
             residual, _ = self.residual_fn(x)
             residual_history.append(residual)
             logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
 
-            if not residual < past_residual:
-                logger.info(f"Residual did not decrease (delta = {residual - past_residual:.6f}). Stopping early.")
-                break
-            past_residual = residual
+            if residual < past_residual:
+                no_improvement_count = 0
+                past_residual = residual
+            else:
+                no_improvement_count += 1
+                if no_improvement_count >= patience:
+                    logger.info(f"Stopping early due to patience limit ({patience}).")
+                    break
 
         return A_base, x, residual_history
