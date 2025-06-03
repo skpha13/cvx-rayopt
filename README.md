@@ -1,4 +1,7 @@
-# Procedural-Computing-of-String-Art
+# Convex Optimization Relaxation for Radial Image Reconstruction
+
+[//]: # (better introduction)
+[//]: # (TODO: docs link)
 
 StringArt is a Python-based package used to generate string art configurations from an input image.
 
@@ -10,10 +13,10 @@ To get started, install the package by following these steps:
 
 ```bash
 # clone repository
-git clone https://github.com/skpha13/Procedural-Computing-of-String-Art.git
+git clone https://github.com/skpha13/cvx-rayopt.git
 
 # enter the directory 
-cd Procedural-Computing-of-String-Art
+cd cvx-rayopt
 
 # install all required dependencies
 pip install .
