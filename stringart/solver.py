@@ -20,7 +20,7 @@ from stringart.optimize.regularization import (
     SmoothRegularizer,
     WeightedRegularizer,
 )
-from stringart.utils.circle import compute_pegs
+from stringart.utils.circle import compute_line_lengths, compute_pegs
 from stringart.utils.image import ImageWrapper, crop_image, find_radius_and_center_point
 from stringart.utils.types import (
     CropMode,
@@ -578,3 +578,96 @@ class Solver:
         logger.info(f"Residual: {residual:.6f}")
 
         return A, x, [residual]
+
+    def radon(
+        self,
+        patience: int | None = None,
+        min_delta: float | None = None,
+    ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
+        """Perform Radon transform line selection using a greedy algorithm.
+
+        Parameters
+        ----------
+        patience : int, optional
+            Number of steps to allow without significant improvement in residual
+            before stopping early. Defaults to 10 if not provided.
+        min_delta : float, optional
+            Minimum improvement in residual required to reset the early stopping
+            counter. Defaults to 1e-6 if not provided.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, list[np.floating]]
+            - The initial matrix of column vectors representing lines to be drawn.
+            - The binary x solution of the system, where entries are either 1 or 0.
+            - The residuals history.
+        """
+
+        logger.info(f"Radon:")
+
+        A_base = MatrixGenerator.compute_matrix(
+            self.shape, self.number_of_pegs, self.crop_mode, "sparse", self.rasterization
+        )
+        A = A_base.copy()
+        x = np.zeros(A_base.shape[1])
+        k = A.shape[1]
+        patience = patience if patience else 10
+        min_delta = min_delta if min_delta else 1e-6
+
+        radius, center_point = find_radius_and_center_point(self.shape, self.crop_mode)
+        line_sizes = compute_line_lengths(self.number_of_pegs, radius, center_point)
+
+        A_sum = A.sum(axis=1)
+        A_sum_clipped = np.clip(np.array(A_sum).flatten(), 0.0, 1.0)
+        sinogram = A_sum_clipped * self.b
+
+        selected_lines = []
+        past_residual = np.inf
+        residual_history = []
+        no_improvement_count = 0
+        for step in tqdm(range(k), desc="Selecting Lines"):
+            logger.info(f"Step {step + 1}/{k}")
+            logger.info("-" * 30)
+
+            A = A.tocsc()
+            A_weighted = A.multiply(sinogram[:, None])
+            col_sums = A_weighted.sum(axis=0).A1
+            means = col_sums / line_sizes
+
+            best_idx = np.argmax(means)
+            best_line = A[:, best_idx].tocoo()
+
+            selected_lines.append(best_idx)
+            # divided by block_size from supersampling
+            contribution = (A[:, best_idx].toarray().flatten() / self.block_size) * sinogram
+            sinogram = np.clip(sinogram - contribution, 0, 1)
+
+            A = A.tocsr()
+            best_line_csr = best_line.tocsr()
+            for i, val in zip(best_line_csr.indices, best_line_csr.data):
+                row_start = A.indptr[i]
+                row_end = A.indptr[i + 1]
+
+                row_data = A.data[row_start:row_end]
+                row_data -= val  # subtract val from all non-zero elements in row i
+
+                # clip negatives to zero
+                np.maximum(row_data, 0, out=row_data)
+
+            A.eliminate_zeros()
+            x[best_idx] = 1
+
+            residual, _ = self.residual_fn(x)
+            residual_history.append(residual)
+            logger.info(f"Residual Check — Previous: {past_residual:.6f}, Current: {residual:.6f}")
+
+            if past_residual - residual > min_delta:
+                no_improvement_count = 0
+                past_residual = residual
+            else:
+                no_improvement_count += 1
+                if no_improvement_count >= patience:
+                    logger.info(f"Stopping early due to patience limit ({patience}).")
+                    break
+
+        return A_base, x, residual_history

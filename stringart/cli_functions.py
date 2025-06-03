@@ -70,6 +70,7 @@ class Configuration:
             "mp": lambda: solver.mp(self.number_of_lines, self.mp_method, selector_type=self.selector_type),
             "bpls": lambda: solver.bpls(self.qp_solver, self.matrix_representation, self.k, self.max_iterations),
             "lsr": lambda: solver.lsr(self.matrix_representation, self.regularizer, self.lambd),
+            "radon": lambda: solver.radon(),
         }
         # fmt: on
 

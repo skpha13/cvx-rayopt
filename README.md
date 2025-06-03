@@ -66,6 +66,7 @@ This package provides a simple and intuitive CLI for computing string art images
 | `bpls`      | Solves a binary-constrained problem by iteratively projecting least squares solutions to binary values.                                            |
 | `lsr`       | Solves a regularized least squares problem using quadratic programming.                                                                            |
 | `mp`        | A greedy method that incrementally builds a solution by selecting atoms (lines) based on correlation. Supports `greedy` and `orthogonal` variants. |
+| `radon`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on contributions to the Radon transform sinogram.            |
 
 
 #### Least Squares Solver Arguments
@@ -133,6 +134,9 @@ python ./stringart/main.py solve lls --number-of-lines 1000 --image-path ./imgs/
  
 # runs the regularized least squares with the `smooth` regularizer and a strength of 10.
  python ./stringart/main.py solve lsr --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
+ 
+# runs the radon solver with a block_size of 8 for supersampling
+python ./stringart/main.py solve radon --block-size 8 --number-of-pegs 256 --image-path ./imgs/lena.png 
 ```
 
 ## Developer Documentation
