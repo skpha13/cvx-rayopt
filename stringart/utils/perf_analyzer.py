@@ -16,12 +16,8 @@ from matplotlib.colors import Colormap
 from skimage import io
 from stringart.solver import Solver
 from stringart.utils.image import ImageWrapper, crop_image, masked_rmse
-from stringart.utils.time_memory_format import (
-    convert_memory_size,
-    convert_monotonic_time,
-    format_memory_size,
-    format_time,
-)
+from stringart.utils.time_memory_format import (convert_memory_size, convert_monotonic_time, format_memory_size,
+                                                format_time)
 from stringart.utils.types import CropMode, ElapsedTime, MemorySize, Rasterization
 from tqdm import tqdm
 
