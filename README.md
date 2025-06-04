@@ -1,9 +1,16 @@
 # Convex Optimization Relaxation for Radial Image Reconstruction
 
-[//]: # (better introduction)
-[//]: # (TODO: docs link)
+StringArt is a Python package designed to generate string art configurations based on an input image, leveraging convex optimization techniques for radial image reconstruction.
 
-StringArt is a Python-based package used to generate string art configurations from an input image.
+## Overview
+
+For a comprehensive understanding of the mathematical formulation and approach, please refer to the thesis paper:
+
+[**Convex Optimization Relaxation for Radial Image Reconstruction**](./documentation.pdf)
+
+For a concise summary, usage instructions, and additional code insights, check the documentation folder:
+
+[**docs**](./docs/README.md)
 
 ## User Documentation
 
