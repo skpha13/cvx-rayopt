@@ -7,7 +7,7 @@
       - [Linear Least Squares](./readmes/07_linear_least_squares.md)
    - [Matching Pursuit](./readmes/03_matching_pursuit.md)
    - [Linear Programming](./readmes/06_linear_programming.md)
-   - [StringArt-AI](./readmes/10_stringart_ai.md)
+   - [StringNet](./readmes/10_stringart_ai.md)
    - [Binary Projection Least Squares](./readmes/11_binary_projection_ls.md)
    - [Regularized Least Squares](./readmes/12_least_squares_regularized.md)
    - [Binary Projection Least Squares Regularized](./readmes/13_binary_projection_ls_reg.md)
