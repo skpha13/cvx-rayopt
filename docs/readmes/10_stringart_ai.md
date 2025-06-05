@@ -1,6 +1,6 @@
-# StringArt-AI
+# StringNet
 
-StringArt-AI is a creative AI project that explores how models can learn to generate string art patterns from images. The core idea is simple: turn any input image into a string art representation, and train AI models to learn this transformation.
+StringNet is a creative AI project that explores how models can learn to generate string art patterns from images. The core idea is simple: turn any input image into a string art representation, and train AI models to learn this transformation.
 
 ## Motivation
 
@@ -8,7 +8,7 @@ Given the fact that I can now generate a String Art representation for any input
 
 ## Dataset
 
-I used the [ImageNet-Sketch](https://github.com/HaohanWang/ImageNet-Sketch) dataset as my input image source. The target outputs, string art representations, were generated procedurally using this StringArt Python package.
+I used the [**ImageNet-Sketch**](https://github.com/HaohanWang/ImageNet-Sketch) dataset as my input image source. The target outputs, string art representations, were generated procedurally using this StringArt Python package.
 
 ## Experiments
 
@@ -20,8 +20,8 @@ One observation during this project was that string art results tend to look bet
 
 A great starting point for this approach is the following tutorial, which demonstrates how to convert images to pencil sketches using OpenCV:
 
-[Image to Pencil Sketch using OpenCV](https://medium.com/@Kavya2099/image-to-pencil-sketch-using-opencv-ec3568443c5e)
+[**Image to Pencil Sketch using OpenCV**](https://medium.com/@Kavya2099/image-to-pencil-sketch-using-opencv-ec3568443c5e)
 
 ## Learn More
 
-You can find more details, code, and examples in the original repository: [StringArt-AI on GitHub](https://github.com/skpha13/StringArt-AI)
+You can find more details, code, and examples in the original repository: [**stringnet on GitHub**](https://github.com/skpha13/stringnet)
