@@ -124,7 +124,7 @@ python ./stringart/main.py run-benchmarks --image-path ./imgs/lena.png
 # this should be run after the `run-benchmarks` command.
 python ./stringart/main.py run-analysis --input-benchmark-dir benchmarks_01 --image-path ./imgs/lena.png 
 
-# runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 100, the crop mode for the image center and the rasterization algorithm xiaolin-wu.
+# runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 128, the crop mode for the image center and the rasterization algorithm xiaolin-wu.
 python ./stringart/main.py solve ls --image-path ./imgs/lena.png --rasterization xiaolin-wu 
 
 # runs the matching pursuit solver with the orthogonal method (OMP) on the provided image, selecting 1000 lines.

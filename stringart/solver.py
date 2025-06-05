@@ -42,15 +42,15 @@ class Solver:
     ----------
     image : np.ndarray
         A numpy array representing the image to be processed.
-    crop_mode : CropMode
-        The mode in which the image is being processed. This determines cropping behaviour.
+    crop_mode : CropMode, optional
+        The mode in which the image is being processed. This determines cropping behaviour. Defaults to 'center'.
     number_of_pegs : int, optional
         The number of pegs to be used in the string art computation. Default is 128.
     rasterization: Rasterization, optional
         If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
         If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
-    block_size : int
-        Size of the square block used in downsampling via averaging.
+    block_size : int, optional
+        Size of the square block used in downsampling via averaging. Defaults to None.
     """
 
     def __init__(
@@ -86,11 +86,11 @@ class Solver:
         Parameters
         ----------
         A : np.ndarray
-            The transformation matrix used to generate the solution.
+            The matrix used to generate the solution.
         x : np.ndarray
-            The input vector representing the parameters of the transformation.
+            Solution vector of coefficients indicating how much to draw each line.
         uds: bool
-            If set, it will run the UDS compute solution. Defaults to `False`.
+            If set, it will run the supersampled computed solution. Defaults to `False`.
 
         Returns
         -------
@@ -264,7 +264,6 @@ class Solver:
            The number of lines to select and add to the solution.
         mp_method : MatchingPursuitMethod, optional
            The matching pursuit method, either "orthogonal" or "greedy". Default is "orthogonal".
-
         **kwargs:
             Additional parameters for the 'greedy' method, such as selector_type.
 
@@ -278,12 +277,6 @@ class Solver:
         Notes
         -----
         The algorithm will stop early if no improvement is found in the residual between steps.
-        It relies on a sparse matrix of candidate lines and uses the `lsqr` solver to solve the
-        least squares problem at each step.
-
-        The greedy approach iterates through the candidate lines, selecting the best candidates
-        based on their dot product with the target vector `b` (or randomly, depending on the
-        selector type) and minimizes the residual error in the least squares problem.
         """
         if number_of_lines is None:
             raise ValueError(
@@ -542,8 +535,8 @@ class Solver:
             Format for matrix construction, e.g., "sparse" or "dense".
         regularizer : {"smooth", "abs"} or None, optional
             The type of regularization to apply. Supported values:
-                - "smooth" : Applies smoothness regularization.
-                - "abs" : Applies L1-norm (absolute value) regularization.
+                - "smooth" : Applies 4x(1-x) regularization.
+                - "abs" : applies -|x-0.5| regularization.
                 - None or any other value : No regularization is applied.
         lambd : float, optional
             The regularization strength. Defaults to 0.1. Ignored if `regularizer` is None.
@@ -552,7 +545,7 @@ class Solver:
         -------
         tuple[np.ndarray, np.ndarray, list[np.floating]]
             - The initial matrix of column vectors representing lines to be drawn.
-            - The binary x solution of the system, where entries are either 1 or 0.
+            - The x solution of the system.
             - The residuals history.
         """
         logger.info(f"Regularized Least Squares: {regularizer}")
@@ -584,7 +577,7 @@ class Solver:
         patience: int | None = None,
         min_delta: float | None = None,
     ) -> tuple[np.ndarray, np.ndarray, list[np.floating]]:
-        """Perform Radon transform line selection using a greedy algorithm.
+        """Perform Radon Transform line selection using a greedy algorithm.
 
         Parameters
         ----------

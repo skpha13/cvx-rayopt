@@ -26,19 +26,15 @@ class MatrixGenerator:
         ----------
         shape : tuple[int, ...]
             The dimensions of the grid (height, width) where the pegs will be placed.
-
         number_of_pegs : int
             The number of pegs to be placed on the grid.
-
         crop_mode : CropMode
             Specifies the location of the center point to start the peg arrangement. Can be one of:
             - "center" (default): Pegs are placed symmetrically around the center.
             - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
             - "second-half": Pegs are placed in the bottom-half/right-half portion of the rectangle.
-
         matrix_representation: MatrixRepresentation
             The method used to generate the matrix. Can be "dense" or "sparse".
-
         rasterization : Rasterization, optional
             If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
             If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
@@ -46,7 +42,7 @@ class MatrixGenerator:
         Returns
         -------
         A : np.ndarray
-            A 2D numpy array (shape: grid_size X number_of_lines) where each row is a binary vector
+            A 2D numpy array (shape: grid_size X number_of_lines) where each column is a vector
             representing a line drawn between two pegs.
         """
         radius, center_point = find_radius_and_center_point(shape, crop_mode)
@@ -77,7 +73,6 @@ class MatrixGenerator:
         ----------
         shape : tuple[int, ...]
             The dimensions of the grid (height, width).
-
         line : List[Point]
             A list of Points representing the coordinates of the line's path between two pegs.
 
@@ -101,17 +96,17 @@ class MatrixGenerator:
 
         Parameters
         ----------
-        shape : tuple of int
-            The shape of the output array, typically representing the dimensions (height, width).
+        shape : tuple[int, ...]
+            The dimensions of the grid (height, width).
         line : list of Point
-            A list of Point objects, where each Point represents the (x, y) coordinates of a point on the line.
+            A list of Points representing the coordinates of the line's path between two pegs.
         values : list of float
             A list of values corresponding to each point in the line. The length of `values` must match the length of `line`.
 
         Returns
         -------
         np.ndarray
-            A flattened 1-dimensional NumPy array of shape `shape`, where the specified points from the line are set to the given values.
+            A flattened 1-dimensional NumPy array of shape `shape[0] * shape[1]`, where the specified points from the line are set to the given values.
         """
         vector = np.zeros(shape=shape, dtype=np.float32)
 
@@ -128,7 +123,6 @@ class MatrixGenerator:
         ----------
         shape : tuple[int, ...]
             The dimensions of the grid (height, width).
-
         line : List[Point]
             A list of Points representing the coordinates of the line's path between two pegs.
 
@@ -147,17 +141,15 @@ class MatrixGenerator:
     ) -> np.ndarray:
         """Generates a dense matrix representation of lines drawn between all pairs of pegs.
 
-        Each column in the resulting matrix corresponds to a line between two pegs, represented as a binary vector
+        Each column in the resulting matrix corresponds to a line between two pegs, represented as a vector
         in flattened grid form.
 
         Parameters
         ----------
         shape : tuple[int, ...]
             The dimensions of the grid (height, width).
-
         pegs : List[Point]
             A list of Points representing the coordinates of the pegs.
-
         rasterization : Rasterization, optional
             If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
             If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).
@@ -165,7 +157,7 @@ class MatrixGenerator:
         Returns
         -------
         np.ndarray
-            A 2D numpy array where each column is a binary vector representing a line between two pegs.
+            A 2D numpy array where each column is a vector representing a line between two pegs.
         """
 
         A = []
@@ -189,17 +181,15 @@ class MatrixGenerator:
     ) -> csc_matrix:
         """Generates a sparse matrix representation of lines drawn between all pairs of pegs.
 
-        The sparse matrix is in CSR format, where each non-zero entry corresponds to a point in the grid
+        The sparse matrix is in CSC format, where each non-zero entry corresponds to a point in the grid
         that is part of a line between two pegs.
 
         Parameters
         ----------
         shape : tuple[int, ...]
             The dimensions of the grid (height, width).
-
         pegs : List[Point]
             A list of Points representing the coordinates of the pegs.
-
         rasterization : Rasterization, optional
             If "xiaolin-wu", the line is generated using a rasterized algorithm (Xiaolin Wu's algorithm).
             If "bresenham", the line is generated using a non-rasterized algorithm (Bresenham's algorithm).

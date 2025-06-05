@@ -27,8 +27,8 @@ def find_optimal_pegs(shape: Tuple[int, ...]) -> int:
 
     Parameters
     ----------
-    shape : tuple of int
-        Shape of the image, typically (height, width). Only the width (shape[1]) is used.
+    shape : tuple[int, ...]
+        The dimensions of the grid (height, width).
 
     Returns
     -------
