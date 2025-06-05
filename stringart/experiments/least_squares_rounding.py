@@ -29,7 +29,7 @@ def compute_solution(A: np.ndarray, x: np.ndarray, l: int = 1000, shape: Tuple[i
 
 def main():
     image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=300)
+    solver = Solver(image_cropped, crop_mode, number_of_pegs=256)
     A, x, _ = solver.ls("sparse")
     solution = compute_solution(A, x)
 

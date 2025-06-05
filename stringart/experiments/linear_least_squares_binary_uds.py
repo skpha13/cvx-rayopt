@@ -27,7 +27,7 @@ def udps(x: np.ndarray, block_size: int = 2) -> tuple[np.floating, np.ndarray]:
 def lls_run(solver: Solver):
     A, x, _ = solver.lls(matrix_representation)
 
-    k = number_of_lines
+    k = min(number_of_lines, A.shape[1])
     value = x[np.argsort(x)[-k]]
 
     xp = x.copy()
