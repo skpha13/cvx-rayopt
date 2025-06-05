@@ -73,21 +73,8 @@ A_i = \text{A matrix representing the } i \text{-th line drawn on the canvas}
 A = \text{For each } A_i \text{, the corresponding column is the flattened row-wise version of } A_i. \space A \in \mathbb{R}^{m^2, \space n}
 ```
 
-```math
-x_i = \begin{cases}
-    1 &\text{if line } i \text{ is drawn} \\
-    0 &\text{otherwise}
-\end{cases}, \ x \in \mathbb{R}^n
-```
-
 Thus, the goal of our process is to minimize:
 
-```math
-\min{\| \sum{(A_i \cdot x_i)} - b \|^2}
-```
-```math
-\text{or}
-```
 ```math
 \min{\| A \cdot x - b \|^2}
 ```

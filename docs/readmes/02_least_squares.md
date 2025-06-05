@@ -46,7 +46,7 @@ selected between two chosen pegs in order to have a close representation of a st
 After solving the system for `x`, we can generate the output image using:
 
 ```math
-O = Ax
+Ax
 ```
 
 ## Implementation
@@ -58,7 +58,7 @@ The least squares solution can be implemented using two methods:
 In this approach, the matrix `A` is represented as a dense (full) matrix with dimensions:
 
 ```math
-A \in \mathbb{R}^{m \cdot m, \space n}
+A \in \mathbb{R}^{m^2, \space n}
 ```
 
 While this is simpler and easier to understand, this representation is more computationally expensive for larger matrices due to the fact that each element, including zeros, is explicitly stored. In consequence, this leads to higher memory usage and increased computational time.
