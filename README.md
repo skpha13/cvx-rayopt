@@ -2,6 +2,8 @@
 
 StringArt is a Python package designed to generate string art configurations based on an input image, leveraging convex optimization techniques for radial image reconstruction.
 
+![String Art Preview](./docs/assets/preview.png)
+
 ## Overview
 
 For a comprehensive understanding of the mathematical formulation and approach, please refer to the thesis paper:
