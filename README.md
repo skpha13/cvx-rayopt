@@ -72,11 +72,11 @@ This package provides a simple and intuitive CLI for computing string art images
 | **Solvers** | **Description**                                                                                                                                    |
 |-------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `ls`        | Solves the system using a standard least squares method. Suitable for dense or sparse matrix formulations.                                         |
-| `lls`       | Alias or variant of least-squares solver focusing on linear positive constraints.                                                                  |
+| `lls`       | Variant of least-squares solver focusing on linear positive constraints.                                                                           |
 | `bpls`      | Solves a binary-constrained problem by iteratively projecting least squares solutions to binary values.                                            |
 | `lsr`       | Solves a regularized least squares problem using quadratic programming.                                                                            |
 | `mp`        | A greedy method that incrementally builds a solution by selecting atoms (lines) based on correlation. Supports `greedy` and `orthogonal` variants. |
-| `radon`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on contributions to the Radon transform sinogram.            |
+| `radon`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on contributions to the Radon Transform sinogram.            |
 
 
 #### Least Squares Solver Arguments
@@ -113,6 +113,12 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--selector`        | Selector method to use with `greedy` method. Choices: `random`, `dot-product`. Defaults to `dot-product`. |
 | `--number-of-lines` | Required. Number of top lines to select.                                                                  |
 
+#### Radon Solver Arguments
+
+| **Argument** | **Description**                             |
+|--------------|---------------------------------------------|
+| *None*       | This solver does not require any arguments. |
+
 
 #### Example Commands:
 
@@ -128,10 +134,10 @@ python ./stringart/main.py run-analysis --input-benchmark-dir benchmarks_01 --im
 python ./stringart/main.py solve ls --image-path ./imgs/lena.png --rasterization xiaolin-wu 
 
 # runs the matching pursuit solver with the orthogonal method (OMP) on the provided image, selecting 1000 lines.
-python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method orthogonal 
+python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method orthogonal --block-size 4
 
 # runs the matching pursuit solver with the greedy method on the provided image, using the dot-product heuristic, selecting 1000 lines.
-python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method greedy
+python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method greedy --selector dot-product --block-size 4
 
 # runs the least squares solver with the sparse matrix representation, a crop mode using the first half of the image and a number of pegs of 50
 python ./stringart/main.py solve ls  --image-path ./imgs/lena.png --crop-mode first-half --number-of-pegs 50 
@@ -140,7 +146,7 @@ python ./stringart/main.py solve ls  --image-path ./imgs/lena.png --crop-mode fi
 python ./stringart/main.py solve lls --number-of-lines 1000 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 
 # runs the binary projection least squares with the `scipy` solver
- python ./stringart/main.py solve bpls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
+ python ./stringart/main.py solve bpls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png --block-size 4
  
 # runs the regularized least squares with the `smooth` regularizer and a strength of 10.
  python ./stringart/main.py solve lsr --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
