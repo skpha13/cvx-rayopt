@@ -17,7 +17,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "bresenham",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\linear_least_squares\\image_000.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\linear_least_squares\\image_000.png",
         "elapsed_monotonic_time": 33.23379130000012,
         "peak_memory_usage": 229400701,
         "elapsed_time": {

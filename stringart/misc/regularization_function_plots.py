@@ -30,5 +30,5 @@ def plot_func(x, y, filename):
     plt.close(fig)
 
 
-plot_func(x, f1(x), "../../docs/assets/smooth_regularizer_graph.png")
-plot_func(x, f2(x), "../../docs/assets/abs_regularizer_graph.png")
+plot_func(x, f1(x), "../../docs/assets/smooth_regularizer_graph.svg")
+plot_func(x, f2(x), "../../docs/assets/abs_regularizer_graph.svg")

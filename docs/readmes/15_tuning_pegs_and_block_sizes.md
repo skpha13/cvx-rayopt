@@ -45,7 +45,7 @@ The best residual (118.2960) occurs at 128 pegs and block size 4.
 
 ### Circle Supersampling Behaviour
 
-![Circle Area Expansion](../assets/upsampling.png)
+![Circle Area Expansion](../assets/upsampling.svg)
 
 > Upsampling the `A` matrix stretches the distance between threads. While angular relationships are preserved, their spatial coverage increases.
 

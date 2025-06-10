@@ -43,8 +43,8 @@ testpaths = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/skpha13/Procedural-Computing-of-String-Art/"
-Issues = "https://github.com/skpha13/Procedural-Computing-of-String-Art/issues"
+Homepage = "https://github.com/skpha13/cvx-rayopt/"
+Issues = "https://github.com/skpha13/cvx-rayopt/issues"
 
 [build-system]
 requires = ["setuptools", "wheel"]

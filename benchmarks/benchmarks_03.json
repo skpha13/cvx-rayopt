@@ -12,7 +12,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_000.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_000.png",
         "elapsed_monotonic_time": 32.53100000007544,
         "peak_memory_usage": 337586544,
         "elapsed_time": {
@@ -8176,7 +8176,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_001.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_001.png",
         "elapsed_monotonic_time": 31.640999999945052,
         "peak_memory_usage": 337586376,
         "elapsed_time": {
@@ -16339,7 +16339,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_002.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_002.png",
         "elapsed_monotonic_time": 169.71900000004098,
         "peak_memory_usage": 807685347,
         "elapsed_time": {
@@ -24503,7 +24503,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_003.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_003.png",
         "elapsed_monotonic_time": 172.25,
         "peak_memory_usage": 807683343,
         "elapsed_time": {
@@ -32666,7 +32666,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_004.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_004.png",
         "elapsed_monotonic_time": 324.46899999992456,
         "peak_memory_usage": 10289548960,
         "elapsed_time": {
@@ -40832,7 +40832,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_005.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_005.png",
         "elapsed_monotonic_time": 14499.007314962,
         "peak_memory_usage": 10855233990,
         "elapsed_time": {
@@ -49023,7 +49023,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 2,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_006.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_006.png",
         "elapsed_monotonic_time": 59.46425579999959,
         "peak_memory_usage": 2946902120,
         "elapsed_time": {
@@ -58185,7 +58185,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 4,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_007.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_007.png",
         "elapsed_monotonic_time": 158.77685089699997,
         "peak_memory_usage": 1327667535,
         "elapsed_time": {
@@ -67346,7 +67346,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 8,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\benchmarks_03\\image_008.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\benchmarks_03\\image_008.png",
         "elapsed_monotonic_time": 2170.854998999999,
         "peak_memory_usage": 1342046120,
         "elapsed_time": {

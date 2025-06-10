@@ -97,7 +97,7 @@ def plot_inner_outer_pegs(num_pegs=16, i=2):
 
     plt.tight_layout(pad=0)
     plt.subplots_adjust(right=0.98)
-    plt.savefig("../../docs/assets/upsampling.png")
+    plt.savefig("../../docs/assets/upsampling.svg")
     plt.show()
 
 

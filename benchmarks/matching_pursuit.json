@@ -13,7 +13,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\matching_pursuit\\image_000.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\matching_pursuit\\image_000.png",
         "elapsed_monotonic_time": 13.206416599998192,
         "peak_memory_usage": 306709436,
         "elapsed_time": {
@@ -130,7 +130,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\matching_pursuit\\image_001.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\matching_pursuit\\image_001.png",
         "elapsed_monotonic_time": 4.829083900000114,
         "peak_memory_usage": 260364926,
         "elapsed_time": {
@@ -247,7 +247,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\matching_pursuit\\image_002.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\matching_pursuit\\image_002.png",
         "elapsed_monotonic_time": 4.639702899999975,
         "peak_memory_usage": 200208966,
         "elapsed_time": {
@@ -364,7 +364,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\matching_pursuit\\image_003.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\matching_pursuit\\image_003.png",
         "elapsed_monotonic_time": 0.4971064000019396,
         "peak_memory_usage": 44183995,
         "elapsed_time": {

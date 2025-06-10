@@ -18,7 +18,7 @@ I extend this problem with two types of regularizers: **smooth** and **absolute*
 4x(1-x)
 ```
 
-<img src="../../docs/assets/smooth_regularizer_graph.png" width=400 alt="Smooth Regularizer Graph">
+<img src="../../docs/assets/smooth_regularizer_graph.svg" width=400 alt="Smooth Regularizer Graph">
 
 > Smooth Regularizer Graph
 
@@ -66,7 +66,7 @@ This simplifies to:
 
 The term `|x−0.5|` is convex, but its negation is concave. Including it in the objective breaks the convexity of the quadratic program (QP), making the problem non-convex.
 
-<img src="../../docs/assets/abs_regularizer_graph.png" width=400 alt="ABS Regularizer Graph">
+<img src="../../docs/assets/abs_regularizer_graph.svg" width=400 alt="ABS Regularizer Graph">
 
 > ABS Regularizer Graph
 

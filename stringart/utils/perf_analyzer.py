@@ -510,7 +510,7 @@ class Benchmark:
                 axs[row_group + r, col].axis("off")
 
         fig.subplots_adjust(wspace=0, hspace=0.01)
-        fig.savefig(f"{directory / f'{plot_name}.png'}", format="png", bbox_inches="tight", pad_inches=0)
+        fig.savefig(f"{directory / f'{plot_name}.svg'}", format="svg", bbox_inches="tight", pad_inches=0)
         plt.close(fig)
 
         # plot residual over iterations
@@ -641,5 +641,5 @@ def plot_residuals(y_data: List[np.ndarray], labels: List[str], plot_name: str, 
     ax.grid(True)
 
     fig.tight_layout()
-    fig.savefig(f"{directory / plot_name}.png", format="png")
+    fig.savefig(f"{directory / plot_name}.svg", format="svg")
     fig.show()

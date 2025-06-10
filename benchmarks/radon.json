@@ -12,7 +12,7 @@
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
         "block_size": 8,
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\radon\\image_000.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\radon\\image_000.png",
         "elapsed_monotonic_time": 1093.5977782999998,
         "peak_memory_usage": 910299352,
         "elapsed_time": {
