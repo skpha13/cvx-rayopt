@@ -24,7 +24,7 @@ Then, we define:
 R(\theta, s) = \int_{L(\theta, s)} f(x, y)ds
 ```
 
-![Radon Transform Illustration](../assets/radon.png)
+![Radon Transform Illustration](../assets/radon.svg)
 > Radon Transform Illustration
 
 Using the illustration above, we can think of the Radon transform like a laser beam that scans through the image. At each angle and distance, the laser measures how much of the image’s content (or density) it passes through. By collecting these measurements from different angles and positions, we get a full set of line integrals that represent the image from many perspectives. 

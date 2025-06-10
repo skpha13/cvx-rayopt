@@ -71,7 +71,7 @@ Knowing the fact that our column vectors in the dense matrix are a representatio
 
 For example, at most `max(m,n)` elements of the matrix are set to non-zero values, as determined by the Bresenham line algorithm. See the illustration below:
 
-![Bresenham Example](../assets/bresenham.png)
+![Bresenham Example](../assets/bresenham.svg)
 
 In the example above, where `m = 5, n = 11` the line drawn results in exactly `11` non-zero elements.
 

@@ -23,7 +23,7 @@ The goal is to digitally replicate this effect from an input image. We have to k
 that there are a multitude of ways to achieve this, and for every approach I will go over the more intricate details of each one.
 For example, I will begin with a black-and-white image and then explore methods for creating full-spectrum RGB versions as well.
 
-![String Art Components](../assets/stringart_components.png)
+![String Art Components](../assets/stringart_components.svg)
 
 > An image to illustrate each individual component of the string art process.
 
@@ -31,7 +31,7 @@ The definition of string art I addressed earlier will not be fully applied when 
 That is because our goal is to replicate the visual effect of the traditional way, and want to get as close as possible to the original image,
 without the physical constraints of a continuous thread or string.
 
-![Continuous vs Fragmented Strings](../assets/continuous_vs_fragmented_strings.png)
+![Continuous vs Fragmented Strings](../assets/continuous_vs_fragmented.svg)
 
 > An image to illustrate different string arrangement types: continuous versus fragmented.
 
@@ -40,7 +40,7 @@ they intersect create the illusion of Bézier curves.
 
 This technique is similar to how shapes are defined in .svg files, enabling us to recreate any shape we desire. In this way, the entire process becomes possible.
 
-![Bézier Curves](../assets/quadratic_bezier_curves.png)
+![Bézier Curves](../assets/quadratic_bezier_curves.svg)
 
 > An image to illustrate Quadratic Bézier Curves obtained from strings
 
