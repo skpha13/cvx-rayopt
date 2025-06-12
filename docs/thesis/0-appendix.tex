@@ -97,8 +97,8 @@ d &= \left| x_1 - x_0 \right| + \left| y_1 - y_0 \right| \\
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{images/radon/normalized_residual_history.pdf}
-    \caption{Normalized residual error over iterations for each Radon solver.}
+    \includegraphics[width=\linewidth]{images/radon/residual_history.pdf}
+    \caption{Residual error over iterations for each Radon solver.}
     \label{fig:radon_norm_error}
 \end{figure}
 
@@ -109,16 +109,16 @@ d &= \left| x_1 - x_0 \right| + \left| y_1 - y_0 \right| \\
 \toprule
 \textbf{Label} & \textbf{Computation Time (s)} & \textbf{Peak Memory Usage (MB)} & \textbf{RMS} & \textbf{Selected Lines} \\
 \midrule
-(a) & 19.101            & 56.351            & 0.6668            & 172 \\
-(b) & 17.441            & 56.351            & 0.5443            & 131 \\
-(c) & 28.912            & 56.370            & 0.5027            & 219 \\
-(d) & 32.341            & 56.369            & 0.5137            & \textbf{275} \\
-(e) & 17.455            & 56.346            & 0.2836            &  99 \\
-(f) & 10.162            & 56.334            & 0.6402            & 119 \\
-(g) &  3.649            & 56.243            & 0.6992            &  15 \\
-(h) &  4.515            & 56.245            & 0.2834            &   8 \\
-(i) &  \textbf{3.478}   & \textbf{56.228}   & 0.3255            &  14 \\
-(j) &  6.632            & 56.279            & \textbf{0.2795}   &  49 \\
+(a) & 2430            & 868.132            & 0.2557            & 1795 \\
+(b) & 2406            & 868.131            & 0.1912            & 1579 \\
+(c) & 2741            & 868.131            & 0.1906            & 1822 \\
+(d) & 2159            & 868.131            & 0.2232            & 1538 \\
+(e) &  821            & 868.131            & 0.2505            &  539 \\
+(f) & 1216            & 868.132            & \textbf{0.1283}   & \textbf{2449} \\
+(g) &  639            & 868.131            & 0.5104            &  312 \\
+(h) &  \textbf{272}   & 868.131            & 0.2234            &   86 \\
+(i) &  471            & 868.131            & 0.2266            &  323 \\
+(j) &  375            & 868.131            & 0.2795            &  242 \\
 \bottomrule
 \end{tabularx}
 \end{table}
