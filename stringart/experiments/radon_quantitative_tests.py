@@ -128,7 +128,7 @@ def main():
     plot_input_output_grid(images, solutions, letter_labels)
 
     for label, result, input_image in zip(letter_labels, results, images):
-        number_of_lines = (result.x == 1).sum()
+        number_of_lines = (np.array(result.x) == 1).sum()
         print(f"Label: {label}, Selected Lines: {number_of_lines}")
 
         input_image = ImageWrapper.scale_image(input_image)
