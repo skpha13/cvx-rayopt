@@ -10,7 +10,7 @@
     \label{fig:preprocess_results}
 \end{figure}
 
-Different preprocessing methods were tried, and a comparative analysis was conducted to determine the best subjective image quality. The raw result is very gray, making it somewhat difficult to distinguish details. Histogram Equalization \footnote{Details about the histogram equalization method can be found on \href{https://docs.opencv.org/4.x/d4/d1b/tutorial_histogram_equalization.html}{OpenCV: Histogram Equalization}} adds a touch of contrast, perfect in my opinion. The sketch effect \footnote{Details about the sketch effect method can be found on \href{https://medium.com/@Kavya2099/image-to-pencil-sketch-using-opencv-ec3568443c5e}{8 Steps To Convert Image To Pencil Sketch Using OpenCV}} adds a lot of background noise, the image becomes darker and contains significantly more detail. Grayscale quantization using two levels of quantization \footnote{Details about the grayscale quantization method can be found on \href{https://en.wikipedia.org/wiki/Quantization_(image_processing)\#Grayscale_quantization}{Quantization (image processing)}} seems to strike a perfect balance between the two.
+Different preprocessing methods were tried, and a comparative analysis was conducted to determine the best subjective image quality. The raw result is very gray, making it somewhat difficult to distinguish details. Histogram Equalization\footnote{Details about the histogram equalization method can be found on \href{https://docs.opencv.org/4.x/d4/d1b/tutorial_histogram_equalization.html}{OpenCV: Histogram Equalization}} adds a touch of contrast. The sketch effect\footnote{Details about the sketch effect method can be found on \href{https://medium.com/@Kavya2099/image-to-pencil-sketch-using-opencv-ec3568443c5e}{8 Steps To Convert Image To Pencil Sketch Using OpenCV}} adds a lot of background noise, the image becomes darker and contains significantly more detail. Grayscale quantization\footnote{Details about the grayscale quantization method can be found on \href{https://en.wikipedia.org/wiki/Quantization_(image_processing)\#Grayscale_quantization}{Quantization (image processing)}} using two levels of quantization seems to strike a perfect balance between the two.
 
 The final method we decided to use is Histogram Equalization because it is not too aggressive and effectively brings images to consistent tonality levels.
 
@@ -18,7 +18,7 @@ The final method we decided to use is Histogram Equalization because it is not t
 
 In the case of a binary \(x\) resulting vector, the rendered lines are too thick, making the image appear overly dark, even when only a limited number of lines are drawn. In reality, human perception interprets the density of string intersections as varying shades of gray, not absolute black.
 
-This formulation \ref{eq:least_squares} operates at low resolution. However, to more accurately capture the visual effect of overlapping strings, I employ supersampling, a technique that involves computing in a higher resolution and then downsampling the result. Specifically, I upscale the matrix \(A\), denoted as \(\bar{A}\), compute the product \(\bar{A}x\), and then apply a downsampling operator \(D : \left[ 0, 1\right] ^ {m^2} \rightarrow \left[ 0, 1\right] ^ \frac{m^2}{\sigma^2}\), which averages non-overlapping blocks of size \(\sigma \times \sigma\), to bring the result back to the original resolution before comparing it to the target image \(b\). The new objective becomes:
+This formulation \ref{eq:least_squares} operates at low resolution. However, to more accurately capture the visual effect of overlapping strings, we employ supersampling, a technique that involves computing in a higher resolution and then downsampling the result. Specifically, we upscale the matrix \(A\), denoted as \(\bar{A}\), compute the product \(\bar{A}x\), and then apply a downsampling operator \(D : \left[ 0, 1\right] ^ {\sigma^2m^2} \rightarrow \left[ 0, 1\right] ^ {m^2}\), which averages non-overlapping blocks of size \(\sigma \times \sigma\), to bring the result back to the original resolution before comparing it to the target image \(b\). The new objective becomes:
 
 \begin{equation}
 \label{eq:supersampling}
@@ -148,10 +148,10 @@ We can observe in Figure~\ref{fig:n_sigma_tuning} that the block size controls t
 As we can see in Figure~\ref{fig:upsampling_A}, the inner circle represents the original low-resolution matrix \(A\), while the outer circle corresponds to the upsampled matrix \(\bar{A}\). The white area between two adjacent pegs increases proportionally with the distance between those pegs. The idea is to plot the Manhattan distance and residual error for a selected set of \(N\) values, \(S = \{n_1, n_2, \ldots, n_t\}\), identify the optimal distance, and then use it to derive a formula for a general use. This leads us to:
 
 \[
-d = \frac{w}{2}\bigg(\left| \cos(\frac{2\pi}{N}) - 1 \right| + \left|  \sin(\frac{2\pi}{N})\right|\bigg)
+d = \frac{m}{2}\bigg(\left| \cos(\frac{2\pi}{N}) - 1 \right| + \left|  \sin(\frac{2\pi}{N})\right|\bigg)
 \]
 
-where \(w\) is the width of the input image and \(d\) is the manhattan distance between two adjacent pegs (see Appendix~\ref{app:d} for a step-by-step derivation). 
+where \(d\) is the manhattan distance between two adjacent pegs (see Appendix~\ref{app:d} for a step-by-step derivation). 
 
 \begin{figure}[H]
     \centering
@@ -169,7 +169,7 @@ N = \underset{n \in S}{\arg\min} \left| d(n) - 10 \right|
 \section{Least Squares Regularized (LSR)}
 \label{sec:lsr}
 
-As explained in Convex Optimization \cite{convex-optimization}, Chapter 4.4, we can cast our problem as a quadratic optimization problem. By using the CVXOPT Python package \footnote{For more details, see \href{https://cvxopt.org/}{CVXOPT: Python Software for Convex Optimization}}, we can integrate constraints and regularization terms. The equation we now need to minimize takes the form of a quadratic problem:
+As explained in Convex Optimization \cite{convex-optimization}, we can cast our problem as a quadratic optimization problem. By using the CVXOPT Python package\footnote{For more details, see \href{https://cvxopt.org/}{CVXOPT: Python Software for Convex Optimization}}, we can integrate constraints and regularization terms. The equation we now need to minimize takes the form of a quadratic problem:
 
 \begin{equation}
 \label{eq:qp}
@@ -223,7 +223,7 @@ To ensure the the matrix \(P\) stays positive semidefinite, a requirement for th
 
 We now introduce an alternative regularization term, given by the formula: \(1-2\left|x-0.5\right|\), which simplifies to \(-\left|x-0.5\right|\). The term \(\left|x-0.5\right|\) is convex, but its negation is concave. Including it in the objective breaks the convexity of the quadratic problem, making the problem non-convex.
 
-To express the absolute value in a quadratic program, I introduce auxiliary variables: \(t_i \geq \left|x_i - 0.5\right|\) and optimize over: \(z = \left[x;t\right] \in \mathbb{R}^{2n}\). The modified objective and constraints:
+To express the absolute value in a quadratic program, we introduce auxiliary variables: \(t_i \geq \left|x_i - 0.5\right|\) and optimize over: \(z = \left[x;t\right] \in \mathbb{R}^{2n}\). The modified objective and constraints:
 
 \begin{equation}
 \min_{x, t} \frac{1}{2} x^TPx + q^Tx - \lambda \sum_i{t_i} \quad \text{subject to } x \in [0,1]^n
@@ -266,7 +266,7 @@ We will now introduce the following vector \(w\). This vector forms the diagonal
 \min_{x} \frac{1}{2} x^T(P + \lambda W)x + q^Tx \text{ subject to } x \in [0,1]^n
 \end{equation}
 
-The first iteration begins with \(W = I\), and we update the weights at step \(i\) using the formula \(w_i = x_{i-1}(1-x_{i-1}) + \epsilon\). We solve the problem described by Equation~\ref{eq:bpls}, then select the the top \(k\) values from \(x\) and fix those to \(1\). Next, we adjust the problem by calculating the contributions of the selected lines: \(A_1 \cdot 1\), where \(A_1\) is the subset of lines corresponding to the selected indices in this iteration. We subtract this from \(b\): \(\bar{b} = b - A_1 \cdot 1\). This process is repeated with the updated \(\bar{b}\) until the error stops decreasing or a maximum number of iterations is reached.
+The first iteration begins with \(W = I\), and we update the weights at step \(i\) using the formula \(w_i = x_{i-1}(1-x_{i-1}) + \epsilon\). We solve the problem described by Equation~\ref{eq:bpls}, then select the the top \(k\) values from \(x\) and fix those to \(1\). Next, we adjust the problem by calculating the contributions of the selected lines: \(A_1 1\), where \(A_1\) is the subset of lines corresponding to the selected indices in this iteration. We subtract this from \(b\): \(\bar{b} = b - A_1 1\). This process is repeated with the updated \(\bar{b}\) until the error stops decreasing or a maximum number of iterations is reached.
 
 \begin{figure}[H]
     \centering
@@ -278,7 +278,7 @@ The first iteration begins with \(W = I\), and we update the weights at step \(i
         \centering
         \includegraphics[width=\linewidth]{images/bpls/bpls.png}
     \end{minipage}
-    \caption{Binary Projection Least Squares results for a system with 128 pegs and \(k=10\): with early stopping (left) and without early stopping, using a maximum of 90 iterations (right).}
+    \caption{Binary Projection Least Squares results for a system with 128 pegs, \(k=10\) and \(\lambda=100\): with early stopping (left) and without early stopping, using a maximum of 90 iterations (right).}
     \label{fig:bpls_output}
 \end{figure}
 
@@ -290,7 +290,7 @@ Below, we present two methods of matching pursuit: Greedy Matching Pursuit and O
 
 \subsection{Greedy}
 
-The greedy method consists of selecting the line the reduces the residual error the most at each step. Once a line is chosen, the decision is irreversible. This method is computationally intensive on a typical personal use PC. To address this, we introduce two heuristics to reduce the number of candidate lines evaluated at each step: random, where we randomly select \(l\) candidate lines, in our experiments \(l=100\) provides a good trade-off between accuracy and computation time, and dot-product, where we compute the scalar product \(A^Tb\) and select the top \(l\) based on this score. See Appendix~\ref{app:greedy} for the pseudocode of this algorithm.
+The greedy method consists of selecting the line that reduces the residual error the most at each step. Once a line is chosen, the decision is irreversible. This method is computationally intensive on a typical personal use PC. To address this, we introduce two heuristics to reduce the number of candidate lines evaluated at each step: random, where we randomly select \(l\) candidate lines, in our experiments \(l=100\) provides a good trade-off between accuracy and computation time, and dot-product, where we compute the scalar product \(A^Tb\) and select the top \(l\) based on this score. See Appendix~\ref{app:greedy} for the pseudocode of this algorithm.
 
 \subsection{Orthogonal Matching Pursuit (OMP)}
 
@@ -310,7 +310,7 @@ The Orthogonal Matching Pursuit (OMP) method is very similar to the Greedy one, 
         \centering
         \includegraphics[width=\linewidth]{images/mp/omp.png}
     \end{minipage}
-    \caption{Matching Pursuit results for a system with 128 pegs and 1000 selected lines, using real valued \(x\) coefficients and without early stopping. The methods, in order, are: greedy (random heuristic), greedy (dot-product heuristic), and Orthogonal Matching Pursuit.}
+    \caption{Matching Pursuit results for a system with 128 pegs and 1000 selected lines, using real valued \(x\) coefficients and without early stopping. The methods, in order, are: Greedy (random heuristic), Greedy (dot-product heuristic), and Orthogonal Matching Pursuit.}
     \label{fig:mp_outputs}
 \end{figure}
 
@@ -328,7 +328,7 @@ The Orthogonal Matching Pursuit (OMP) method is very similar to the Greedy one, 
         \centering
         \includegraphics[width=\linewidth]{images/mp_binary/omp_binary.png}
     \end{minipage}
-    \caption{Matching Pursuit results for a system with 128 pegs and 1000 selected lines, using binary valued \(x\) coefficients with supersampling and without early stopping. The methods, in order, are: greedy (random heuristic), greedy (dot-product heuristic), and Orthogonal Matching Pursuit.}
+    \caption{Matching Pursuit results for a system with 128 pegs and 1000 selected lines, using binary valued \(x\) coefficients with supersampling and without early stopping. The methods, in order, are: Greedy (random heuristic), Greedy (dot-product heuristic), and Orthogonal Matching Pursuit.}
     \label{fig:mp_binary_outputs}
 \end{figure}
 
@@ -353,7 +353,7 @@ In our string art problem, the lines we draw can also be described using the sam
 
 After selecting a line, we need to subtract its contribution from the sinogram, and also from all other lines. Because lines intersect and depend on each other, this means the basis is not orthogonal. We continue this process as long as the error decreases by more than a minimum delta, and we use a customizable patience factor to control when to stop.
 
-We implemented a custom Radon Transform because we can take advantage of the constraints in the string art problem. Instead of representing the sinogram as a matrix indexed by \(\theta\) and \(s\), it’s stored as a list where each index \(i\) corresponds to the density of line \(i\). We select the line with the highest value, remove it from the list, and then update all other lines by removing the pixels that intersect with the chosen line. This keeps the space orthogonal. This update step has time complexity \(O(n^2)\).
+We implemented a custom Radon Transform because we can take advantage of the constraints in the string art problem. Instead of representing the sinogram as a matrix indexed by \(\theta\) and \(s\), it’s stored as a list where each index \(i\) corresponds to the density of line \(i\). We select the line with the highest value, remove it from the list, and then update all other lines by removing the pixels that intersect with the chosen line. This keeps the space orthogonal. This update step has a time complexity of \(O(N^2)\), resulting in a final algorithm complexity of \(O(N^4)\).
 
 \begin{figure}[H]
     \centering
@@ -380,10 +380,10 @@ We implemented a custom Radon Transform because we can take advantage of the con
 \subsubsection{Enhancing the Radon Transform Method}
 \label{sec:radon_improvements}
 
-While standard Radon implementations (like those in scikit-learn) run in \(O(nlogn)\), our approach avoids the overhead of computing the sinogram of the intersection between two lines and then subtracting it from all other lines. Although this may sound straightforward, it is actually more complex than implementing manual projection calculations and the orthogonal projection update.
+While standard Radon implementations (like those in scikit-learn) run in \(O(NlogN)\), compared to the \(O(N^2)\) complexity of our algorithm, our approach avoids the overhead of computing the sinogram of the intersection between two lines and then subtracting it from all other lines. Although this may sound straightforward, it is actually more complex than implementing manual projection calculations and the orthogonal projection update.
 
-Another way to speed up our Radon Transform is to update only the lines that intersect the chosen line, limiting updates to the number of intersections instead of all lines. Of course, the initial computation of the Radon Transform still has a time complexity of \(O(n)\). However, when subtracting the contribution of the chosen line, the update step now becomes more efficient, with time complexity \(O(k)\), where \(k\) is the maximum number of possible intersections across all lines. 
+Another way to speed up our Radon Transform is to update only the lines that intersect the chosen line, limiting updates to the number of intersections instead of all lines. Of course, the initial computation of the Radon Transform still has a time complexity of \(O(N^2)\). However, when subtracting the contribution of the chosen line, the update step now becomes more efficient, with time complexity \(O(k)\), where \(k\) is the maximum number of possible intersections across all lines. 
 
-This raises an important question: \textit{Which is the worst line to draw?}, or more formally: \textit{Which line causes the most intersections if drawn?} As a result, the final time complexity becomes \(O(nk)\).
+This raises an important question: \textit{Which is the worst line to draw?}, or more formally: \textit{Which line causes the most intersections if drawn?} As a result, the final time complexity becomes \(O(N^2k)\).
 
 To answer the question above, intersections occur when the selected line partitions the circle into two regions, and other lines attempt to connect points from opposite sides of this partition. Any such line will necessarily intersect the dividing line. Intuitively, the worst-case dividing line is the one that perfectly splits the circle into two equal halves. In this case, each of the \(\frac{N}{2}\) pegs on one side can potentially connect to each of the \(\frac{N}{2}\) pegs on the other side, resulting in a maximum of \((\frac{N}{2})^2 = \frac{N^2}{4}\) intersections. This remains to be formally proven.

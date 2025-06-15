@@ -34,7 +34,7 @@ It is important to note that there exists a discrepancy in a computers perceptio
     \label{fig:perceptual_image_quality}
 \end{figure}
 
-This phenomenon can be observed in the figure above, where the image on the left, despite having a higher FSIMc score \cite{fsimc} (the higher the better), has a lower MOS \footnote{For more details about the Mean Opinion Score (MOS), see the article on \href{https://en.wikipedia.org/wiki/Mean_opinion_score}{Mean Opinion Score (MOS)}}. This indicates that the majority of people perceived the image on the right as being of higher quality, which contradicts the result given by the computer.
+This phenomenon can be observed in the figure above, where the image on the left, despite having a higher FSIMc score \cite{fsimc} (the higher the better), has a lower MOS\footnote{For more details about the Mean Opinion Score (MOS), see the article on \href{https://en.wikipedia.org/wiki/Mean_opinion_score}{Mean Opinion Score (MOS)}}. This indicates that the majority of people perceived the image on the right as being of higher quality, which contradicts the result given by the computer.
 
 \subsubsection{Peg Placement}
 
@@ -50,8 +50,8 @@ y_k &= y_c + r \cdot \sin\left( \frac{2\pi k}{N} \right),
 \quad \text{for } k = 0, 1, 2, \dots, N - 1
 \]
 
-This placement ensures that the directions of lines connecting peg pairs are distributed uniformly over the angular domain. This is particularly important due to the Fourier Slice Theorem \footnote{For the connection between Radon and Fourier transforms, see the article on \href{https://en.wikipedia.org/wiki/Projection-slice_theorem}{Fourier Slice Theorem}}, which connects the Radon transform with the 2D Fourier transform: equidistant angular sampling allows for more accurate coverage of the frequency domain and, in turn, better image approximation through string lines.
+This placement ensures that the directions of lines connecting peg pairs are distributed uniformly over the angular domain. This is particularly important due to the Fourier Slice Theorem\footnote{For the connection between Radon and Fourier transforms, see the article on \href{https://en.wikipedia.org/wiki/Projection-slice_theorem}{Fourier Slice Theorem}}, which connects the Radon transform with the 2D Fourier transform: equidistant angular sampling allows for more accurate coverage of the frequency domain and, in turn, better image approximation through string lines.
 
 \subsubsection{Line Rendering}
 
-For rendering lines in the matrix representation, we initially used the Bresenham algorithm \footnote{For a detailed implementation of the algorithm, see the article on \href{https://en.wikipedia.org/wiki/Bresenham\%27s\_line\_algorithm\#Algorithm}{Bresenham's Line Algorithm}}, and later switched to the anti-aliased Xiaolin-Wu algorithm  \footnote{For a detailed implementation of the algorithm, see the article on \href{https://en.wikipedia.org/wiki/Xiaolin_Wu\%27s_line_algorithm}{Xiaolin Wu's line algorithm}}.
+For rendering lines in the matrix representation, we initially used the Bresenham algorithm\footnote{For a detailed implementation of the algorithm, see the article on \href{https://en.wikipedia.org/wiki/Bresenham\%27s\_line\_algorithm\#Algorithm}{Bresenham's Line Algorithm}}, and later switched to the anti-aliased Xiaolin-Wu algorithm\footnote{For a detailed implementation of the algorithm, see the article on \href{https://en.wikipedia.org/wiki/Xiaolin_Wu\%27s_line_algorithm}{Xiaolin Wu's line algorithm}}.
