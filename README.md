@@ -1,6 +1,18 @@
-# Procedural-Computing-of-String-Art
+# Convex Optimization Relaxation for Radial Image Reconstruction
 
-StringArt is a Python-based package used to generate string art configurations from an input image.
+StringArt is a Python package designed to generate string art configurations based on an input image, leveraging convex optimization techniques for radial image reconstruction.
+
+![String Art Preview](./docs/assets/preview.png)
+
+## Overview
+
+For a comprehensive understanding of the mathematical formulation and approach, please refer to the thesis paper:
+
+[**Convex Optimization Relaxation for Radial Image Reconstruction**](./documentation.pdf)
+
+For a concise summary, usage instructions, and additional code insights, check the documentation folder:
+
+[**docs**](./docs/README.md)
 
 ## User Documentation
 
@@ -10,10 +22,10 @@ To get started, install the package by following these steps:
 
 ```bash
 # clone repository
-git clone https://github.com/skpha13/Procedural-Computing-of-String-Art.git
+git clone https://github.com/skpha13/cvx-rayopt.git
 
 # enter the directory 
-cd Procedural-Computing-of-String-Art
+cd cvx-rayopt
 
 # install all required dependencies
 pip install .
@@ -62,11 +74,11 @@ This package provides a simple and intuitive CLI for computing string art images
 | **Solvers** | **Description**                                                                                                                                    |
 |-------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `ls`        | Solves the system using a standard least squares method. Suitable for dense or sparse matrix formulations.                                         |
-| `lls`       | Alias or variant of least-squares solver focusing on linear positive constraints.                                                                  |
+| `lls`       | Variant of least-squares solver focusing on linear positive constraints.                                                                           |
 | `bpls`      | Solves a binary-constrained problem by iteratively projecting least squares solutions to binary values.                                            |
 | `lsr`       | Solves a regularized least squares problem using quadratic programming.                                                                            |
 | `mp`        | A greedy method that incrementally builds a solution by selecting atoms (lines) based on correlation. Supports `greedy` and `orthogonal` variants. |
-| `radon`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on contributions to the Radon transform sinogram.            |
+| `radon`     | A greedy method that incrementally builds a solution by selecting atoms (lines) based on contributions to the Radon Transform sinogram.            |
 
 
 #### Least Squares Solver Arguments
@@ -103,6 +115,12 @@ This package provides a simple and intuitive CLI for computing string art images
 | `--selector`        | Selector method to use with `greedy` method. Choices: `random`, `dot-product`. Defaults to `dot-product`. |
 | `--number-of-lines` | Required. Number of top lines to select.                                                                  |
 
+#### Radon Solver Arguments
+
+| **Argument** | **Description**                             |
+|--------------|---------------------------------------------|
+| *None*       | This solver does not require any arguments. |
+
 
 #### Example Commands:
 
@@ -114,14 +132,14 @@ python ./stringart/main.py run-benchmarks --image-path ./imgs/lena.png
 # this should be run after the `run-benchmarks` command.
 python ./stringart/main.py run-analysis --input-benchmark-dir benchmarks_01 --image-path ./imgs/lena.png 
 
-# runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 100, the crop mode for the image center and the rasterization algorithm xiaolin-wu.
+# runs the least squares solver with the sparse matrix representation on the provided image. The number of pegs used will be 128, the crop mode for the image center and the rasterization algorithm xiaolin-wu.
 python ./stringart/main.py solve ls --image-path ./imgs/lena.png --rasterization xiaolin-wu 
 
 # runs the matching pursuit solver with the orthogonal method (OMP) on the provided image, selecting 1000 lines.
-python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method orthogonal 
+python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method orthogonal --block-size 4
 
 # runs the matching pursuit solver with the greedy method on the provided image, using the dot-product heuristic, selecting 1000 lines.
-python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method greedy
+python ./stringart/main.py solve mp --image-path ./imgs/lena.png --number-of-lines 1000 --method greedy --selector dot-product --block-size 4
 
 # runs the least squares solver with the sparse matrix representation, a crop mode using the first half of the image and a number of pegs of 50
 python ./stringart/main.py solve ls  --image-path ./imgs/lena.png --crop-mode first-half --number-of-pegs 50 
@@ -130,7 +148,7 @@ python ./stringart/main.py solve ls  --image-path ./imgs/lena.png --crop-mode fi
 python ./stringart/main.py solve lls --number-of-lines 1000 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 
 # runs the binary projection least squares with the `scipy` solver
- python ./stringart/main.py solve bpls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png
+ python ./stringart/main.py solve bpls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png --block-size 4
  
 # runs the regularized least squares with the `smooth` regularizer and a strength of 10.
  python ./stringart/main.py solve lsr --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu

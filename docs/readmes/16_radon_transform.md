@@ -24,14 +24,14 @@ Then, we define:
 R(\theta, s) = \int_{L(\theta, s)} f(x, y)ds
 ```
 
-![Radon Transform Illustration](../assets/radon.gif)
+![Radon Transform Illustration](../assets/radon.svg)
 > Radon Transform Illustration
 
 Using the illustration above, we can think of the Radon transform like a laser beam that scans through the image. At each angle and distance, the laser measures how much of the image’s content (or density) it passes through. By collecting these measurements from different angles and positions, we get a full set of line integrals that represent the image from many perspectives. 
 
 The Radon Transform is used in CT scans to detect foreign objects inside a patient’s body. It works by sending beams through the body from different angles and measuring the density along each beam. When the beam passes through something with a different density than the surrounding tissue, that difference is detected and identified as a foreign object.
 
-![CT Scan Illustration](../assets/ct_scan.gif)
+![CT Scan Illustration](../assets/ct_scan.png)
 > CT Scan Illustration
 
 ## Custom Radon Transform for String Art

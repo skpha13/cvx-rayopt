@@ -45,7 +45,7 @@ def main():
     benchmark = Benchmark(image, crop_mode, number_of_pegs)
     benchmarks_result = benchmark.run_benchmark(
         linear_least_squares,
-        image,
+        src=image,
         shape=shape,
         number_of_pegs=number_of_pegs,
         crop_mode=crop_mode,

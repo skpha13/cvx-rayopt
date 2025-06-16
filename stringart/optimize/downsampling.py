@@ -17,14 +17,14 @@ class UDSLoss:
     ----------
     image : np.ndarray
         Target grayscale image (2D array) to compare against after downsampling.
-    crop_mode : CropMode, optional
-        Cropping mode for matrix generation. Default is "center".
-    number_of_pegs : int, optional
-        Number of pegs used in the matrix generation. Default is 100.
-    rasterization : Rasterization, optional
-        Line rasterization algorithm to use. Default is "bresenham".
-    block_size : int
-        Size of the square block used in downsampling via averaging.
+    crop_mode : CropMode
+        Cropping mode for matrix generation.
+    number_of_pegs : int
+        Number of pegs used in the matrix generation.
+    rasterization : Rasterization
+        Line rasterization algorithm to use.
+    block_size : int, optional
+        Size of the square block used in downsampling via averaging. Default is 8.
 
     Attributes
     ----------

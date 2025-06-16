@@ -15,6 +15,7 @@ matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
 k = 10
 max_iterations = 100
+block_size = 4
 
 
 def main():
@@ -22,16 +23,19 @@ def main():
     directory: Path = stringart_directory.parent.resolve()
 
     image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
+    solver = Solver(
+        image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization, block_size=block_size
+    )
 
     Benchmark.initialize_metadata(directory)
-    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
+    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization, block_size)
     cvxopt_result = benchmark.run_benchmark(
         solver.bpls,
         solver="cvxopt",
         matrix_representation=matrix_representation,
         k=k,
         max_iterations=max_iterations,
+        uds=True,
     )
 
     scipy_result = benchmark.run_benchmark(
@@ -40,6 +44,7 @@ def main():
         matrix_representation=matrix_representation,
         k=k,
         max_iterations=max_iterations,
+        uds=True,
     )
 
     benchmark_results = [cvxopt_result, scipy_result]

@@ -8,7 +8,7 @@ Linear programming (LP) aims to optimize an objective function subject to linear
 \text{Find a vector: } x
 ```
 ```math
-\text{That minimizes the objective function: } \sum_{i=1}^{m \cdot m} r_i
+\text{That minimizes the objective function: } \sum_{i=1}^{m^2} r_i
 ```
 ```math
 \text{Where: } r = b - Ax

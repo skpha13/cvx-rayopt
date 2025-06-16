@@ -15,7 +15,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\gridsearch_lambda\\image_000.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\gridsearch_lambda\\image_000.png",
         "elapsed_monotonic_time": 60.366767999999865,
         "peak_memory_usage": 1164093613,
         "elapsed_time": {
@@ -1313,7 +1313,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\gridsearch_lambda\\image_001.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\gridsearch_lambda\\image_001.png",
         "elapsed_monotonic_time": 61.76413289999982,
         "peak_memory_usage": 1164078545,
         "elapsed_time": {
@@ -2612,7 +2612,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\gridsearch_lambda\\image_002.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\gridsearch_lambda\\image_002.png",
         "elapsed_monotonic_time": 58.67514799999981,
         "peak_memory_usage": 1164078289,
         "elapsed_time": {
@@ -3909,7 +3909,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\gridsearch_lambda\\image_003.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\gridsearch_lambda\\image_003.png",
         "elapsed_monotonic_time": 55.98119679999991,
         "peak_memory_usage": 1164078345,
         "elapsed_time": {
@@ -5204,7 +5204,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\gridsearch_lambda\\image_004.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\gridsearch_lambda\\image_004.png",
         "elapsed_monotonic_time": 42.09701099999984,
         "peak_memory_usage": 1164078105,
         "elapsed_time": {
@@ -6490,7 +6490,7 @@
         ],
         "crop_mode": "center",
         "rasterization": "xiaolin-wu",
-        "output_image_path": "C:\\Users\\mal13\\Desktop\\Procedural-Computing-of-String-Art\\benchmarks\\img_outputs\\gridsearch_lambda\\image_005.png",
+        "output_image_path": "C:\\Users\\mal13\\Desktop\\cvx-rayopt\\benchmarks\\img_outputs\\gridsearch_lambda\\image_005.png",
         "elapsed_monotonic_time": 41.19302830000015,
         "peak_memory_usage": 1164078001,
         "elapsed_time": {

@@ -11,12 +11,13 @@ image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
-number_of_pegs = 50
+number_of_pegs = 100
 matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
 k = 10
 max_iterations = 100
 lambd = 0.1
+block_size = 4
 
 
 logger = logging.getLogger(__name__)
@@ -28,10 +29,12 @@ def main():
     directory: Path = stringart_directory.parent.resolve()
 
     image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
+    solver = Solver(
+        image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization, block_size=block_size
+    )
 
     Benchmark.initialize_metadata(directory)
-    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
+    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization, block_size)
     cvxopt_result = benchmark.run_benchmark(
         solver.bpls,
         solver="cvxopt",

@@ -51,7 +51,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
         "--output-dir",
         type=str,
         required=False,
-        help="Name of the directory containing the benchmark results to analyze. Default: analysis_01",
+        help="Name of the directory containing results of the analysis. Default: analysis_01",
     )
 
     # subcommand: solve
@@ -197,7 +197,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
             "--number-of-pegs",
             type=int,
             required=False,
-            help="Number of pegs to use. Defaults to 100.",
+            help="Number of pegs to use. Defaults to 128.",
         )
         subparser.add_argument(
             "--crop-mode",
@@ -209,7 +209,7 @@ def add_arguments(parser: ArgumentParser) -> ArgumentParser:
             "--rasterization",
             choices=get_args(Rasterization),
             required=False,
-            help="Line rasterization algorithm. Use 'bresenham' for fast lines, or 'xiaolin-wu' for anti-aliased lines.",
+            help="Line rasterization algorithm. Use 'bresenham' for fast lines, or 'xiaolin-wu' for anti-aliased lines. Defaults to 'xiaolin-wu'.",
         )
         subparser.add_argument(
             "--block-size",

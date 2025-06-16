@@ -16,7 +16,7 @@ image_path = "../../imgs/lena.png"
 image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
-number_of_pegs = 50
+number_of_pegs = 100
 matrix_representation: MatrixRepresentation = "sparse"
 rasterization: Rasterization = "xiaolin-wu"
 k = 3
@@ -47,7 +47,7 @@ def run_benchmarks(benchmark: Benchmark, solver: Solver):
 
 
 def solve_two_iterations(solver: Solver, lambd: float) -> np.ndarray | None:
-    A, _ = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterization)
+    A = MatrixGenerator.compute_matrix(shape, number_of_pegs, crop_mode, matrix_representation, rasterization)
 
     n = A.shape[1]
     x_fixed = np.full(n, np.nan)
@@ -102,10 +102,10 @@ def main():
     directory: Path = stringart_directory.parent.resolve()
 
     image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
+    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization, block_size=4)
 
     Benchmark.initialize_metadata(directory)
-    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
+    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization, block_size=4)
 
     run_benchmarks(benchmark, solver)
     solve_plot_x(solver)

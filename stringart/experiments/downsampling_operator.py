@@ -17,7 +17,7 @@ image = ImageWrapper.read_bw(image_path)
 shape = image.shape
 crop_mode: CropMode = "center"
 matrix_representation: MatrixRepresentation = "sparse"
-number_of_pegs: int = 10
+number_of_pegs: int = 100
 rasterization: Rasterization = "xiaolin-wu"
 
 number_of_lines: int = 5000
@@ -103,10 +103,10 @@ def main():
     directory: Path = stringart_directory.parent.resolve()
 
     image_cropped = crop_image(image, crop_mode)
-    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization)
+    solver = Solver(image_cropped, crop_mode, number_of_pegs=number_of_pegs, rasterization=rasterization, block_size=2)
 
     Benchmark.initialize_metadata(directory)
-    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization)
+    benchmark = Benchmark(image, crop_mode, number_of_pegs, rasterization, block_size=2)
 
     start = time.monotonic()
     residual_fn = UDSLoss(image, crop_mode, number_of_pegs, rasterization, block_size=2)

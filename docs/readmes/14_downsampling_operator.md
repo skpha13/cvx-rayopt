@@ -36,7 +36,7 @@ D : \left[ 0, 1\right] ^ {m^2} \rightarrow \left[ 0, 1\right] ^ \frac{m^2}{k^2}
 
 The matrix `A` can be thought of as a geometric drawing:
 
-![Upsampling figure](../assets/upsampling.png)
+![Upsampling figure](../assets/upsampling.svg)
 
 > The inner circle represents the original low-resolution matrix `A`, while the outer circle corresponds to the upsampled matrix `A'`.
 

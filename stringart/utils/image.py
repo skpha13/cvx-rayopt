@@ -36,7 +36,6 @@ class ImageWrapper:
         This function scales the pixel values of an input image to lie between 0 and 1.
         The scaling is performed using the formula:
             scaled_image = (image - min_value) / (max_value - min_value)
-        where `min_value` and `max_value` are the minimum and maximum values of the image, respectively.
 
         Parameters
         ----------
@@ -171,9 +170,8 @@ class ImageWrapper:
         ----------
         src : np.ndarray
             A grayscale image represented as a 2D NumPy array with pixel values in the range [0, 1].
-
         n_levels : int, optional
-            The number of quantization levels. The default is 2.
+            The number of quantization levels. Default is 2.
 
         Returns
         -------
@@ -210,7 +208,6 @@ class ImageWrapper:
         Notes
         -----
         - This function assumes the input image is normalized (i.e., pixel values are between 0 and 1).
-        - A small epsilon is added to the denominator to avoid division by zero.
         - Histogram equalization is applied at the end to improve contrast.
         """
         inverted_src = 1.0 - src
@@ -230,20 +227,19 @@ def find_radius_and_center_point(shape: tuple[int, ...], crop_mode: CropMode | N
 
     Parameters
     ----------
-        shape : (tuple[int, ...])
-            The dimensions of the image (height, width).
-
-        crop_mode : CropMode | None
-            Specifies the location of the center point to start the peg arrangement. Can be one of:
-            - "center" (default): Pegs are placed symmetrically around the center.
-            - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
-            - "second-half": Pegs are placed in the bottom-half/right-half portion of the rectangle.
+    shape : (tuple[int, ...])
+        The dimensions of the image (height, width).
+    crop_mode : CropMode | None
+        Specifies the location of the center point to start the peg arrangement. Can be one of:
+        - "center" (default): Pegs are placed symmetrically around the center.
+        - "first-half": Pegs are placed in the top-half/left-half portion of the rectangle.
+        - "second-half": Pegs are placed in the bottom-half/right-half portion of the rectangle.
 
     Returns
     -------
-        radius, center_point : tuple[int, Point | None]
-            - radius (int): Half the smaller dimension of the image (height or width).
-            - center_point (Point | None): A Point object representing the center, or None if mode is None.
+    radius, center_point : tuple[int, Point | None]
+        - radius (int): Half the smaller dimension of the image (height or width).
+        - center_point (Point | None): A Point object representing the center, or None if mode is None.
     """
     radius = min(shape[0], shape[1]) // 2 - 1
 
