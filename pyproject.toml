@@ -33,6 +33,7 @@ dev = [
     'pytest~=8.3',
     'black~=24.10',
     'isort~=5.13',
+    'imageio-ffmpeg~=0.6',
 ]
 
 [tool.pytest.ini_options]

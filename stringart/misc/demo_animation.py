@@ -9,10 +9,10 @@ from stringart.utils.perf_analyzer import Benchmark, BenchmarkResult
 from tqdm import tqdm
 
 
-def animation(x: np.ndarray, loss: UDSLoss, filename: str = "animation.gif"):
+def animation(x: np.ndarray, loss: UDSLoss, filename: str = "animation.mp4"):
     x_temp = np.zeros(x.shape)
-    frames = []
     indices = np.flatnonzero(x)
+    frames = []
 
     for i in tqdm(indices, desc="Drawing lines"):
         x_temp[i] = 1
@@ -24,14 +24,15 @@ def animation(x: np.ndarray, loss: UDSLoss, filename: str = "animation.gif"):
 
         frames.append(image)
 
-    # to last exactly one minute
-    duration = 60 / len(frames)
-    imageio.mimsave(filename, frames, duration=duration)
+    fps = 30
+    with imageio.get_writer(filename, format="ffmpeg", mode="I", fps=fps, codec="libx264") as writer:
+        for frame in frames:
+            writer.append_data(frame)
 
 
 def generate_animations(xs: list[np.ndarray], loss: UDSLoss):
     for i, x in enumerate(xs):
-        animation(x, loss, filename=f"../../outputs/demo/animation_{i}.gif")
+        animation(x, loss, filename=f"../../outputs/demo/animation_{i}.mp4")
 
 
 if __name__ == "__main__":
