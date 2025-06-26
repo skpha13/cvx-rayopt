@@ -47,7 +47,7 @@ if __name__ == "__main__":
     rasterization = results[0].rasterization
     block_size = results[0].block_size
 
-    xs = [np.array(results[0].x), np.array(results[1].x), np.array(results[2].x)]
+    xs = [np.array(results[0].x), np.array(results[2].x), np.array(results[8].x)]
     loss = UDSLoss(image, crop_mode, number_of_pegs, rasterization, block_size)
 
     generate_animations(xs, loss)
