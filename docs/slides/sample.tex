@@ -1,0 +1,152 @@
+%----------------------------------------------------------------------------------------
+%    PACKAGES AND THEMES
+%----------------------------------------------------------------------------------------
+
+\documentclass[aspectratio=169,xcolor=dvipsnames]{beamer}
+\usetheme{SimpleDarkBlue}
+
+\usepackage{hyperref}
+\usepackage{graphicx} % Allows including images
+\graphicspath{{./images/}}
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{csquotes}
+\usepackage{animate}
+
+%----------------------------------------------------------------------------------------
+%    TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{Convex Optimization Relaxation for Radial Image Reconstruction}
+% \subtitle{Subtitle}
+
+\author{
+    Adrian-Lucian Mincu\\
+    \small Coordonator științific: Conf. Dr. Rusu Cristian
+}
+
+\institute
+{
+    Universitatea din București - Facultatea de Matematică și Informatică
+}
+\date{July, 2025} % Date, can be changed to a custom date
+
+%----------------------------------------------------------------------------------------
+%    PRESENTATION SLIDES
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\begin{frame}
+    % Print the title page as the first slide
+    \titlepage
+\end{frame}
+
+\begin{frame}{Cuprins}
+    % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+    \tableofcontents
+\end{frame}
+
+%------------------------------------------------
+\section{Introducere}
+
+\begin{frame}{Introducere}
+    \begin{columns}
+        \begin{column}{0.6\textwidth}
+            \textbf{Motivație}
+            \begin{itemize}
+                \item CT-ul se bazează pe reconstrucție radială, esențială în diagnostic.
+                \item Transformata Radon este studiată atât în matematică, cât și în imagistică.
+                \item Arta cu sfoară este un proces manual intensiv, propunem automatizarea ei.
+            \end{itemize}
+
+            \vspace{0.25cm}
+
+            \textbf{Contribuție personală}
+            \begin{itemize}
+                \item Studiu literatură despre artă cu sfoară și optimizare.
+                \item Adaptarea transformatei Radon și implementarea mai multor algoritmi de optimizare.
+                \item Pachet Python documentat, cu experimente reproductibile.
+            \end{itemize}
+        \end{column}
+
+        \begin{column}{0.4\textwidth}
+            \begin{figure}
+                \includegraphics[width=\linewidth]{images/stringart_components.pdf}
+                \caption{Componente ale artei cu sfoară.}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+%------------------------------------------------
+
+%------------------------------------------------
+\section{Definirea problemei}
+\begin{frame}{Definirea problemei}
+    \begin{figure}
+        \includegraphics[width=0.75\linewidth]{images/problem_definition.pdf}
+    \end{figure}
+\end{frame}
+%------------------------------------------------
+
+%------------------------------------------------
+\section{Metodologie}
+\begin{frame}{Transformata Radon}
+    \begin{figure}[H]
+    \centering
+        \begin{minipage}{0.5\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{images/radon.pdf}
+        \end{minipage}
+    \hspace{0.02\linewidth}
+        \begin{minipage}{0.2\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{images/mary.png}
+        \end{minipage}
+    \hspace{0.02\linewidth}
+        \begin{minipage}{0.2\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{images/mary_radon.png}
+        \end{minipage}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Analiză Comparativă}
+    \begin{figure}
+        \includegraphics[width=0.6\linewidth]{images/diff_images.pdf}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Istoric Reziduu}
+    \begin{figure}
+        \includegraphics[width=0.9\linewidth]{images/residual_history.pdf}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Rezultate Cantitative Radon}
+    \begin{figure}
+        \includegraphics[width=0.6\linewidth]{images/radon_quantitative_test.pdf}
+    \end{figure}
+\end{frame}
+%------------------------------------------------
+
+%------------------------------------------------
+\section{Sumar și Perspective}
+\begin{frame}{Concluzie}
+    \textbf{Cea mai bună metodă: Radon}
+    \begin{itemize}
+        \item Produce un rezultat binar.
+        \item Oferă un echilibru perfect între timp de execuție și consum de memorie.
+        \item Are cea mai bună calitate vizuală subiectivă și un RMS competitiv.
+    \end{itemize}
+
+    \vspace{0.5cm}
+
+    \textbf{Perspective viitoare}
+    \begin{itemize}
+        \item Explorarea metodei de transfer de stil bazată pe deep learning a fost deja începută.
+        \item Direcție propusă: dezvoltarea unui model care să prezică direct liniile folosite, nu doar să aplice un stil.
+    \end{itemize}
+\end{frame}
+%------------------------------------------------
+
+\end{document}

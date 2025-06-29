@@ -148,10 +148,10 @@ python ./stringart/main.py solve ls  --image-path ./imgs/lena.png --crop-mode fi
 python ./stringart/main.py solve lls --number-of-lines 1000 --image-path ./imgs/lena.png --rasterization xiaolin-wu
 
 # runs the binary projection least squares with the `scipy` solver
- python ./stringart/main.py solve bpls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png --block-size 4
+python ./stringart/main.py solve bpls --qp-solver scipy --k 500 --max-iterations 1 --image-path ./imgs/lena.png --block-size 4
  
 # runs the regularized least squares with the `smooth` regularizer and a strength of 10.
- python ./stringart/main.py solve lsr --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
+python ./stringart/main.py solve lsr --regularizer "smooth" --lambda 10 --image-path ./imgs/lena.png --rasterization xiaolin-wu
  
 # runs the radon solver with a block_size of 8 for supersampling
 python ./stringart/main.py solve radon --block-size 8 --number-of-pegs 256 --image-path ./imgs/lena.png 
@@ -169,9 +169,10 @@ pip install stringart[dev]
 
 This will install the following tools:
 
-- **Black:**  A code formatter to ensure consistent style.
+- **black:**  A code formatter to ensure consistent style.
 - **isort:**  A tool for sorting imports automatically.
-- **Pytest:** A testing framework for running unit tests.
+- **pytest:** A testing framework for running unit tests.
+- **imageio-ffmpeg:** A package providing FFmpeg support for reading and writing video files.
 
 ### Running Tests
 
