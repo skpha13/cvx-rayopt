@@ -28,7 +28,7 @@
 {
     Universitatea din București - Facultatea de Matematică și Informatică
 }
-\date{July, 2025} % Date, can be changed to a custom date
+\date{Iulie, 2025} % Date, can be changed to a custom date
 
 %----------------------------------------------------------------------------------------
 %    PRESENTATION SLIDES
@@ -41,11 +41,6 @@
     \titlepage
 \end{frame}
 
-\begin{frame}{Cuprins}
-    % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
-    \tableofcontents
-\end{frame}
-
 %------------------------------------------------
 \section{Introducere}
 
@@ -54,7 +49,7 @@
         \begin{column}{0.6\textwidth}
             \textbf{Motivație}
             \begin{itemize}
-                \item CT-ul se bazează pe reconstrucție radială, esențială în diagnostic.
+                \item CT: \textbf{375+ mil. scanări/an}, bazate pe Radon, cu +\textbf{3–4\%} anual.
                 \item Transformata Radon este studiată atât în matematică, cât și în imagistică.
                 \item Arta cu sfoară este un proces manual intensiv, propunem automatizarea ei.
             \end{itemize}
@@ -134,9 +129,10 @@
 \begin{frame}{Concluzie}
     \textbf{Cea mai bună metodă: Radon}
     \begin{itemize}
-        \item Produce un rezultat binar.
-        \item Oferă un echilibru perfect între timp de execuție și consum de memorie.
-        \item Are cea mai bună calitate vizuală subiectivă și un RMS competitiv.
+        \item Produce un rezultat binar, cu un contrast bun și separare clară între fundal și subiect.
+        \item De \textbf{6.7× mai rapidă} decât BPLS, dar \textbf{12.6× mai lentă} decât LLS binar.
+        \item De \textbf{8× mai eficientă} în memorie decât BPLS, dar \textbf{1.62× mai consumatoare} decât LLS binar.
+        \item RMS competitiv: \textbf{0.1807} —  LLS binar (0.2255), BPLS (0.4447), MP binar (0.2339).
     \end{itemize}
 
     \vspace{0.5cm}
