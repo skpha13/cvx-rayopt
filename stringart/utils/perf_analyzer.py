@@ -631,7 +631,8 @@ def plot_residuals(y_data: List[np.ndarray], labels: List[str], plot_name: str, 
 
     for idx, (y, label) in enumerate(zip(y_data, labels)):
         if len(y) == 1:
-            ax.plot(2 * idx, y[0], "o", label=label)
+            max_len = max(len(y) for y in y_data)
+            ax.plot(range(max_len), [y[0]] * max_len, label=label)
         else:
             ax.plot(range(len(y)), y, label=label)
 

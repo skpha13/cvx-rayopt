@@ -25,6 +25,7 @@ dependencies = [
     'pulp~=3.0',
     'cvxopt~=1.3',
     'tqdm~=4.67',
+    'imageio~=2.37',
 ]
 
 [project.optional-dependencies]
@@ -32,6 +33,7 @@ dev = [
     'pytest~=8.3',
     'black~=24.10',
     'isort~=5.13',
+    'imageio-ffmpeg~=0.6',
 ]
 
 [tool.pytest.ini_options]
